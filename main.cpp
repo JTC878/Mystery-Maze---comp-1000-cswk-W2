@@ -7,12 +7,13 @@
 using namespace std;
 
 char mazeArray[MAZE_Y][MAZE_X];
-void initialiseMaze();
+void initialiseMazeArray();
 void printMazeArray();
+void initialiseRandomMaze();
 
 
 int main() {
-	initialiseMaze();
+	initialiseMazeArray();
 	printMazeArray();
 }
 
@@ -20,7 +21,7 @@ int main() {
 
 
 
-void initialiseMaze() {
+void initialiseMazeArray() {
 	for (int i = 0; i < MAZE_Y; i++) {
 		for (int j = 0; j < MAZE_X; j++) {
 			mazeArray[i][j] = '#';
@@ -35,4 +36,8 @@ void printMazeArray() {
 			cout << mazeArray[i][j];
 		}
 	}
+}
+
+void initialiseRandomMaze() {
+
 }
