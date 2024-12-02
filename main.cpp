@@ -3,8 +3,8 @@
 #include <random>
 #include <cmath>
 
-#define MAZE_X 50 //make sure these are even
-#define MAZE_Y 20
+#define MAZE_X 20 //make sure these are even
+#define MAZE_Y 10
 #define ABOVE mazeArr[i - 1][j]
 #define BELOW mazeArr[i + 1][j]
 #define RIGHT mazeArr[i][j+1]
@@ -12,25 +12,25 @@
 
 
 struct mazeMidPoint {
-	int y = (MAZE_Y / 2) - 1;
-	int x = (MAZE_X / 2) - 1;
+	int y;
+	int x;
 };
 
 using namespace std;
 
 char mazeArr[MAZE_Y][MAZE_X];
-mazeMidPoint midPoint;
+mazeMidPoint midPoint = {(MAZE_Y / 2) - 1, (MAZE_X / 2) - 1};
 void initialiseMazeArray();
 void printMazeArray();
 void initialiseMainPath();
 int checkForPath(int i, int j);
+void initialiseMainPath2();
 
 
 int main() {
 	initialiseMazeArray();
-	printMazeArray();
-	system("pause");
-	initialiseMainPath();
+	srand(time(0));
+	initialiseMainPath2();
 	printMazeArray();
 
 	return 0;
@@ -58,45 +58,44 @@ void printMazeArray() {
 }
 
 int checkForPath(int i, int j) {
-	int yPercValue = 0;
-	int xPercValue = 0;
-	if (i == midPoint.y) yPercValue = 100;
-	else if (j == midPoint.x) xPercValue = 100;
+	float yPercValue = 2;
+	float xPercValue = 2;
+	srand(time(0));
+	int r = rand() % 10;
+	/*
+	if (i == midPoint.y || i == 0 || i >= MAZE_Y - 2) yPercValue = 5;
 	else {
-		yPercValue = 100 * (1 - abs(i - midPoint.y) / midPoint.y);
-		xPercValue = 100 * (1 - abs(j - midPoint.x) / midPoint.x);
+		yPercValue = abs(i - midPoint.y);
+		yPercValue = yPercValue / midPoint.y;
+		yPercValue = 1 - yPercValue;
+		yPercValue = 10 * yPercValue;
 	}
-	if (i != 0 && ABOVE == ' ' && rand() % 101 < yPercValue) {
-		if (i == (MAZE_Y-1)) {
-			return 1;
-		}
-		else {
-			return 0;
-		}
+	if (j == midPoint.x || j == 0 || j >= MAZE_X - 2) xPercValue = 5;
+	else {
+		xPercValue = abs(j - midPoint.x);
+		xPercValue = xPercValue / midPoint.x;
+		xPercValue = 1 - xPercValue;
+		xPercValue = 10 * xPercValue;
+	}*/
+
+	if (i != 0 && ABOVE == ' ' && r < (int)yPercValue) {
+		if (i == (MAZE_Y-1)) return 1;
+		else return 2;
 	}
-	else if (j != 0 && LEFT == ' ' && rand() % 101 < xPercValue) {
-		if (j == (MAZE_X - 1)) {
-			return 1;
-		}
-		else {
-			return 0;
-		}
+	else if (j != 0 && LEFT == ' ' && r < (int)xPercValue) {
+		if (j == (MAZE_X - 1)) return 1;
+		else return 2;
 	}
-	else if (i != (MAZE_Y - 1) && BELOW == ' ' && rand() % 101 < yPercValue) {
-		if (i == 0) {
-			return 1;
-		}
-		else {
-			return 0;
-		}
+	else if (i != (MAZE_Y - 1) && BELOW == ' ' && r < (int)yPercValue) {
+		if (i == 0) return 1;
+		else return 2;
 	}
-	else if (j != (MAZE_X - 1) && RIGHT == ' ' && rand() % 101 < xPercValue) {
-		if (j == 0) {
-			return 1;
-		}
-		else {
-			return 0;
-		}
+	else if (j != (MAZE_X - 1) && RIGHT == ' ' && r < (int)xPercValue) {
+		if (j == 0) return 1;
+		else return 2;
+	}
+	else {
+		return 0;
 	}
 }
 
@@ -106,19 +105,59 @@ void initialiseMainPath() {
 	while (found == false) {
 		for (int i = 0; i < MAZE_Y && found == false; i++) {
 			for (int j = 0; j < MAZE_X && found == false; j++) {
-				srand(time(0));
 				switch (checkForPath(i, j)) {
-				case 0:
-					mazeArr[i][j] == ' ';
-					break;
 				case 1:
-					mazeArr[i][j] == ' ';
+					mazeArr[i][j] = ' ';
 					found = true;
 					break;
+				case 2:
+					mazeArr[i][j] = ' ';
 				default:
 					continue;
 				}
 			}
+		}
+	}
+}
+
+void initialiseMainPath2() {
+	mazeArr[midPoint.y][midPoint.x] = ' ';
+	int i = midPoint.y;
+	int j = midPoint.x;
+	bool found = false;
+	int r = 0;
+	while (found == false) {
+		r = rand() % 4;
+		switch (r) {
+		case 0: //ABOVE case
+			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i - 1][j + 1] == '#' && mazeArr[i-2][j] == '#') { //if left, right and up is a wall
+				mazeArr[i - 1][j] = ' ';
+				i--;
+			}
+			break;
+		case 1: //LEFT case
+			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i + 1][j - 1] == '#' && mazeArr[i][j-2] == '#') { //if up and down is not a path
+				mazeArr[i][j - 1] = ' ';
+				j--;
+			}
+			break;
+		case 2: //BELOW case
+			if (mazeArr[i + 1][j - 1] == '#' && mazeArr[i + 1][j + 1] == '#' && mazeArr[i+2][j] == '#') { //if left and right is not a path
+				mazeArr[i + 1][j] = ' ';
+				i++;
+			}
+			break;
+		case 3: //RIGHT case
+			if (mazeArr[i - 1][j + 1] == '#' && mazeArr[i + 1][j + 1] == '#' && mazeArr[i][j+2] == '#') { //if up and down is not a path
+				mazeArr[i][j + 1] = ' ';
+				j++;
+			}
+			break;
+		default:
+			cout << "Something went wrong";
+		}
+		if (i == 0 || j == 0 || i == (MAZE_Y - 1) || j == (MAZE_X - 1)) {
+			found = true;
 		}
 	}
 }
@@ -136,7 +175,8 @@ For example if the path is beneath the current element, then the current element
 This absolute value is then 1 - ANSWER/(MAZE_Y / 2 - 1) to get the percentage value that the path will be initialised in the current element.
 5. We must also check whether we have reached the edge of the maze on our current element (eg. IF a path is above us we check if we are at the bottom of the maze - If we are, found
 variable will return as true)
-6. Additionally if we want one way paths we must  
+6. Additionally if we want one way paths we must check LEFT and RIGHT for other PATHS if you are checking ABOVE OR DOWN from the current element. Vice versa we must check ABOVE and BELOW for 
+other PATHS if we are checking RIGHT OR LEFT from the current element.
 
 
 
