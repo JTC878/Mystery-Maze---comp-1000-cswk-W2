@@ -3,8 +3,8 @@
 #include <random>
 #include <cmath>
 
-#define MAZE_X 20 //make sure these are even
-#define MAZE_Y 10
+#define MAZE_X 19 //make sure these are even
+#define MAZE_Y 9
 #define ABOVE mazeArr[i - 1][j]
 #define BELOW mazeArr[i + 1][j]
 #define RIGHT mazeArr[i][j+1]
@@ -19,7 +19,7 @@ struct mazeMidPoint {
 using namespace std;
 
 char mazeArr[MAZE_Y][MAZE_X];
-mazeMidPoint midPoint = {(MAZE_Y / 2) - 1, (MAZE_X / 2) - 1};
+mazeMidPoint midPoint = {(MAZE_Y / 2), (MAZE_X / 2)};
 void initialiseMazeArray();
 void printMazeArray();
 void initialiseMainPath();
@@ -120,7 +120,25 @@ void initialiseMainPath() {
 	}
 }
 
-void initialiseMainPath2() {
+int weightedRandomPercX(int k) {
+	float PercValue;
+	PercValue = abs(k - midPoint.x);
+	PercValue = PercValue / midPoint.x;
+	PercValue = 1 - PercValue;
+	PercValue = 100 * PercValue;
+	return int(PercValue);
+}
+
+int weightedRandomPercY(int k) {
+	float PercValue;
+	PercValue = abs(k - midPoint.y);
+	PercValue = PercValue / midPoint.y;
+	PercValue = 1 - PercValue;
+	PercValue = 100 * PercValue;
+	return int(PercValue);
+}
+
+void initialiseMainPath2() { //works to a certain extent but gets stuck because of the wall checks - need to find out how that happens. 
 	mazeArr[midPoint.y][midPoint.x] = ' ';
 	int i = midPoint.y;
 	int j = midPoint.x;
@@ -130,25 +148,25 @@ void initialiseMainPath2() {
 		r = rand() % 4;
 		switch (r) {
 		case 0: //ABOVE case
-			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i - 1][j + 1] == '#' && mazeArr[i-2][j] == '#') { //if left, right and up is a wall
+			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i - 1][j + 1] == '#' && mazeArr[i-2][j] == '#' && (rand() % 101) <= weightedRandomPercY(i)) { //if left, right and up is a wall
 				mazeArr[i - 1][j] = ' ';
 				i--;
 			}
 			break;
 		case 1: //LEFT case
-			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i + 1][j - 1] == '#' && mazeArr[i][j-2] == '#') { //if up and down is not a path
+			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i + 1][j - 1] == '#' && mazeArr[i][j-2] == '#' && (rand() % 101) <= weightedRandomPercX(j)) { //if up and down is not a path
 				mazeArr[i][j - 1] = ' ';
 				j--;
 			}
 			break;
 		case 2: //BELOW case
-			if (mazeArr[i + 1][j - 1] == '#' && mazeArr[i + 1][j + 1] == '#' && mazeArr[i+2][j] == '#') { //if left and right is not a path
+			if (mazeArr[i + 1][j - 1] == '#' && mazeArr[i + 1][j + 1] == '#' && mazeArr[i+2][j] == '#' && (rand() % 101) <= weightedRandomPercY(i)) { //if left and right is not a path
 				mazeArr[i + 1][j] = ' ';
 				i++;
 			}
 			break;
 		case 3: //RIGHT case
-			if (mazeArr[i - 1][j + 1] == '#' && mazeArr[i + 1][j + 1] == '#' && mazeArr[i][j+2] == '#') { //if up and down is not a path
+			if (mazeArr[i - 1][j + 1] == '#' && mazeArr[i + 1][j + 1] == '#' && mazeArr[i][j+2] == '#' && (rand() % 101) <= weightedRandomPercX(j)) { //if up and down is not a path
 				mazeArr[i][j + 1] = ' ';
 				j++;
 			}
