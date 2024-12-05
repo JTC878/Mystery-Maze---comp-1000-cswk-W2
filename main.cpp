@@ -3,8 +3,8 @@
 #include <random>
 #include <cmath>
 
-#define MAZE_X 19 //make sure these are even
-#define MAZE_Y 9
+#define MAZE_X 99 //make sure these are even
+#define MAZE_Y 49
 #define ABOVE mazeArr[i - 1][j]
 #define BELOW mazeArr[i + 1][j]
 #define RIGHT mazeArr[i][j+1]
@@ -126,6 +126,7 @@ int weightedRandomPercX(int k) {
 	PercValue = PercValue / midPoint.x;
 	PercValue = 1 - PercValue;
 	PercValue = 100 * PercValue;
+	if (PercValue < 1) PercValue = 1;
 	return int(PercValue);
 }
 
@@ -135,6 +136,7 @@ int weightedRandomPercY(int k) {
 	PercValue = PercValue / midPoint.y;
 	PercValue = 1 - PercValue;
 	PercValue = 100 * PercValue;
+	if (PercValue < 1) PercValue = 1;
 	return int(PercValue);
 }
 
@@ -144,32 +146,69 @@ void initialiseMainPath2() { //works to a certain extent but gets stuck because 
 	int j = midPoint.x;
 	bool found = false;
 	int r = 0;
+	int loopCounter = 0;
 	while (found == false) {
 		r = rand() % 4;
 		switch (r) {
-		case 0: //ABOVE case
-			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i - 1][j + 1] == '#' && mazeArr[i-2][j] == '#' && (rand() % 101) <= weightedRandomPercY(i)) { //if left, right and up is a wall
-				mazeArr[i - 1][j] = ' ';
-				i--;
+		case 0: //ABOVE case - ISSUE Maze will never end at top or bottom but because of the way memory addressing works for arrays ending at the left or right side is possible 
+			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i - 1][j + 1] == '#' && (rand() % 101) <= weightedRandomPercY(i)) { //if left, right and up is a wall
+				if (i < 5 || loopCounter > 40) {
+					mazeArr[i - 1][j] = ' ';
+					i--;
+					loopCounter = 0;
+				}
+				else if (mazeArr[i - 2][j] == '#' && mazeArr[i - 3][j] == '#' && mazeArr[i - 4][j] == '#') {
+					mazeArr[i - 1][j] = ' ';
+					i--;
+					loopCounter = 0;
+				}
 			}
+			loopCounter++;
 			break;
 		case 1: //LEFT case
-			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i + 1][j - 1] == '#' && mazeArr[i][j-2] == '#' && (rand() % 101) <= weightedRandomPercX(j)) { //if up and down is not a path
-				mazeArr[i][j - 1] = ' ';
-				j--;
+			if (mazeArr[i - 1][j - 1] == '#' && mazeArr[i + 1][j - 1] == '#' && (rand() % 101) <= weightedRandomPercX(j)) { //if up and down is not a path
+				if (j < 5 || loopCounter > 40) {
+					mazeArr[i][j-1] = ' ';
+					j--;
+					loopCounter = 0;
+				}
+				else if (mazeArr[i][j-2] == '#' && mazeArr[i][j-3] == '#' && mazeArr[i][j - 4] == '#') {
+					mazeArr[i][j-1] = ' ';
+					j--;
+					loopCounter = 0;
+				}
 			}
+			loopCounter++;
 			break;
 		case 2: //BELOW case
-			if (mazeArr[i + 1][j - 1] == '#' && mazeArr[i + 1][j + 1] == '#' && mazeArr[i+2][j] == '#' && (rand() % 101) <= weightedRandomPercY(i)) { //if left and right is not a path
-				mazeArr[i + 1][j] = ' ';
-				i++;
+			if (mazeArr[i + 1][j - 1] == '#' && mazeArr[i + 1][j + 1] == '#' && (rand() % 101) <= weightedRandomPercY(i)) { //if left and right is not a path
+				if (i > MAZE_Y - 5 || loopCounter > 40) {
+					mazeArr[i+1][j] = ' ';
+					i++;
+					loopCounter = 0;
+				}
+				else if (mazeArr[i+2][j] == '#' && mazeArr[i+3][j] == '#' && mazeArr[i+4][j] == '#') {
+					mazeArr[i+1][j] = ' ';
+					i++;
+					loopCounter = 0;
+				}
 			}
+			loopCounter++;
 			break;
 		case 3: //RIGHT case
-			if (mazeArr[i - 1][j + 1] == '#' && mazeArr[i + 1][j + 1] == '#' && mazeArr[i][j+2] == '#' && (rand() % 101) <= weightedRandomPercX(j)) { //if up and down is not a path
-				mazeArr[i][j + 1] = ' ';
-				j++;
+			if (mazeArr[i - 1][j + 1] == '#' && mazeArr[i + 1][j + 1] == '#' && (rand() % 101) <= weightedRandomPercX(j)) { //if up and down is not a path
+				if (j > MAZE_X - 5 || loopCounter > 40) {
+					mazeArr[i][j+1] = ' ';
+					j++;
+					loopCounter = 0;
+				}
+				else if (mazeArr[i][j+2] == '#' && mazeArr[i][j+3] == '#' && mazeArr[i][j+4] == '#') {
+					mazeArr[i][j+1] = ' ';
+					j++;
+					loopCounter = 0;
+				}
 			}
+			loopCounter++;
 			break;
 		default:
 			cout << "Something went wrong";
