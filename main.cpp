@@ -3,15 +3,10 @@
 #include <random>
 #include <cmath>
 
-#define MAZE_X 99 //make sure these are even
+#define MAZE_X 99 
 #define MAZE_Y 49
-#define ABOVE mazeArr[i - 1][j]
-#define BELOW mazeArr[i + 1][j]
-#define RIGHT mazeArr[i][j+1]
-#define LEFT mazeArr[i][j-1]
 
-
-struct mazeMidPoint {
+struct mazePoint {
 	int y;
 	int x;
 };
@@ -20,18 +15,16 @@ using namespace std;
 
 char mazeArr[MAZE_Y][MAZE_X];
 int pathCount = 1;
-mazeMidPoint midPoint = {(MAZE_Y / 2), (MAZE_X / 2)};
+mazePoint midPoint = {(MAZE_Y / 2), (MAZE_X / 2)};
 void initialiseMazeArray();
 void printMazeArray();
 void initialiseMainPath();
-int checkForPath(int i, int j);
-void initialiseMainPath2();
 
 
 int main() {
 	initialiseMazeArray();
 	srand(time(0));
-	initialiseMainPath2();
+	initialiseMainPath();
 	printMazeArray();
 	cout << endl << pathCount << endl;
 
@@ -59,69 +52,6 @@ void printMazeArray() {
 	}
 }
 
-int checkForPath(int i, int j) {
-	float yPercValue = 2;
-	float xPercValue = 2;
-	srand(time(0));
-	int r = rand() % 10;
-	/*
-	if (i == midPoint.y || i == 0 || i >= MAZE_Y - 2) yPercValue = 5;
-	else {
-		yPercValue = abs(i - midPoint.y);
-		yPercValue = yPercValue / midPoint.y;
-		yPercValue = 1 - yPercValue;
-		yPercValue = 10 * yPercValue;
-	}
-	if (j == midPoint.x || j == 0 || j >= MAZE_X - 2) xPercValue = 5;
-	else {
-		xPercValue = abs(j - midPoint.x);
-		xPercValue = xPercValue / midPoint.x;
-		xPercValue = 1 - xPercValue;
-		xPercValue = 10 * xPercValue;
-	}*/
-
-	if (i != 0 && ABOVE == ' ' && r < (int)yPercValue) {
-		if (i == (MAZE_Y-1)) return 1;
-		else return 2;
-	}
-	else if (j != 0 && LEFT == ' ' && r < (int)xPercValue) {
-		if (j == (MAZE_X - 1)) return 1;
-		else return 2;
-	}
-	else if (i != (MAZE_Y - 1) && BELOW == ' ' && r < (int)yPercValue) {
-		if (i == 0) return 1;
-		else return 2;
-	}
-	else if (j != (MAZE_X - 1) && RIGHT == ' ' && r < (int)xPercValue) {
-		if (j == 0) return 1;
-		else return 2;
-	}
-	else {
-		return 0;
-	}
-}
-
-void initialiseMainPath() {
-	mazeArr[midPoint.y][midPoint.x] = ' ';
-	bool found = false;
-	while (found == false) {
-		for (int i = 0; i < MAZE_Y && found == false; i++) {
-			for (int j = 0; j < MAZE_X && found == false; j++) {
-				switch (checkForPath(i, j)) {
-				case 1:
-					mazeArr[i][j] = ' ';
-					found = true;
-					break;
-				case 2:
-					mazeArr[i][j] = ' ';
-				default:
-					continue;
-				}
-			}
-		}
-	}
-}
-
 int weightedRandomPercX(int k) {
 	float PercValue;
 	PercValue = abs(k - midPoint.x);
@@ -142,7 +72,7 @@ int weightedRandomPercY(int k) {
 	return int(PercValue);
 }
 
-void initialiseMainPath2() { //works to a certain extent but gets stuck because of the wall checks - need to find out how that happens. 
+void initialiseMainPath() { //works to a certain extent but gets stuck because of the wall checks - need to find out how that happens. 
 	mazeArr[midPoint.y][midPoint.x] = ' ';
 	int i = midPoint.y;
 	int j = midPoint.x;
@@ -225,6 +155,7 @@ void initialiseMainPath2() { //works to a certain extent but gets stuck because 
 		}
 		if (i == 0 || j == 0 || i == (MAZE_Y - 1) || j == (MAZE_X - 1)) {
 			found = true;
+			mazeArr[i][j] = 'D';
 		}
 	}
 }
@@ -245,6 +176,12 @@ variable will return as true)
 6. Additionally if we want one way paths we must check LEFT and RIGHT for other PATHS if you are checking ABOVE OR DOWN from the current element. Vice versa we must check ABOVE and BELOW for 
 other PATHS if we are checking RIGHT OR LEFT from the current element.
 
+DUMMY PATH CHARACTERISTICS
 
+1. Paths must always start from the main path (or dummy path) 
+2. The number of paths must be between a certain range eg. 100-300 the only exception is if there is no wall to make a path from, the dummy path will end prematurely.
+3. Dummy paths must always end in a dead end, they should never connect to another path or reach the end of the maze
+4. Dummy paths should be initialised until a total pathCounter reaches a certain number (30% of the maze should be paths when this number is reached, dummy paths will stop being generated)
 
+There should be a mainPaths vector, allPaths vector which stores the struct coords of every paths, and also a dummyPaths vector for storing dummy paths (in order to make puzzles later)
 */
