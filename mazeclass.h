@@ -85,8 +85,13 @@ public:
 					switch (r) {
 					case 0:
 						if (i > 1) { //continue this tommorow, loopcounter should not be reset until the main loop resets it itself
+							mazeArr[i - 1][j] = ' ';
 							i--;
 							backtrack.push({ i, j });
+							pathCount++;
+						}
+						else {
+							i = 0;
 						}
 						break;
 					case 1:
