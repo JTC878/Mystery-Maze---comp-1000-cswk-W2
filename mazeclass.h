@@ -90,9 +90,6 @@ public:
 							backtrack.push({ i, j });
 							pathCount++;
 						}
-						else {
-							i = 0;
-						}
 						break;
 					case 1:
 						j--;
