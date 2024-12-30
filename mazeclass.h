@@ -5,6 +5,9 @@ struct mazePoint {
 	int x;
 };
 
+//(rand() % 101) <= weightedRandomPercY(i)
+//(rand() % 101) <= weightedRandomPercX(j)
+
 class Maze {
 private:
 	int mazeX, mazeY;
@@ -12,6 +15,7 @@ private:
 	int maxPathCount;
 	mazePoint midPoint;
 	char** mazeArr;
+	bool** visitedArr;
 	stack<mazePoint> backtrack;
 
 	int weightedRandomPercX(int k) {
@@ -35,11 +39,12 @@ private:
 	}
 
 public:
-	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new char*[y]) {
+	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new char*[y]), visitedArr(new bool*[y]) {
 		for (int i = 0; i < y; i++) {
 			mazeArr[i] = new char[x];
+			visitedArr[i] = new bool[x];
 		}
-		maxPathCount = (mazeX * mazeY) * 0.3;
+		maxPathCount = (mazeX * mazeY) * 0.5;
 	}
 	void initialiseMazeArray() {
 		for (int i = 0; i < mazeY; i++) {
@@ -69,7 +74,7 @@ public:
 		int r = 0;
 		int loopCounter = 0;
 		while (found == false || pathCount < maxPathCount) {
-			if (loopCounter > 80) {
+			if (loopCounter > 500) {
 				if (i != midPoint.y && j != midPoint.x) {
 					backtrack.pop();
 					top = backtrack.top();
@@ -228,7 +233,9 @@ public:
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
 			delete[] mazeArr[i];
+			delete[] visitedArr[i];
 		}
 		delete[] mazeArr;
+		delete[] visitedArr;
 	}
 };
