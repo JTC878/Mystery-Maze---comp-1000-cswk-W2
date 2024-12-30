@@ -70,7 +70,13 @@ public:
 		int loopCounter = 0;
 		while (found == false || pathCount < maxPathCount) {
 			if (loopCounter > 80) {
-				if (i == midPoint.y && j == midPoint.x) {
+				if (i != midPoint.y && j != midPoint.x) {
+					backtrack.pop();
+					top = backtrack.top();
+					i = top.y;
+					j = top.x;
+				}
+				else {
 					switch (r) {
 					case 0:
 						i--;
@@ -89,12 +95,6 @@ public:
 						backtrack.push({ i, j });
 						break;
 					}
-				}
-				else {
-					backtrack.pop();
-					top = backtrack.top();
-					i = top.y;
-					j = top.x;
 				}
 				loopCounter = 0;
 			}
