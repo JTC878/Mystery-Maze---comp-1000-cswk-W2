@@ -39,7 +39,7 @@ private:
 	}
 
 public:
-	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new char*[y]), visitedArr(new bool*[y]) {
+	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new char* [y]), visitedArr(new bool* [y]) {
 		for (int i = 0; i < y; i++) {
 			mazeArr[i] = new char[x];
 			visitedArr[i] = new bool[x];
@@ -75,7 +75,7 @@ public:
 		int loopCounter = 0;
 		while (found == false || pathCount < maxPathCount) {
 			if (loopCounter > 500) {
-				if (i != midPoint.y && j != midPoint.x) {
+				if (i != midPoint.y || j != midPoint.x) {
 					backtrack.pop();
 					top = backtrack.top();
 					i = top.y;
@@ -84,8 +84,10 @@ public:
 				else {
 					switch (r) {
 					case 0:
-						i--;
-						backtrack.push({ i, j });
+						if (i > 1) { //continue this tommorow, loopcounter should not be reset until the main loop resets it itself
+							i--;
+							backtrack.push({ i, j });
+						}
 						break;
 					case 1:
 						j--;
@@ -101,7 +103,6 @@ public:
 						break;
 					}
 				}
-				loopCounter = 0;
 			}
 			r = rand() % 4;
 			switch (r) {
@@ -229,6 +230,11 @@ public:
 				backtrack.push({ i, j });
 			}
 		}
+	}
+	void generateMaze2() {
+		/* This routine will use the visitedArray, every step taken will log the neighbour cells as visited, a switch case will be used to decide which path to carve 
+		out of, with every step the surrounding cells will be checked if they have been visited or not, if they have they won't be carved as a path. If all surrounding cells have been visited
+		then you will take a step back/backtrack with a stack. Each iteration*/
 	}
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
