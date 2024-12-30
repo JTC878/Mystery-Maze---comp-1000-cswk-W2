@@ -2,16 +2,15 @@
 #include <string>
 #include <random>
 #include <cmath>
-
-#define MAZE_X 99 
-#define MAZE_Y 49
-
-struct mazePoint {
-	int y;
-	int x;
-};
+#include <stack>
 
 using namespace std;
+
+#include "mazeclass.h"
+
+/*
+#define MAZE_X 99 
+#define MAZE_Y 49
 
 char mazeArr[MAZE_Y][MAZE_X];
 int pathCount = 1;
@@ -20,20 +19,25 @@ void initialiseMazeArray();
 void printMazeArray();
 void initialiseMainPath();
 
+*/
+
 
 int main() {
-	initialiseMazeArray();
-	srand(time(0));
-	initialiseMainPath();
-	printMazeArray();
-	cout << endl << pathCount << endl;
+	{
+		Maze maze1(100, 50);
+		maze1.initialiseMazeArray();
+		srand(time(0));
+		maze1.generateMaze();
+		maze1.printMazeArray();
+		maze1.printPathCount();
+	}
 
 	return 0;
 }
 
 
 
-
+/*
 
 void initialiseMazeArray() {
 	for (int i = 0; i < MAZE_Y; i++) {
@@ -160,7 +164,7 @@ void initialiseMainPath() { //works to a certain extent but gets stuck because o
 	}
 }
 
-
+*/
 
 
 /* MAZE GENERATION STEPS
