@@ -41,7 +41,7 @@ public:
 	mazePoint midPoint;
 	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new unsigned char* [y]), visitedArr(new bool* [y]) {
 		for (int i = 0; i < y; i++) {
-			mazeArr[i] = new unsigned char[x];
+			mazeArr[i] = new unsigned char[x]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			visitedArr[i] = new bool[x];
 		}
 		maxPathCount = (mazeX * mazeY) * 0.5;
