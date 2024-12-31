@@ -85,7 +85,7 @@ public:
 		int r = 0;
 		int loopCounter = 0;
 		while (found == false || pathCount < maxPathCount) {
-			if (loopCounter > 500) { //if the conditionals for carving a path normally cannot be met and the algorithm gets 'stuck'
+			if (loopCounter > 500) { //if the conditionals for carving a path normally cannot be met and the algorithm gets 'stuck', loopCounter is only reset when a new path is carved.
 				if (i != midPoint.y || j != midPoint.x) { //if not at the middle of the maze (when the stack has a size of 1) backtrack to the previous mazePoint on the stack
 					backtrack.pop();
 					top = backtrack.top();
