@@ -17,6 +17,7 @@ int main() {
 		maze1.generateMaze();
 		maze1.printMazeArray();
 		maze1.printPathCount();
+		maze1.printVisitedArray();
 	}
 
 	return 0;
