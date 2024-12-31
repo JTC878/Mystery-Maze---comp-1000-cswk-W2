@@ -14,7 +14,7 @@ private:
 	int pathCount;
 	int maxPathCount;
 	mazePoint midPoint;
-	char** mazeArr;
+	unsigned char** mazeArr;
 	bool** visitedArr;
 	stack<mazePoint> backtrack;
 
@@ -39,9 +39,9 @@ private:
 	}
 
 public:
-	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new char* [y]), visitedArr(new bool* [y]) {
+	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new unsigned char* [y]), visitedArr(new bool* [y]) {
 		for (int i = 0; i < y; i++) {
-			mazeArr[i] = new char[x];
+			mazeArr[i] = new unsigned char[x];
 			visitedArr[i] = new bool[x];
 		}
 		maxPathCount = (mazeX * mazeY) * 0.5;
@@ -49,7 +49,7 @@ public:
 	void initialiseMazeArray() {
 		for (int i = 0; i < mazeY; i++) {
 			for (int j = 0; j < mazeX; j++) {
-				mazeArr[i][j] = '#';
+				mazeArr[i][j] = 219;
 				visitedArr[i][j] = false;
 			}
 		}
@@ -125,7 +125,7 @@ public:
 							j = top.x;
 						}
 					}
-					else if (mazeArr[i - 1][j] == '#' && mazeArr[i - 2][j] == '#' && mazeArr[i - 1][j - 1] == '#' && mazeArr[i - 1][j + 1] == '#') {
+					else if (visitedArr[i - 1][j] == false && visitedArr[i - 2][j] == false && visitedArr[i - 1][j - 1] == false && visitedArr[i - 1][j + 1] == false) {
 						mazeArr[i - 1][j] = ' ';
 						i--;
 						backtrack.push({ i, j });
@@ -154,7 +154,7 @@ public:
 							j = top.x;
 						}
 					}
-					else if (mazeArr[i][j - 1] == '#' && mazeArr[i][j - 2] == '#' && mazeArr[i - 1][j - 1] == '#' && mazeArr[i + 1][j - 1] == '#') {
+					else if (visitedArr[i][j - 1] == false && visitedArr[i][j - 2] == false && visitedArr[i - 1][j - 1] == false && visitedArr[i + 1][j - 1] == false) {
 						mazeArr[i][j - 1] = ' ';
 						j--;
 						backtrack.push({ i , j });
@@ -183,7 +183,7 @@ public:
 							j = top.x;
 						}
 					}
-					else if (mazeArr[i + 1][j] == '#' && mazeArr[i + 2][j] == '#' && mazeArr[i + 1][j - 1] == '#' && mazeArr[i + 1][j + 1] == '#') {
+					else if (visitedArr[i + 1][j] == false && visitedArr[i + 2][j] == false && visitedArr[i + 1][j - 1] == false && visitedArr[i + 1][j + 1] == false) {
 						mazeArr[i + 1][j] = ' ';
 						i++;
 						backtrack.push({ i, j });
@@ -212,7 +212,7 @@ public:
 							j = top.x;
 						}
 					}
-					else if (mazeArr[i][j + 1] == '#' && mazeArr[i][j + 2] == '#' && mazeArr[i - 1][j + 1] == '#' && mazeArr[i + 1][j + 1] == '#') {
+					else if (visitedArr[i][j + 1] == false && visitedArr[i][j + 2] == false && visitedArr[i - 1][j + 1] == false && visitedArr[i + 1][j + 1] == false) {
 						mazeArr[i][j + 1] = ' ';
 						j++;
 						backtrack.push({ i, j });
