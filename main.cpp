@@ -3,27 +3,58 @@
 #include <random>
 #include <cmath>
 #include <stack>
+#include <conio.h>
 
 using namespace std;
 
 #include "mazeclass.h"
 
+void playerMovement(unsigned char keyPress);
+
 Maze maze1(100, 50);
+mazePoint playerPos = { maze1.midPoint.y, maze1.midPoint.x };
 
 int main() {
+	char key;
 	maze1.initialiseMazeArray();
 	srand(time(0));
 	maze1.generateMaze();
 	maze1.printMazeArray();
 	maze1.printPathCount();
-	maze1.printVisitedArray();
+
+	while (true) {
+		key = _getche();
+		playerMovement(key);
+		maze1.printMazeArray();
+	}
 
 	return 0;
 }
 
 
 
-
+void playerMovement(unsigned char keyPress) {
+	if ((keyPress == 'w' || keyPress == 'W') && maze1.mazeArr[playerPos.y - 1][playerPos.x] == ' ') {
+		maze1.mazeArr[playerPos.y][playerPos.x] = ' ';
+		playerPos.y--;
+		maze1.mazeArr[playerPos.y][playerPos.x] = 'C';
+	}
+	else if ((keyPress == 's' || keyPress == 'S') && maze1.mazeArr[playerPos.y + 1][playerPos.x] == ' ') {
+		maze1.mazeArr[playerPos.y][playerPos.x] = ' ';
+		playerPos.y++;
+		maze1.mazeArr[playerPos.y][playerPos.x] = 'C';
+	}
+	else if ((keyPress == 'a' || keyPress == 'A') && maze1.mazeArr[playerPos.y][playerPos.x - 1] == ' ') {
+		maze1.mazeArr[playerPos.y][playerPos.x] = ' ';
+		playerPos.x--;
+		maze1.mazeArr[playerPos.y][playerPos.x] = 'C';
+	}
+	else if ((keyPress == 'd' || keyPress == 'D') && maze1.mazeArr[playerPos.y][playerPos.x + 1] == ' ') {
+		maze1.mazeArr[playerPos.y][playerPos.x] = ' ';
+		playerPos.x++;
+		maze1.mazeArr[playerPos.y][playerPos.x] = 'C';
+	}
+}
 
 
 

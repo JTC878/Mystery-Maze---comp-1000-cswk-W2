@@ -13,8 +13,6 @@ private:
 	int mazeX, mazeY;
 	int pathCount;
 	int maxPathCount;
-	mazePoint midPoint;
-	unsigned char** mazeArr;
 	bool** visitedArr;
 	stack<mazePoint> backtrack;
 
@@ -39,6 +37,8 @@ private:
 	}
 
 public:
+	unsigned char** mazeArr;
+	mazePoint midPoint;
 	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new unsigned char* [y]), visitedArr(new bool* [y]) {
 		for (int i = 0; i < y; i++) {
 			mazeArr[i] = new unsigned char[x];
@@ -240,11 +240,6 @@ public:
 			}
 		}
 	}
-	void generateMaze2() {
-		/* This routine will use the visitedArray, every step taken will log the neighbour cells as visited, a switch case will be used to decide which path to carve 
-		out of, with every step the surrounding cells will be checked if they have been visited or not, if they have they won't be carved as a path. If all surrounding cells have been visited
-		then you will take a step back/backtrack with a stack. Each iteration*/
-	}
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
 			delete[] mazeArr[i];
@@ -253,4 +248,8 @@ public:
 		delete[] mazeArr;
 		delete[] visitedArr;
 	}
+};
+
+class Player {
+
 };
