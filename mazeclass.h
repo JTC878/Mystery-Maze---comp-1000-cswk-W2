@@ -105,7 +105,7 @@ public:
 					}
 				}
 			}
-			r = rand() % 4;
+			r = rand() % 4; //random variable corresponding to up,down,left,right to check whether carving a path is possible from the current position in the subsequent switch case.
 			switch (r) {
 			case 0: //ABOVE case - ISSUE Maze will never end at top or bottom but because of the way memory addressing works for arrays ending at the left or right side is possible 
 				if ((rand() % 101) <= weightedRandomPercY(i)) { //if left, right and up is a wall
