@@ -8,17 +8,15 @@ using namespace std;
 
 #include "mazeclass.h"
 
+Maze maze1(100, 50);
 
 int main() {
-	{
-		Maze maze1(100, 50);
-		maze1.initialiseMazeArray();
-		srand(time(0));
-		maze1.generateMaze();
-		maze1.printMazeArray();
-		maze1.printPathCount();
-		maze1.printVisitedArray();
-	}
+	maze1.initialiseMazeArray();
+	srand(time(0));
+	maze1.generateMaze();
+	maze1.printMazeArray();
+	maze1.printPathCount();
+	maze1.printVisitedArray();
 
 	return 0;
 }
