@@ -96,8 +96,8 @@ public:
 					//loop with random points until you go to a path in the visited array where its set to 'true', set i and j to that point.
 					visitedFound = false;
 					while (visitedFound == false) {
-						i = (rand() % (mazeY - 2)) + 1;
-						j = (rand() % (mazeX - 2)) + 1;
+						i = (rand() % (mazeY - 4)) + 2;
+						j = (rand() % (mazeX - 4)) + 2;
 						if (visitedArr[i][j] == true) {
 							visitedFound = true;
 							backtrack.push({ i, j });
@@ -109,7 +109,7 @@ public:
 			switch (r) {
 			case 0: //ABOVE case - ISSUE Maze will never end at top or bottom but because of the way memory addressing works for arrays ending at the left or right side is possible 
 				if ((rand() % 101) <= weightedRandomPercY(i)) { //if left, right and up is a wall
-					if (i < 2) {
+					if (i < 3) {
 						if (found != true) {
 							mazeArr[i - 1][j] = ' ';
 							i--;
@@ -125,7 +125,7 @@ public:
 							j = top.x;
 						}
 					}
-					else if (mazeArr[i - 1][j] == '#' && mazeArr[i - 1][j - 1] == '#' && mazeArr[i - 1][j + 1] == '#') {
+					else if (mazeArr[i - 1][j] == '#' && mazeArr[i - 2][j] == '#' && mazeArr[i - 1][j - 1] == '#' && mazeArr[i - 1][j + 1] == '#') {
 						mazeArr[i - 1][j] = ' ';
 						i--;
 						backtrack.push({ i, j });
@@ -138,7 +138,7 @@ public:
 				break;
 			case 1: //LEFT case
 				if ((rand() % 101) <= weightedRandomPercX(j)) { //if up and down is not a path
-					if (j < 2) {
+					if (j < 3) {
 						if (found != true) {
 							mazeArr[i][j - 1] = ' ';
 							j--;
@@ -154,7 +154,7 @@ public:
 							j = top.x;
 						}
 					}
-					else if (mazeArr[i][j - 1] == '#' && mazeArr[i - 1][j - 1] == '#' && mazeArr[i + 1][j - 1] == '#') {
+					else if (mazeArr[i][j - 1] == '#' && mazeArr[i][j - 2] == '#' && mazeArr[i - 1][j - 1] == '#' && mazeArr[i + 1][j - 1] == '#') {
 						mazeArr[i][j - 1] = ' ';
 						j--;
 						backtrack.push({ i , j });
@@ -167,7 +167,7 @@ public:
 				break;
 			case 2: //BELOW case
 				if ((rand() % 101) <= weightedRandomPercY(i)) { //if left and right is not a path
-					if (i > mazeY - 3) {
+					if (i > mazeY - 4) {
 						if (found != true) {
 							mazeArr[i + 1][j] = ' ';
 							i++;
@@ -183,7 +183,7 @@ public:
 							j = top.x;
 						}
 					}
-					else if (mazeArr[i + 1][j] == '#' && mazeArr[i + 1][j - 1] == '#' && mazeArr[i + 1][j + 1] == '#') {
+					else if (mazeArr[i + 1][j] == '#' && mazeArr[i + 2][j] == '#' && mazeArr[i + 1][j - 1] == '#' && mazeArr[i + 1][j + 1] == '#') {
 						mazeArr[i + 1][j] = ' ';
 						i++;
 						backtrack.push({ i, j });
@@ -196,7 +196,7 @@ public:
 				break;
 			case 3: //RIGHT case
 				if ((rand() % 101) <= weightedRandomPercX(j)) { //if up and down is not a path
-					if (j > mazeX - 3) {
+					if (j > mazeX - 4) {
 						if (found != true) {
 							mazeArr[i][j + 1] = ' ';
 							j++;
@@ -212,7 +212,7 @@ public:
 							j = top.x;
 						}
 					}
-					else if (mazeArr[i][j + 1] == '#' && mazeArr[i - 1][j + 1] == '#' && mazeArr[i + 1][j + 1] == '#') {
+					else if (mazeArr[i][j + 1] == '#' && mazeArr[i][j + 2] == '#' && mazeArr[i - 1][j + 1] == '#' && mazeArr[i + 1][j + 1] == '#') {
 						mazeArr[i][j + 1] = ' ';
 						j++;
 						backtrack.push({ i, j });
