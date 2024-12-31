@@ -25,6 +25,7 @@ int main() {
 	while (true) {
 		key = _getche();
 		playerMovement(key);
+		system("cls");
 		maze1.printMazeArray();
 	}
 
