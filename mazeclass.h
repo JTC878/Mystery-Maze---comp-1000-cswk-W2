@@ -85,8 +85,8 @@ public:
 		int r = 0;
 		int loopCounter = 0;
 		while (found == false || pathCount < maxPathCount) {
-			if (loopCounter > 500) {
-				if (i != midPoint.y || j != midPoint.x) {
+			if (loopCounter > 500) { //if the conditionals for carving a path normally cannot be met and the algorithm gets 'stuck'
+				if (i != midPoint.y || j != midPoint.x) { //if not at the middle of the maze (when the stack has a size of 1) backtrack with the next mazePoint on the stack
 					backtrack.pop();
 					top = backtrack.top();
 					i = top.y;
@@ -109,7 +109,7 @@ public:
 			switch (r) {
 			case 0: //ABOVE case - ISSUE Maze will never end at top or bottom but because of the way memory addressing works for arrays ending at the left or right side is possible 
 				if ((rand() % 101) <= weightedRandomPercY(i)) { //if left, right and up is a wall
-					if (i < 3) {
+					if (i < 3) { //because of the way memory addressing works for arrays this precaution is necessary
 						if (found != true) {
 							mazeArr[i - 1][j] = ' ';
 							i--;
@@ -226,14 +226,14 @@ public:
 			default:
 				cout << "Something went wrong";
 			}
-			if (i == 0 || j == 0 || i == (mazeY - 1) || j == (mazeX - 1)) {
+			if (i == 0 || j == 0 || i == (mazeY - 1) || j == (mazeX - 1)) { //if it's at one of the edges of the maze
 				if (found != true) {
 					found = true;
-					mazeArr[i][j] = 'D';
+					mazeArr[i][j] = 'D'; //door will be added at the edge of the maze
 				}
 				i = midPoint.y;
 				j = midPoint.x;
-				while (!backtrack.empty()) {
+				while (!backtrack.empty()) { //set back to the midpoint and stack is emptied, the midpoints are pushed back onto the stack.
 					backtrack.pop();
 				}
 				backtrack.push({ i, j });
