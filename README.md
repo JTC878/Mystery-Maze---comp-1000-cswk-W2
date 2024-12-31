@@ -3,4 +3,4 @@ dungeon and another maze will be generated as the next "depth". Of course the be
 powerful equipment. Example inventory: Sword - Armour - Helmet - Boots - Minor Potion of HP. Once you die you start from the beginning. 
 
 
-Further ideas: Each level enemies speed up exponentionally, to make this easier for yourself to progress you must collect slow orbs which will spawn randomly around the maze, these will make the more difficult levels easier as enemies will take longer to catch up to you.
+Further ideas: Each level enemies speed up exponentionally, to make this easier for yourself to progress you must collect slow orbs which will spawn randomly around the maze, these will make the more difficult levels easier as enemies will take longer to catch up to you. Teleportation tiles. Fog of war.
