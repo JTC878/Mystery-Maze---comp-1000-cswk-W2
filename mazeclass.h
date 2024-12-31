@@ -50,6 +50,7 @@ public:
 		for (int i = 0; i < mazeY; i++) {
 			for (int j = 0; j < mazeX; j++) {
 				mazeArr[i][j] = '#';
+				visitedArr[i][j] = false;
 			}
 		}
 	}
@@ -61,6 +62,14 @@ public:
 			}
 		}
 	}
+	void printVisitedArray() {
+		for (int i = 0; i < mazeY; i++) {
+			cout << endl;
+			for (int j = 0; j < mazeX; j++) {
+				cout << visitedArr[i][j];
+			}
+		}
+	}
 	void printPathCount() {
 		cout << endl << "Number of paths: " << pathCount << endl;
 	}
@@ -69,8 +78,10 @@ public:
 		int i = midPoint.y;
 		int j = midPoint.x;
 		backtrack.push({ i, j });
+		visitedArr[i][j] = true;
 		mazePoint top;
 		bool found = false;
+		bool visitedFound;
 		int r = 0;
 		int loopCounter = 0;
 		while (found == false || pathCount < maxPathCount) {
@@ -82,27 +93,15 @@ public:
 					j = top.x;
 				}
 				else {
-					switch (r) {
-					case 0:
-						if (i > 1) { //continue this tommorow, loopcounter should not be reset until the main loop resets it itself
-							mazeArr[i - 1][j] = ' ';
-							i--;
+					//loop with random points until you go to a path in the visited array where its set to 'true', set i and j to that point.
+					visitedFound = false;
+					while (visitedFound == false) {
+						i = (rand() % (mazeY - 2)) + 1;
+						j = (rand() % (mazeX - 2)) + 1;
+						if (visitedArr[i][j] == true) {
+							visitedFound = true;
 							backtrack.push({ i, j });
-							pathCount++;
 						}
-						break;
-					case 1:
-						j--;
-						backtrack.push({ i, j });
-						break;
-					case 2:
-						i++;
-						backtrack.push({ i, j });
-						break;
-					case 3:
-						j++;
-						backtrack.push({ i, j });
-						break;
 					}
 				}
 			}
@@ -115,6 +114,7 @@ public:
 							mazeArr[i - 1][j] = ' ';
 							i--;
 							backtrack.push({ i, j });
+							visitedArr[i][j] = true;
 							loopCounter = 0;
 							pathCount++;
 						}
@@ -129,6 +129,7 @@ public:
 						mazeArr[i - 1][j] = ' ';
 						i--;
 						backtrack.push({ i, j });
+						visitedArr[i][j] = true;
 						loopCounter = 0;
 						pathCount++;
 					}
@@ -142,6 +143,7 @@ public:
 							mazeArr[i][j - 1] = ' ';
 							j--;
 							backtrack.push({ i, j });
+							visitedArr[i][j] = true;
 							loopCounter = 0;
 							pathCount++;
 						}
@@ -156,6 +158,7 @@ public:
 						mazeArr[i][j - 1] = ' ';
 						j--;
 						backtrack.push({ i , j });
+						visitedArr[i][j] = true;
 						loopCounter = 0;
 						pathCount++;
 					}
@@ -169,6 +172,7 @@ public:
 							mazeArr[i + 1][j] = ' ';
 							i++;
 							backtrack.push({ i, j });
+							visitedArr[i][j] = true;
 							loopCounter = 0;
 							pathCount++;
 						}
@@ -183,6 +187,7 @@ public:
 						mazeArr[i + 1][j] = ' ';
 						i++;
 						backtrack.push({ i, j });
+						visitedArr[i][j] = true;
 						loopCounter = 0;
 						pathCount++;
 					}
@@ -196,6 +201,7 @@ public:
 							mazeArr[i][j + 1] = ' ';
 							j++;
 							backtrack.push({ i, j });
+							visitedArr[i][j] = true;
 							loopCounter = 0;
 							pathCount++;
 						}
@@ -210,6 +216,7 @@ public:
 						mazeArr[i][j + 1] = ' ';
 						j++;
 						backtrack.push({ i, j });
+						visitedArr[i][j] = true;
 						loopCounter = 0;
 						pathCount++;
 					}
