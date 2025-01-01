@@ -12,7 +12,7 @@ using namespace std;
 void playerMovement(unsigned char keyPress);
 
 Maze maze1(100, 50);
-mazePoint playerPos = { maze1.midPoint.y, maze1.midPoint.x };
+MazePoint playerPos = { maze1.midPoint.y, maze1.midPoint.x };
 
 int main() {
 	char key;

@@ -1,8 +1,12 @@
 #pragma once
 
-struct mazePoint {
+struct MazePoint {
 	int y;
 	int x;
+};
+
+struct Inventory {
+
 };
 
 //(rand() % 101) <= weightedRandomPercY(i)
@@ -14,7 +18,7 @@ private:
 	int pathCount;
 	int maxPathCount;
 	bool** visitedArr;
-	stack<mazePoint> backtrack;
+	stack<MazePoint> backtrack;
 
 	int weightedRandomPercX(int k) {
 		float PercValue;
@@ -38,7 +42,7 @@ private:
 
 public:
 	unsigned char** mazeArr;
-	mazePoint midPoint;
+	MazePoint midPoint;
 	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new unsigned char* [y]), visitedArr(new bool* [y]) {
 		for (int i = 0; i < y; i++) {
 			mazeArr[i] = new unsigned char[x]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
@@ -79,7 +83,7 @@ public:
 		int j = midPoint.x;
 		backtrack.push({ i, j });
 		visitedArr[i][j] = true;
-		mazePoint top;
+		MazePoint top;
 		bool found = false;
 		bool visitedFound;
 		int r = 0;
@@ -240,6 +244,8 @@ public:
 			}
 		}
 	}
+	void generateItems() {
+	} //to be implemented
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
 			delete[] mazeArr[i];
