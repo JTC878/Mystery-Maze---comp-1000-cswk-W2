@@ -9,10 +9,8 @@ using namespace std;
 
 #include "mazeclass.h"
 
-void playerMovement(unsigned char keyPress);
-
 Maze maze1(100, 50);
-MazePoint playerPos = { maze1.midPoint.y, maze1.midPoint.x };
+Player player1(maze1.midPoint);
 
 int main() {
 	char key;
@@ -24,7 +22,7 @@ int main() {
 
 	while (true) {
 		key = _getche();
-		playerMovement(key);
+		player1.playerInput(key, maze1.mazeArr);
 		system("cls");
 		maze1.printMazeArray();
 	}
@@ -34,28 +32,6 @@ int main() {
 
 
 
-void playerMovement(unsigned char keyPress) {
-	if ((keyPress == 'w' || keyPress == 'W') && maze1.mazeArr[playerPos.y - 1][playerPos.x] == ' ') {
-		maze1.mazeArr[playerPos.y][playerPos.x] = ' ';
-		playerPos.y--;
-		maze1.mazeArr[playerPos.y][playerPos.x] = 'C';
-	}
-	else if ((keyPress == 's' || keyPress == 'S') && maze1.mazeArr[playerPos.y + 1][playerPos.x] == ' ') {
-		maze1.mazeArr[playerPos.y][playerPos.x] = ' ';
-		playerPos.y++;
-		maze1.mazeArr[playerPos.y][playerPos.x] = 'C';
-	}
-	else if ((keyPress == 'a' || keyPress == 'A') && maze1.mazeArr[playerPos.y][playerPos.x - 1] == ' ') {
-		maze1.mazeArr[playerPos.y][playerPos.x] = ' ';
-		playerPos.x--;
-		maze1.mazeArr[playerPos.y][playerPos.x] = 'C';
-	}
-	else if ((keyPress == 'd' || keyPress == 'D') && maze1.mazeArr[playerPos.y][playerPos.x + 1] == ' ') {
-		maze1.mazeArr[playerPos.y][playerPos.x] = ' ';
-		playerPos.x++;
-		maze1.mazeArr[playerPos.y][playerPos.x] = 'C';
-	}
-}
 
 
 

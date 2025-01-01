@@ -6,7 +6,12 @@ struct MazePoint {
 };
 
 struct Inventory {
-
+	int slowOrbs;
+	int teleOrbs;
+	int killOrbs;
+	int suteleOrbs;
+	int keys;
+	bool goldenKey;
 };
 
 //(rand() % 101) <= weightedRandomPercY(i)
@@ -257,5 +262,30 @@ public:
 };
 
 class Player {
-
+	Inventory playerInv;
+	MazePoint playerPos;
+public:
+	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({ 0, 0, 0, 0, 0, false }) {}
+	void playerInput(unsigned char keyPress, unsigned char** mazeArr) {
+		if ((keyPress == 'w' || keyPress == 'W') && mazeArr[playerPos.y - 1][playerPos.x] == ' ') {
+			mazeArr[playerPos.y][playerPos.x] = ' ';
+			playerPos.y--;
+			mazeArr[playerPos.y][playerPos.x] = 'C';
+		}
+		else if ((keyPress == 's' || keyPress == 'S') && mazeArr[playerPos.y + 1][playerPos.x] == ' ') {
+			mazeArr[playerPos.y][playerPos.x] = ' ';
+			playerPos.y++;
+			mazeArr[playerPos.y][playerPos.x] = 'C';
+		}
+		else if ((keyPress == 'a' || keyPress == 'A') && mazeArr[playerPos.y][playerPos.x - 1] == ' ') {
+			mazeArr[playerPos.y][playerPos.x] = ' ';
+			playerPos.x--;
+			mazeArr[playerPos.y][playerPos.x] = 'C';
+		}
+		else if ((keyPress == 'd' || keyPress == 'D') && mazeArr[playerPos.y][playerPos.x + 1] == ' ') {
+			mazeArr[playerPos.y][playerPos.x] = ' ';
+			playerPos.x++;
+			mazeArr[playerPos.y][playerPos.x] = 'C';
+		}
+	}
 };
