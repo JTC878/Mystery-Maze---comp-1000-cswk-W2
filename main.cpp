@@ -24,12 +24,6 @@ int main() {
 	srand(time(0));
 	maze1.generateMaze();
 	Enemy enemy1(maze1.mazeArr, MAZE_X, MAZE_Y);
-	Enemy enemy2(maze1.mazeArr, MAZE_X, MAZE_Y);
-	Enemy enemy3(maze1.mazeArr, MAZE_X, MAZE_Y);
-	Enemy enemy4(maze1.mazeArr, MAZE_X, MAZE_Y);
-	Enemy enemy5(maze1.mazeArr, MAZE_X, MAZE_Y);
-	Enemy enemy6(maze1.mazeArr, MAZE_X, MAZE_Y);
-	Enemy enemy7(maze1.mazeArr, MAZE_X, MAZE_Y);
 	maze1.printMazeArray();
 	maze1.printPathCount();
 
@@ -38,12 +32,6 @@ int main() {
 		if (player1.playerInput(key, maze1.mazeArr)) {
 			for (int i = 0; i < enemy1.getEnemyStep(); i++) {
 				enemy1.enemyRandomMove(maze1.mazeArr);
-				enemy2.enemyRandomMove(maze1.mazeArr);
-				enemy3.enemyRandomMove(maze1.mazeArr);
-				enemy4.enemyRandomMove(maze1.mazeArr);
-				enemy5.enemyRandomMove(maze1.mazeArr);
-				enemy6.enemyRandomMove(maze1.mazeArr);
-				enemy7.enemyRandomMove(maze1.mazeArr);
 			}
 		}
 		system("cls");
