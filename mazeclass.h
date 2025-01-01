@@ -46,12 +46,12 @@ private:
 
 public:
 	unsigned char** mazeArr;
-	bool** visitedArr;
+	bool** pathArr;
 	MazePoint midPoint;
-	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new unsigned char* [y]), visitedArr(new bool* [y]) {
+	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new unsigned char* [y]), pathArr(new bool* [y]) {
 		for (int i = 0; i < y; i++) {
 			mazeArr[i] = new unsigned char[x]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
-			visitedArr[i] = new bool[x];
+			pathArr[i] = new bool[x];
 		}
 		maxPathCount = (mazeX * mazeY) * 0.5;
 	}
@@ -59,7 +59,7 @@ public:
 		for (int i = 0; i < mazeY; i++) {
 			for (int j = 0; j < mazeX; j++) {
 				mazeArr[i][j] = 219;
-				visitedArr[i][j] = false;
+				pathArr[i][j] = false;
 			}
 		}
 	}
@@ -71,11 +71,11 @@ public:
 			}
 		}
 	}
-	void printVisitedArray() {
+	void printPathArray() {
 		for (int i = 0; i < mazeY; i++) {
 			cout << endl;
 			for (int j = 0; j < mazeX; j++) {
-				cout << visitedArr[i][j];
+				cout << pathArr[i][j];
 			}
 		}
 	}
@@ -87,7 +87,7 @@ public:
 		int i = midPoint.y;
 		int j = midPoint.x;
 		backtrack.push({ i, j });
-		visitedArr[i][j] = true;
+		pathArr[i][j] = true;
 		MazePoint top;
 		bool found = false;
 		bool visitedFound;
@@ -107,7 +107,7 @@ public:
 					while (visitedFound == false) {
 						i = (rand() % (mazeY - 4)) + 2;
 						j = (rand() % (mazeX - 4)) + 2;
-						if (visitedArr[i][j] == true) {
+						if (pathArr[i][j] == true) {
 							visitedFound = true;
 							backtrack.push({ i, j });
 						}
@@ -123,7 +123,7 @@ public:
 							mazeArr[i - 1][j] = ' ';
 							i--;
 							backtrack.push({ i, j });
-							visitedArr[i][j] = true;
+							pathArr[i][j] = true;
 							loopCounter = 0;
 							pathCount++;
 						}
@@ -134,11 +134,11 @@ public:
 							j = top.x;
 						}
 					}
-					else if (visitedArr[i - 1][j] == false && visitedArr[i - 2][j] == false && visitedArr[i - 1][j - 1] == false && visitedArr[i - 1][j + 1] == false) {
+					else if (pathArr[i - 1][j] == false && pathArr[i - 2][j] == false && pathArr[i - 1][j - 1] == false && pathArr[i - 1][j + 1] == false) {
 						mazeArr[i - 1][j] = ' ';
 						i--;
 						backtrack.push({ i, j });
-						visitedArr[i][j] = true;
+						pathArr[i][j] = true;
 						loopCounter = 0;
 						pathCount++;
 					}
@@ -152,7 +152,7 @@ public:
 							mazeArr[i][j - 1] = ' ';
 							j--;
 							backtrack.push({ i, j });
-							visitedArr[i][j] = true;
+							pathArr[i][j] = true;
 							loopCounter = 0;
 							pathCount++;
 						}
@@ -163,11 +163,11 @@ public:
 							j = top.x;
 						}
 					}
-					else if (visitedArr[i][j - 1] == false && visitedArr[i][j - 2] == false && visitedArr[i - 1][j - 1] == false && visitedArr[i + 1][j - 1] == false) {
+					else if (pathArr[i][j - 1] == false && pathArr[i][j - 2] == false && pathArr[i - 1][j - 1] == false && pathArr[i + 1][j - 1] == false) {
 						mazeArr[i][j - 1] = ' ';
 						j--;
 						backtrack.push({ i , j });
-						visitedArr[i][j] = true;
+						pathArr[i][j] = true;
 						loopCounter = 0;
 						pathCount++;
 					}
@@ -181,7 +181,7 @@ public:
 							mazeArr[i + 1][j] = ' ';
 							i++;
 							backtrack.push({ i, j });
-							visitedArr[i][j] = true;
+							pathArr[i][j] = true;
 							loopCounter = 0;
 							pathCount++;
 						}
@@ -192,11 +192,11 @@ public:
 							j = top.x;
 						}
 					}
-					else if (visitedArr[i + 1][j] == false && visitedArr[i + 2][j] == false && visitedArr[i + 1][j - 1] == false && visitedArr[i + 1][j + 1] == false) {
+					else if (pathArr[i + 1][j] == false && pathArr[i + 2][j] == false && pathArr[i + 1][j - 1] == false && pathArr[i + 1][j + 1] == false) {
 						mazeArr[i + 1][j] = ' ';
 						i++;
 						backtrack.push({ i, j });
-						visitedArr[i][j] = true;
+						pathArr[i][j] = true;
 						loopCounter = 0;
 						pathCount++;
 					}
@@ -210,7 +210,7 @@ public:
 							mazeArr[i][j + 1] = ' ';
 							j++;
 							backtrack.push({ i, j });
-							visitedArr[i][j] = true;
+							pathArr[i][j] = true;
 							loopCounter = 0;
 							pathCount++;
 						}
@@ -221,11 +221,11 @@ public:
 							j = top.x;
 						}
 					}
-					else if (visitedArr[i][j + 1] == false && visitedArr[i][j + 2] == false && visitedArr[i - 1][j + 1] == false && visitedArr[i + 1][j + 1] == false) {
+					else if (pathArr[i][j + 1] == false && pathArr[i][j + 2] == false && pathArr[i - 1][j + 1] == false && pathArr[i + 1][j + 1] == false) {
 						mazeArr[i][j + 1] = ' ';
 						j++;
 						backtrack.push({ i, j });
-						visitedArr[i][j] = true;
+						pathArr[i][j] = true;
 						loopCounter = 0;
 						pathCount++;
 					}
@@ -239,6 +239,7 @@ public:
 				if (found != true) {
 					found = true;
 					mazeArr[i][j] = 'D'; //door will be added at the edge of the maze
+					pathArr[i][j] = false;
 				}
 				i = midPoint.y;
 				j = midPoint.x;
