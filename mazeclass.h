@@ -22,7 +22,6 @@ private:
 	int mazeX, mazeY;
 	int pathCount;
 	int maxPathCount;
-	bool** visitedArr;
 	stack<MazePoint> backtrack;
 
 	int weightedRandomPercX(int k) {
@@ -47,6 +46,7 @@ private:
 
 public:
 	unsigned char** mazeArr;
+	bool** visitedArr;
 	MazePoint midPoint;
 	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new unsigned char* [y]), visitedArr(new bool* [y]) {
 		for (int i = 0; i < y; i++) {
@@ -233,7 +233,7 @@ public:
 				loopCounter++;
 				break;
 			default:
-				cout << "Something went wrong";
+				cout << "Something went wrong - generateMaze";
 			}
 			if (i == 0 || j == 0 || i == (mazeY - 1) || j == (mazeX - 1)) { //if it's at one of the edges of the maze
 				if (found != true) {
@@ -266,26 +266,129 @@ class Player {
 	MazePoint playerPos;
 public:
 	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({ 0, 0, 0, 0, 0, false }) {}
-	void playerInput(unsigned char keyPress, unsigned char** mazeArr) {
+	bool playerInput(unsigned char keyPress, unsigned char** mazeArr) {
 		if ((keyPress == 'w' || keyPress == 'W') && mazeArr[playerPos.y - 1][playerPos.x] == ' ') {
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y--;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
+			return true;
 		}
 		else if ((keyPress == 's' || keyPress == 'S') && mazeArr[playerPos.y + 1][playerPos.x] == ' ') {
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y++;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
+			return true;
 		}
 		else if ((keyPress == 'a' || keyPress == 'A') && mazeArr[playerPos.y][playerPos.x - 1] == ' ') {
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x--;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
+			return true;
 		}
 		else if ((keyPress == 'd' || keyPress == 'D') && mazeArr[playerPos.y][playerPos.x + 1] == ' ') {
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x++;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
+			return true;
 		}
+		return false;
+	}
+};
+
+class Enemy {
+	MazePoint enemyPos;
+	static int enemyStep;
+	static bool gameOver;
+public:
+	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }) {
+		bool pathFound = false;
+		int i, j;
+		while (pathFound == false) {
+			i = (rand() % (mazeY - 4)) + 2;
+			j = (rand() % (mazeX - 4)) + 2;
+			if (mazeArr[i][j] == ' ') {
+				pathFound = true;
+				enemyPos.y = i;
+				enemyPos.x = j;
+				mazeArr[i][j] = 'E';
+			}
+		}
+	}
+	void enemyRandomMove(unsigned char** mazeArr) {
+		bool hasMoved = false;
+		int r;
+		while (hasMoved == false) {
+			r = rand() % 4;
+			switch (r) {
+			case 0:
+				if (mazeArr[enemyPos.y - 1][enemyPos.x] == ' ') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.y--;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+				}
+				else if (mazeArr[enemyPos.y - 1][enemyPos.x] == 'C') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.y--;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+					gameOver = true;
+				}
+				break;
+			case 1:
+				if (mazeArr[enemyPos.y + 1][enemyPos.x] == ' ') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.y++;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+				}
+				else if (mazeArr[enemyPos.y + 1][enemyPos.x] == 'C') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.y++;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+					gameOver = true;
+				}
+				break;
+			case 2:
+				if (mazeArr[enemyPos.y][enemyPos.x - 1] == ' ') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.x--;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+				}
+				else if (mazeArr[enemyPos.y][enemyPos.x - 1] == 'C') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.x--;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+					gameOver = true;
+				}
+				break;
+			case 3:
+				if (mazeArr[enemyPos.y][enemyPos.x + 1] == ' ') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.x++;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+				}
+				else if (mazeArr[enemyPos.y][enemyPos.x + 1] == 'C') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.x++;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+					gameOver = true;
+				}
+				break;
+			default:
+				cout << "Something went wrong - enemyRandomMove";
+			}
+		}
+	}
+	static bool isGameOver() {
+		return gameOver;
+	}
+	int getEnemyStep() {
+		return enemyStep;
 	}
 };

@@ -6,28 +6,62 @@
 #include <conio.h>
 
 using namespace std;
+#define MAZE_X 100
+#define MAZE_Y 50
 
 #include "mazeclass.h"
 
-Maze maze1(100, 50);
+Maze maze1(MAZE_X, MAZE_Y);
 Player player1(maze1.midPoint);
+bool Enemy::gameOver = false;
+int Enemy::enemyStep = 2;
+
+void deathScreen();
 
 int main() {
 	char key;
 	maze1.initialiseMazeArray();
 	srand(time(0));
 	maze1.generateMaze();
+	Enemy enemy1(maze1.mazeArr, MAZE_X, MAZE_Y);
+	Enemy enemy2(maze1.mazeArr, MAZE_X, MAZE_Y);
+	Enemy enemy3(maze1.mazeArr, MAZE_X, MAZE_Y);
+	Enemy enemy4(maze1.mazeArr, MAZE_X, MAZE_Y);
+	Enemy enemy5(maze1.mazeArr, MAZE_X, MAZE_Y);
+	Enemy enemy6(maze1.mazeArr, MAZE_X, MAZE_Y);
+	Enemy enemy7(maze1.mazeArr, MAZE_X, MAZE_Y);
 	maze1.printMazeArray();
 	maze1.printPathCount();
 
 	while (true) {
 		key = _getche();
-		player1.playerInput(key, maze1.mazeArr);
+		if (player1.playerInput(key, maze1.mazeArr)) {
+			for (int i = 0; i < enemy1.getEnemyStep(); i++) {
+				enemy1.enemyRandomMove(maze1.mazeArr);
+				enemy2.enemyRandomMove(maze1.mazeArr);
+				enemy3.enemyRandomMove(maze1.mazeArr);
+				enemy4.enemyRandomMove(maze1.mazeArr);
+				enemy5.enemyRandomMove(maze1.mazeArr);
+				enemy6.enemyRandomMove(maze1.mazeArr);
+				enemy7.enemyRandomMove(maze1.mazeArr);
+			}
+		}
 		system("cls");
 		maze1.printMazeArray();
+		if (Enemy::isGameOver()) {
+			deathScreen();
+		}
 	}
 
 	return 0;
+}
+
+
+void deathScreen() {
+	cout << endl << endl << "GAME OVER";
+	cout << endl << "You have died by getting hit by an enemy" << endl;
+	cout << "Press any button to exit" << endl << endl;
+	exit(0);
 }
 
 
