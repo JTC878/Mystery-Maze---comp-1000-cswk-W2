@@ -48,7 +48,8 @@ public:
 	unsigned char** mazeArr;
 	bool** pathArr;
 	MazePoint midPoint;
-	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), mazeArr(new unsigned char* [y]), pathArr(new bool* [y]) {
+	MazePoint exitDoor;
+	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [y]), pathArr(new bool* [y]) {
 		for (int i = 0; i < y; i++) {
 			mazeArr[i] = new unsigned char[x]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[x];
@@ -239,7 +240,8 @@ public:
 				if (found != true) {
 					found = true;
 					mazeArr[i][j] = 'D'; //door will be added at the edge of the maze
-					pathArr[i][j] = false;
+					exitDoor.y = i;
+					exitDoor.x = j;
 				}
 				i = midPoint.y;
 				j = midPoint.x;
@@ -255,38 +257,79 @@ public:
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
 			delete[] mazeArr[i];
-			delete[] visitedArr[i];
+			delete[] pathArr[i];
 		}
 		delete[] mazeArr;
-		delete[] visitedArr;
+		delete[] pathArr;
 	}
 };
 
 class Player {
 	Inventory playerInv;
 	MazePoint playerPos;
+	bool levelClear;
 public:
-	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({ 0, 0, 0, 0, 0, false }) {}
-	bool playerInput(unsigned char keyPress, unsigned char** mazeArr) {
-		if ((keyPress == 'w' || keyPress == 'W') && mazeArr[playerPos.y - 1][playerPos.x] == ' ') {
+	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({ 0, 0, 0, 0, 0, true }), levelClear(false) {}
+	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor) {
+		if ((keyPress == 'w' || keyPress == 'W') && pathArr[playerPos.y - 1][playerPos.x] == true) {
+			if (playerPos.y - 1 == exitDoor.y && playerPos.x == exitDoor.x) {
+				if (playerInv.goldenKey == true) {
+					mazeArr[playerPos.y][playerPos.x] = ' ';
+					playerPos.y--;
+					mazeArr[playerPos.y][playerPos.x] = 'C';
+					levelClear = true;
+					return true;
+				}
+				return false;
+			}
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y--;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
 			return true;
 		}
-		else if ((keyPress == 's' || keyPress == 'S') && mazeArr[playerPos.y + 1][playerPos.x] == ' ') {
+		else if ((keyPress == 's' || keyPress == 'S') && pathArr[playerPos.y + 1][playerPos.x] == true) {
+			if (playerPos.y + 1 == exitDoor.y && playerPos.x == exitDoor.x) {
+				if (playerInv.goldenKey == true) {
+					mazeArr[playerPos.y][playerPos.x] = ' ';
+					playerPos.y++;
+					mazeArr[playerPos.y][playerPos.x] = 'C';
+					levelClear = true;
+					return true;
+				}
+				return false;
+			}
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y++;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
 			return true;
 		}
-		else if ((keyPress == 'a' || keyPress == 'A') && mazeArr[playerPos.y][playerPos.x - 1] == ' ') {
+		else if ((keyPress == 'a' || keyPress == 'A') && pathArr[playerPos.y][playerPos.x - 1] == true) {
+			if (playerPos.y == exitDoor.y && playerPos.x - 1 == exitDoor.x) {
+				if (playerInv.goldenKey == true) {
+					mazeArr[playerPos.y][playerPos.x] = ' ';
+					playerPos.x--;
+					mazeArr[playerPos.y][playerPos.x] = 'C';
+					levelClear = true;
+					return true;
+				}
+				return false;
+			}
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x--;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
 			return true;
 		}
-		else if ((keyPress == 'd' || keyPress == 'D') && mazeArr[playerPos.y][playerPos.x + 1] == ' ') {
+		else if ((keyPress == 'd' || keyPress == 'D') && pathArr[playerPos.y][playerPos.x + 1] == true) {
+			if (playerPos.y == exitDoor.y && playerPos.x + 1 == exitDoor.x) {
+				if (playerInv.goldenKey == true) {
+					mazeArr[playerPos.y][playerPos.x] = ' ';
+					playerPos.x++;
+					mazeArr[playerPos.y][playerPos.x] = 'C';
+					levelClear;
+					return true;
+				}
+				return false;
+			}
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x++;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
@@ -294,6 +337,13 @@ public:
 		}
 		return false;
 	}
+	MazePoint getPlayerPos() {
+		return playerPos;
+	}
+	bool isLevelClear() {
+		return levelClear;
+	}
+	void printInventory() {}
 };
 
 class Enemy {
@@ -315,75 +365,50 @@ public:
 			}
 		}
 	}
-	void enemyRandomMove(unsigned char** mazeArr) {
+	void enemyRandomMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
 		bool hasMoved = false;
 		int r;
 		while (hasMoved == false) {
 			r = rand() % 4;
 			switch (r) {
 			case 0:
-				if (mazeArr[enemyPos.y - 1][enemyPos.x] == ' ') {
+				if (pathArr[enemyPos.y - 1][enemyPos.x] == true) {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.y--;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
 					hasMoved = true;
-				}
-				else if (mazeArr[enemyPos.y - 1][enemyPos.x] == 'C') {
-					mazeArr[enemyPos.y][enemyPos.x] = ' ';
-					enemyPos.y--;
-					mazeArr[enemyPos.y][enemyPos.x] = 'E';
-					hasMoved = true;
-					gameOver = true;
 				}
 				break;
 			case 1:
-				if (mazeArr[enemyPos.y + 1][enemyPos.x] == ' ') {
+				if (pathArr[enemyPos.y + 1][enemyPos.x] == true) {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.y++;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
 					hasMoved = true;
-				}
-				else if (mazeArr[enemyPos.y + 1][enemyPos.x] == 'C') {
-					mazeArr[enemyPos.y][enemyPos.x] = ' ';
-					enemyPos.y++;
-					mazeArr[enemyPos.y][enemyPos.x] = 'E';
-					hasMoved = true;
-					gameOver = true;
 				}
 				break;
 			case 2:
-				if (mazeArr[enemyPos.y][enemyPos.x - 1] == ' ') {
+				if (pathArr[enemyPos.y][enemyPos.x - 1] == true) {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.x--;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
 					hasMoved = true;
-				}
-				else if (mazeArr[enemyPos.y][enemyPos.x - 1] == 'C') {
-					mazeArr[enemyPos.y][enemyPos.x] = ' ';
-					enemyPos.x--;
-					mazeArr[enemyPos.y][enemyPos.x] = 'E';
-					hasMoved = true;
-					gameOver = true;
 				}
 				break;
 			case 3:
-				if (mazeArr[enemyPos.y][enemyPos.x + 1] == ' ') {
+				if (pathArr[enemyPos.y][enemyPos.x + 1] == true) {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.x++;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
 					hasMoved = true;
-				}
-				else if (mazeArr[enemyPos.y][enemyPos.x + 1] == 'C') {
-					mazeArr[enemyPos.y][enemyPos.x] = ' ';
-					enemyPos.x++;
-					mazeArr[enemyPos.y][enemyPos.x] = 'E';
-					hasMoved = true;
-					gameOver = true;
 				}
 				break;
 			default:
 				cout << "Something went wrong - enemyRandomMove";
 			}
+		}
+		if (enemyPos.y == playerPos.y && enemyPos.x == playerPos.x) {
+			gameOver = true;
 		}
 	}
 	static bool isGameOver() {

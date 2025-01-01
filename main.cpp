@@ -17,6 +17,7 @@ bool Enemy::gameOver = false;
 int Enemy::enemyStep = 2;
 
 void deathScreen();
+void endScreen();
 
 int main() {
 	char key;
@@ -29,13 +30,16 @@ int main() {
 
 	while (true) {
 		key = _getche();
-		if (player1.playerInput(key, maze1.mazeArr)) {
+		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor)) {
 			for (int i = 0; i < enemy1.getEnemyStep(); i++) {
-				enemy1.enemyRandomMove(maze1.mazeArr);
+				enemy1.enemyRandomMove(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos());
 			}
 		}
 		system("cls");
 		maze1.printMazeArray();
+		if (player1.isLevelClear()) {
+			endScreen();
+		}
 		if (Enemy::isGameOver()) {
 			deathScreen();
 		}
@@ -49,6 +53,13 @@ void deathScreen() {
 	cout << endl << endl << "GAME OVER";
 	cout << endl << "You have died by getting hit by an enemy" << endl;
 	cout << "Press any button to exit" << endl << endl;
+	exit(0);
+}
+
+void endScreen() {
+	cout << endl << endl << "Congratulations";
+	cout << endl << "You have made it out of the maze!" << endl;
+	cout << "Press any button to exit" << endl;
 	exit(0);
 }
 
