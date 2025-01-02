@@ -22,7 +22,7 @@ void endScreen();
 
 int main() {
 	char key;
-	maze1.initialiseMazeArray();
+
 	srand(time(0));
 	maze1.generateMaze();
 	Enemy enemy1(maze1.mazeArr, MAZE_X, MAZE_Y);

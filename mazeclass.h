@@ -133,7 +133,7 @@ private:
 	int pathCount;
 	int maxPathCount;
 	stack<MazePoint> backtrack;
-	vector<Item> itemList;
+	vector<Item*> itemList;
 
 	int weightedRandomPercX(int k) {
 		float PercValue;
@@ -156,6 +156,21 @@ private:
 	}
 
 	void generateGoldenKey() { //only one golden key is generated for each maze
+		bool pathFound = false;
+		int i, j;
+		while (pathFound == false) {
+			i = (rand() % (mazeY - 4)) + 2;
+			j = (rand() % (mazeX - 4)) + 2;
+			int yDifference = abs(exitDoor.y - i);
+			int xDifference = abs(exitDoor.x - j);
+			//spawn key opposite side of exit door
+			if (mazeArr[i][j] == ' ' && (yDifference > midPoint.y || xDifference > midPoint.x)) {
+				pathFound = true;
+				Item* gKey = new GoldenKey({ i, j }, 1);
+				itemList.push_back(gKey);
+				mazeArr[i][j] = 184;
+			}
+		}
 
 	}
 
@@ -198,7 +213,7 @@ public:
 	void printPathCount() {
 		cout << endl << "Number of paths: " << pathCount << endl;
 	}
-	void generateMaze() {
+	void generateMazePaths() {
 		mazeArr[midPoint.y][midPoint.x] = 'C';
 		int i = midPoint.y;
 		int j = midPoint.x;
@@ -368,8 +383,13 @@ public:
 		}
 	}
 	void generateItems() {
-
+		generateGoldenKey();
 	} //to be implemented - golden key should spawn opposite side of the exit door.
+	void generateMaze() {
+		initialiseMazeArray();
+		generateMazePaths();
+		generateItems();
+	}
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
 			delete[] mazeArr[i];
