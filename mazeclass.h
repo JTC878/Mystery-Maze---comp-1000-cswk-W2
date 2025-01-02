@@ -530,12 +530,13 @@ public:
 	}
 	void printInventory() {
 		cout << endl;
-		cout << playerInv.slowOrbs.name << " : " << playerInv.slowOrbs.quantity << endl;
-		cout << playerInv.teleOrbs.name << " : " << playerInv.teleOrbs.quantity << endl;
-		cout << playerInv.killOrbs.name << " : " << playerInv.killOrbs.quantity << endl;
-		cout << playerInv.suteleOrbs.name << " : " << playerInv.suteleOrbs.quantity << endl;
-		cout << playerInv.keys.name << " : " << playerInv.keys.quantity << endl;
-		cout << playerInv.goldenKey.name << " : " << playerInv.goldenKey.quantity << endl;
+		cout << "Inventory" << endl << endl;
+		cout << playerInv.slowOrbs.name << "(" << playerInv.slowOrbs.mazeChar << ")" << " : " << playerInv.slowOrbs.quantity << endl;
+		cout << playerInv.teleOrbs.name << "(" << playerInv.teleOrbs.mazeChar << ")" << " : " << playerInv.teleOrbs.quantity << endl;
+		cout << playerInv.killOrbs.name << "(" << playerInv.killOrbs.mazeChar << ")" << " : " << playerInv.killOrbs.quantity << endl;
+		cout << playerInv.suteleOrbs.name << "(" << playerInv.suteleOrbs.mazeChar << ")" << " : " << playerInv.suteleOrbs.quantity << endl;
+		cout << playerInv.keys.name << "(" << playerInv.keys.mazeChar << ")" << " : " << playerInv.keys.quantity << endl;
+		cout << playerInv.goldenKey.name << "(" << playerInv.goldenKey.mazeChar << ")" << " : " << playerInv.goldenKey.quantity << endl;
 	}
 };
 
