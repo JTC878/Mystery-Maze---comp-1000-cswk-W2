@@ -6,20 +6,123 @@ struct MazePoint {
 };
 
 class Item {
-
+public:
+	string name;
+	MazePoint itemPos;
+	int quantity;
+	Item() {}
+	virtual void use() = 0;
 };
 
 class SlowOrb : public Item {
+public:
+	SlowOrb() {
+		name = "Slow Orb";
+		itemPos = { NULL, NULL };
+		quantity = 0;
+	}
+	SlowOrb(MazePoint pos, int quant) {
+		name = "Slow Orb";
+		itemPos = pos;
+		quantity = quant;
+	}
+	void use() override {
 
+	}
+};
+
+class TeleOrb : public Item {
+public:
+	TeleOrb() {
+		name = "Tele Orb";
+		itemPos = { NULL, NULL };
+		quantity = 0;
+	}
+	TeleOrb(MazePoint pos, int quant) {
+		name = "Tele Orb";
+		itemPos = pos;
+		quantity = quant;
+	}
+	void use() override {
+
+	}
+};
+
+class KillOrb : public Item {
+public:
+	KillOrb() {
+		name = "Kill Orb";
+		itemPos = { NULL, NULL };
+		quantity = 0;
+	}
+	KillOrb(MazePoint pos, int quant) {
+		name = "Kill Orb";
+		itemPos = pos;
+		quantity = quant;
+	}
+	void use() override {
+
+	}
+};
+
+class SUTeleOrb : public Item {
+public:
+	SUTeleOrb() {
+		name = "Super Tele Orb";
+		itemPos = { NULL, NULL };
+		quantity = 0;
+	}
+	SUTeleOrb(MazePoint pos, int quant) {
+		name = "Super Tele Orb";
+		itemPos = pos;
+		quantity = quant;
+	}
+	void use() override {
+
+	}
+};
+
+class Key : public Item {
+public:
+	Key() {
+		name = "Key";
+		itemPos = { NULL, NULL };
+		quantity = 0;
+	}
+	Key(MazePoint pos, int quant) {
+		name = "Key";
+		itemPos = pos;
+		quantity = quant;
+	}
+	void use() override {
+
+	}
+};
+
+class GoldenKey : public Item {
+public:
+	GoldenKey() {
+		name = "Golden Key";
+		itemPos = { NULL, NULL };
+		quantity = 0;
+	}
+	GoldenKey(MazePoint pos, int quant) {
+		name = "Golden Key";
+		itemPos = pos;
+		quantity = quant;
+	}
+	void use() override {
+		quantity--;
+	}
 };
 
 struct Inventory {
-	int slowOrbs;
-	int teleOrbs;
-	int killOrbs;
-	int suteleOrbs;
-	int keys;
-	bool goldenKey;
+	SlowOrb slowOrbs;
+	TeleOrb teleOrbs;
+	KillOrb killOrbs;
+	SUTeleOrb suteleOrbs;
+	Key keys;
+	GoldenKey goldenKey;
 };
 
 //(rand() % 101) <= weightedRandomPercY(i)
@@ -277,15 +380,16 @@ class Player {
 	MazePoint playerPos;
 	bool levelClear;
 public:
-	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({ 0, 0, 0, 0, 0, true }), levelClear(false) {}
+	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false) {}
 	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor) {
 		if ((keyPress == 'w' || keyPress == 'W') && pathArr[playerPos.y - 1][playerPos.x] == true) {
 			if (playerPos.y - 1 == exitDoor.y && playerPos.x == exitDoor.x) {
-				if (playerInv.goldenKey == true) {
+				if (playerInv.goldenKey.quantity >= 1) {
 					mazeArr[playerPos.y][playerPos.x] = ' ';
 					playerPos.y--;
 					mazeArr[playerPos.y][playerPos.x] = 'C';
 					levelClear = true;
+					playerInv.goldenKey.use();
 					return true;
 				}
 				return false;
@@ -297,11 +401,12 @@ public:
 		}
 		else if ((keyPress == 's' || keyPress == 'S') && pathArr[playerPos.y + 1][playerPos.x] == true) {
 			if (playerPos.y + 1 == exitDoor.y && playerPos.x == exitDoor.x) {
-				if (playerInv.goldenKey == true) {
+				if (playerInv.goldenKey.quantity >= 1) {
 					mazeArr[playerPos.y][playerPos.x] = ' ';
 					playerPos.y++;
 					mazeArr[playerPos.y][playerPos.x] = 'C';
 					levelClear = true;
+					playerInv.goldenKey.use();
 					return true;
 				}
 				return false;
@@ -313,11 +418,12 @@ public:
 		}
 		else if ((keyPress == 'a' || keyPress == 'A') && pathArr[playerPos.y][playerPos.x - 1] == true) {
 			if (playerPos.y == exitDoor.y && playerPos.x - 1 == exitDoor.x) {
-				if (playerInv.goldenKey == true) {
+				if (playerInv.goldenKey.quantity >= 1) {
 					mazeArr[playerPos.y][playerPos.x] = ' ';
 					playerPos.x--;
 					mazeArr[playerPos.y][playerPos.x] = 'C';
 					levelClear = true;
+					playerInv.goldenKey.use();
 					return true;
 				}
 				return false;
@@ -329,11 +435,12 @@ public:
 		}
 		else if ((keyPress == 'd' || keyPress == 'D') && pathArr[playerPos.y][playerPos.x + 1] == true) {
 			if (playerPos.y == exitDoor.y && playerPos.x + 1 == exitDoor.x) {
-				if (playerInv.goldenKey == true) {
+				if (playerInv.goldenKey.quantity >= 1) {
 					mazeArr[playerPos.y][playerPos.x] = ' ';
 					playerPos.x++;
 					mazeArr[playerPos.y][playerPos.x] = 'C';
 					levelClear = true;
+					playerInv.goldenKey.use();
 					return true;
 				}
 				return false;
@@ -351,7 +458,14 @@ public:
 	bool isLevelClear() {
 		return levelClear;
 	}
-	void printInventory() {}
+	void printInventory() {
+		cout << playerInv.slowOrbs.name << " : " << playerInv.slowOrbs.quantity << endl;
+		cout << playerInv.teleOrbs.name << " : " << playerInv.teleOrbs.quantity << endl;
+		cout << playerInv.killOrbs.name << " : " << playerInv.killOrbs.quantity << endl;
+		cout << playerInv.suteleOrbs.name << " : " << playerInv.suteleOrbs.quantity << endl;
+		cout << playerInv.keys.name << " : " << playerInv.keys.quantity << endl;
+		cout << playerInv.goldenKey.name << " : " << playerInv.goldenKey.quantity << endl;
+	}
 };
 
 class Enemy {
@@ -360,12 +474,16 @@ class Enemy {
 	static bool gameOver;
 public:
 	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }) {
+		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
+		int radiusY = mazeY * 0.1; //these can be changed later if necessary
+		int radiusX = mazeX * 0.1;
 		bool pathFound = false;
 		int i, j;
 		while (pathFound == false) {
 			i = (rand() % (mazeY - 4)) + 2;
 			j = (rand() % (mazeX - 4)) + 2;
-			if (mazeArr[i][j] == ' ') {
+			if (i < (midPoint.y + radiusY) && i >(midPoint.y - radiusY) && j < (midPoint.x + radiusX) && j >(midPoint.x - radiusX)) {} //do nothing if enemy is within certain range of the middle
+			else if (mazeArr[i][j] == ' ') {
 				pathFound = true;
 				enemyPos.y = i;
 				enemyPos.x = j;
@@ -419,6 +537,8 @@ public:
 			gameOver = true;
 		}
 	}
+	void enemyTargetedMove() {}
+	void movementChoice() {}
 	static bool isGameOver() {
 		return gameOver;
 	}

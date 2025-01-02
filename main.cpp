@@ -14,7 +14,7 @@ using namespace std;
 Maze maze1(MAZE_X, MAZE_Y);
 Player player1(maze1.midPoint);
 bool Enemy::gameOver = false;
-int Enemy::enemyStep = 4;
+int Enemy::enemyStep = 2;
 
 void deathScreen();
 void endScreen();
@@ -27,6 +27,7 @@ int main() {
 	Enemy enemy1(maze1.mazeArr, MAZE_X, MAZE_Y);
 	maze1.printMazeArray();
 	maze1.printPathCount();
+	player1.printInventory();
 
 	while (true) {
 		key = _getche();
