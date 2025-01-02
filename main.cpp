@@ -14,7 +14,7 @@ using namespace std;
 Maze maze1(MAZE_X, MAZE_Y);
 Player player1(maze1.midPoint);
 bool Enemy::gameOver = false;
-int Enemy::enemyStep = 2;
+int Enemy::enemyStep = 4;
 
 void deathScreen();
 void endScreen();
@@ -35,7 +35,7 @@ int main() {
 				enemy1.enemyRandomMove(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos());
 			}
 		}
-		system("cls");
+		system("cls"); //windows dependant - ncurses?
 		maze1.printMazeArray();
 		if (player1.isLevelClear()) {
 			endScreen();
