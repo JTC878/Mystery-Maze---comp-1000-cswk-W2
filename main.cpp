@@ -33,12 +33,20 @@ int main() {
 	while (true) {
 		key = _getche();
 		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor)) { //for each item check collect method, if check collect is true then player.collect the item. 
+			vector<Item*>::iterator iterator = maze1.itemList.begin();
+			for (Item* item : maze1.itemList) {
+				if (item->checkCollect(player1.getPlayerPos())) {
+					player1.collectItem(item, maze1.itemList, iterator);
+				}
+				iterator++;
+			}
 			for (int i = 0; i < enemy1.getEnemyStep(); i++) {
 				enemy1.enemyRandomMove(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos());
 			}
 		}
 		system("cls"); //windows dependant - ncurses?
 		maze1.printMazeArray();
+		player1.printInventory();
 		if (player1.isLevelClear()) {
 			endScreen();
 		}
