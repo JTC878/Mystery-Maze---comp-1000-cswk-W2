@@ -13,6 +13,7 @@ public:
 	int quantity;
 	Item() {
 		name = "Item";
+		mazeChar = ' ';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
