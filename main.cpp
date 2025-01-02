@@ -32,7 +32,7 @@ int main() {
 
 	while (true) {
 		key = _getche();
-		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor)) {
+		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor)) { //for each item check collect method, if check collect is true then player.collect the item. 
 			for (int i = 0; i < enemy1.getEnemyStep(); i++) {
 				enemy1.enemyRandomMove(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos());
 			}

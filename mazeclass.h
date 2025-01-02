@@ -10,7 +10,20 @@ public:
 	string name;
 	MazePoint itemPos;
 	int quantity;
+	Item() {
+		name = "Item";
+		itemPos = { NULL, NULL };
+		quantity = 0;
+	}
 	virtual void use() = 0;
+	bool checkCollect(MazePoint playerPos) {
+		if (playerPos.y == itemPos.y && playerPos.x == itemPos.x) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 };
 
 class SlowOrb : public Item {
@@ -133,7 +146,6 @@ private:
 	int pathCount;
 	int maxPathCount;
 	stack<MazePoint> backtrack;
-	vector<Item*> itemList;
 
 	int weightedRandomPercX(int k) {
 		float PercValue;
@@ -171,12 +183,12 @@ private:
 				mazeArr[i][j] = 184;
 			}
 		}
-
 	}
 
 public:
 	unsigned char** mazeArr;
 	bool** pathArr;
+	vector<Item*> itemList;
 	MazePoint midPoint;
 	MazePoint exitDoor;
 	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [y]), pathArr(new bool* [y]) {
@@ -195,6 +207,8 @@ public:
 		}
 	}
 	void printMazeArray() {
+		//seperate for each loop - get the position of each item and compare it to the mazeArr position, if there is no enemies on the space assign the position to the item.
+
 		for (int i = 0; i < mazeY; i++) {
 			cout << endl;
 			for (int j = 0; j < mazeX; j++) {
@@ -404,17 +418,36 @@ class Player {
 	Inventory playerInv;
 	MazePoint playerPos;
 	bool levelClear;
+
+	bool checkExitDoor(int playerPosY, int playerPosX, MazePoint exitDoor) {
+		if (playerPosY == exitDoor.y && playerPosX == exitDoor.x) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	bool checkGoldenKey(int playerPosY, int playerPosX, unsigned char** mazeArr) {
+		if (playerInv.goldenKey.quantity >= 1) {
+			mazeArr[playerPos.y][playerPos.x] = ' ';
+			playerPos.y = playerPosY;
+			playerPos.x = playerPosX;
+			mazeArr[playerPos.y][playerPos.x] = 'C';
+			levelClear = true;
+			playerInv.goldenKey.use();
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 public:
 	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false) {}
 	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor) {
 		if ((keyPress == 'w' || keyPress == 'W') && pathArr[playerPos.y - 1][playerPos.x] == true) {
-			if (playerPos.y - 1 == exitDoor.y && playerPos.x == exitDoor.x) {
-				if (playerInv.goldenKey.quantity >= 1) {
-					mazeArr[playerPos.y][playerPos.x] = ' ';
-					playerPos.y--;
-					mazeArr[playerPos.y][playerPos.x] = 'C';
-					levelClear = true;
-					playerInv.goldenKey.use();
+			if (checkExitDoor(playerPos.y - 1, playerPos.x, exitDoor)) {
+				if (checkGoldenKey(playerPos.y - 1, playerPos.x, mazeArr)) {
 					return true;
 				}
 				return false;
@@ -425,13 +458,8 @@ public:
 			return true;
 		}
 		else if ((keyPress == 's' || keyPress == 'S') && pathArr[playerPos.y + 1][playerPos.x] == true) {
-			if (playerPos.y + 1 == exitDoor.y && playerPos.x == exitDoor.x) {
-				if (playerInv.goldenKey.quantity >= 1) {
-					mazeArr[playerPos.y][playerPos.x] = ' ';
-					playerPos.y++;
-					mazeArr[playerPos.y][playerPos.x] = 'C';
-					levelClear = true;
-					playerInv.goldenKey.use();
+			if (checkExitDoor(playerPos.y + 1, playerPos.x, exitDoor)) {
+				if (checkGoldenKey(playerPos.y + 1, playerPos.x, mazeArr)) {
 					return true;
 				}
 				return false;
@@ -442,13 +470,8 @@ public:
 			return true;
 		}
 		else if ((keyPress == 'a' || keyPress == 'A') && pathArr[playerPos.y][playerPos.x - 1] == true) {
-			if (playerPos.y == exitDoor.y && playerPos.x - 1 == exitDoor.x) {
-				if (playerInv.goldenKey.quantity >= 1) {
-					mazeArr[playerPos.y][playerPos.x] = ' ';
-					playerPos.x--;
-					mazeArr[playerPos.y][playerPos.x] = 'C';
-					levelClear = true;
-					playerInv.goldenKey.use();
+			if (checkExitDoor(playerPos.y, playerPos.x - 1, exitDoor)) {
+				if (checkGoldenKey(playerPos.y, playerPos.x - 1, mazeArr)) {
 					return true;
 				}
 				return false;
@@ -459,13 +482,8 @@ public:
 			return true;
 		}
 		else if ((keyPress == 'd' || keyPress == 'D') && pathArr[playerPos.y][playerPos.x + 1] == true) {
-			if (playerPos.y == exitDoor.y && playerPos.x + 1 == exitDoor.x) {
-				if (playerInv.goldenKey.quantity >= 1) {
-					mazeArr[playerPos.y][playerPos.x] = ' ';
-					playerPos.x++;
-					mazeArr[playerPos.y][playerPos.x] = 'C';
-					levelClear = true;
-					playerInv.goldenKey.use();
+			if (checkExitDoor(playerPos.y, playerPos.x + 1, exitDoor)) {
+				if (checkGoldenKey(playerPos.y, playerPos.x + 1, mazeArr)) {
 					return true;
 				}
 				return false;
@@ -482,6 +500,13 @@ public:
 	}
 	bool isLevelClear() {
 		return levelClear;
+	}
+	void collectItem(Item* itemObject, vector<Item*> itemList, vector<Item*>::iterator iterator) {
+		if (itemObject->name == "Golden Key") {
+			itemList.erase(iterator, iterator);
+			playerInv.goldenKey.quantity += itemObject->quantity;
+			delete itemObject;
+		}
 	}
 	void printInventory() {
 		cout << playerInv.slowOrbs.name << " : " << playerInv.slowOrbs.quantity << endl;
