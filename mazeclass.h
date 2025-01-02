@@ -156,6 +156,7 @@ struct Inventory {
 
 class Maze {
 private:
+	int depth;
 	int mazeX, mazeY;
 	int pathCount;
 	int maxPathCount;
@@ -205,7 +206,7 @@ public:
 	vector<Item*> itemList;
 	MazePoint midPoint;
 	MazePoint exitDoor;
-	Maze(int x, int y) : mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [y]), pathArr(new bool* [y]) {
+	Maze(int x, int y) : depth(1), mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [y]), pathArr(new bool* [y]) {
 		for (int i = 0; i < y; i++) {
 			mazeArr[i] = new unsigned char[x]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[x];
