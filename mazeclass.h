@@ -5,6 +5,14 @@ struct MazePoint {
 	int x;
 };
 
+class Item {
+
+};
+
+class SlowOrb : public Item {
+
+};
+
 struct Inventory {
 	int slowOrbs;
 	int teleOrbs;
@@ -325,7 +333,7 @@ public:
 					mazeArr[playerPos.y][playerPos.x] = ' ';
 					playerPos.x++;
 					mazeArr[playerPos.y][playerPos.x] = 'C';
-					levelClear;
+					levelClear = true;
 					return true;
 				}
 				return false;
