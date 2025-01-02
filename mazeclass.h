@@ -156,11 +156,19 @@ struct Inventory {
 
 class Maze {
 private:
-	int depth;
+	int depthCounter;
+	const static int depthValues[10][11]; //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
 	int mazeX, mazeY;
 	int pathCount;
 	int maxPathCount;
+	float percPathsofMaze;
+	int enemyNumber;
+	int maxSlow, maxTele, maxKill, maxSUTele, maxKeys;
 	stack<MazePoint> backtrack;
+
+	void setMaxPathCount() {
+		maxPathCount = (mazeX * mazeY) * percPathsofMaze;
+	}
 
 	int weightedRandomPercX(int k) {
 		float PercValue;
@@ -204,16 +212,16 @@ public:
 	unsigned char** mazeArr;
 	bool** pathArr;
 	vector<Item*> itemList;
+	vector<Enemy*> enemyList;
 	MazePoint midPoint;
 	MazePoint exitDoor;
-	Maze(int x, int y) : depth(1), mazeX(x), mazeY(y), pathCount(1), midPoint({ (y / 2), (x / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [y]), pathArr(new bool* [y]) {
-		for (int i = 0; i < y; i++) {
-			mazeArr[i] = new unsigned char[x]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
-			pathArr[i] = new bool[x];
+	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]), pathCount(1), midPoint({(mazeY / 2), (mazeX / 2)}), exitDoor({0, 0}), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]) {
+		for (int i = 0; i < mazeY; i++) {
+			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
+			pathArr[i] = new bool[mazeX];
 		}
-		maxPathCount = (mazeX * mazeY) * 0.5;
 	}
-	void initialiseMazeArray() {
+	void initialiseMazeArray() { //need to delete the arrays like in the destructor, then allocate new memory to the arrays with the same name, then initialise.
 		for (int i = 0; i < mazeY; i++) {
 			for (int j = 0; j < mazeX; j++) {
 				mazeArr[i][j] = 219;
@@ -420,10 +428,30 @@ public:
 	void generateItems() {
 		generateGoldenKey();
 	} //to be implemented - golden key should spawn opposite side of the exit door.
+	void generateEnemies() {}
 	void generateMaze() {
+		depthUpdateValues();
+		setMaxPathCount();
 		initialiseMazeArray();
 		generateMazePaths();
 		generateItems();
+		generateEnemies();
+	}
+	void depthUpdateValues() {
+		mazeX = depthValues[depthCounter][0];
+		mazeY = depthValues[depthCounter][1];
+		midPoint.x = mazeX / 2;
+		midPoint.y = mazeY / 2;
+		percPathsofMaze = (float)depthValues[depthCounter][2] * 0.1;
+		enemyNumber = depthValues[depthCounter][3];
+		Enemy::enemySpotDistance = depthValues[depthCounter][4];
+		Enemy::enemyStep = depthValues[depthCounter][5];
+		maxSlow = depthValues[depthCounter][6];
+		maxTele = depthValues[depthCounter][7];
+		maxKill = depthValues[depthCounter][8];
+		maxSUTele = depthValues[depthCounter][9];
+		maxKeys = depthValues[depthCounter][10];
+		depthCounter++;
 	}
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
@@ -544,9 +572,10 @@ public:
 
 class Enemy {
 	MazePoint enemyPos;
-	static int enemyStep;
 	static bool gameOver;
 public:
+	static int enemyStep;
+	static int enemySpotDistance;
 	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }) {
 		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
 		int radiusY = mazeY * 0.1; //these can be changed later if necessary
