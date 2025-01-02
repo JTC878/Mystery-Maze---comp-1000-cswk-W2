@@ -15,7 +15,7 @@ using namespace std;
 Maze maze1(MAZE_X, MAZE_Y);
 Player player1(maze1.midPoint);
 bool Enemy::gameOver = false;
-int Enemy::enemyStep = 2;
+int Enemy::enemyStep = 3;
 
 void deathScreen();
 void endScreen();
@@ -33,14 +33,13 @@ int main() {
 	while (true) {
 		key = _getche();
 		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor)) { //for each item check collect method, if check collect is true then player.collect the item. 
-			vector<Item*>::iterator iterator = maze1.itemList.begin();
 			for (Item* item : maze1.itemList) {
 				if (item->checkCollect(player1.getPlayerPos())) {
-					player1.collectItem(item, maze1.itemList, iterator);
+					player1.collectItem(item, maze1.itemList);
 				}
-				iterator++;
 			}
-			for (int i = 0; i < enemy1.getEnemyStep(); i++) {
+			int enemyStep = Enemy::getEnemyStep();
+			for (int i = 0; i < enemyStep; i++) {
 				enemy1.enemyRandomMove(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos());
 			}
 		}

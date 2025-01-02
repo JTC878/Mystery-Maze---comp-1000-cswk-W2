@@ -8,6 +8,7 @@ struct MazePoint {
 class Item {
 public:
 	string name;
+	char mazeChar;
 	MazePoint itemPos;
 	int quantity;
 	Item() {
@@ -24,17 +25,19 @@ public:
 			return false;
 		}
 	}
-};
+}; //each item has placeholder mazeChars. Probably should be changed later.
 
 class SlowOrb : public Item {
 public:
 	SlowOrb() {
 		name = "Slow Orb";
+		mazeChar = 'S';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	SlowOrb(MazePoint pos, int quant) {
 		name = "Slow Orb";
+		mazeChar = 'S';
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -47,11 +50,13 @@ class TeleOrb : public Item {
 public:
 	TeleOrb() {
 		name = "Tele Orb";
+		mazeChar = 'T';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	TeleOrb(MazePoint pos, int quant) {
 		name = "Tele Orb";
+		mazeChar = 'T';
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -64,11 +69,13 @@ class KillOrb : public Item {
 public:
 	KillOrb() {
 		name = "Kill Orb";
+		mazeChar = 'K';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	KillOrb(MazePoint pos, int quant) {
 		name = "Kill Orb";
+		mazeChar = 'K';
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -81,11 +88,13 @@ class SUTeleOrb : public Item {
 public:
 	SUTeleOrb() {
 		name = "Super Tele Orb";
+		mazeChar = 'S';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	SUTeleOrb(MazePoint pos, int quant) {
 		name = "Super Tele Orb";
+		mazeChar = 'S';
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -98,11 +107,13 @@ class Key : public Item {
 public:
 	Key() {
 		name = "Key";
+		mazeChar = 'k';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	Key(MazePoint pos, int quant) {
 		name = "Key";
+		mazeChar = 'k';
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -115,11 +126,13 @@ class GoldenKey : public Item {
 public:
 	GoldenKey() {
 		name = "Golden Key";
+		mazeChar = 184;
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	GoldenKey(MazePoint pos, int quant) {
 		name = "Golden Key";
+		mazeChar = 184;
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -208,6 +221,12 @@ public:
 	}
 	void printMazeArray() {
 		//seperate for each loop - get the position of each item and compare it to the mazeArr position, if there is no enemies on the space assign the position to the item.
+		for (Item* item : itemList) {
+			MazePoint pos = item->itemPos;
+			if (mazeArr[pos.y][pos.x] != 'E') {
+				mazeArr[pos.y][pos.x] = item->mazeChar;
+			}
+		}
 
 		for (int i = 0; i < mazeY; i++) {
 			cout << endl;
@@ -501,14 +520,16 @@ public:
 	bool isLevelClear() {
 		return levelClear;
 	}
-	void collectItem(Item* itemObject, vector<Item*> itemList, vector<Item*>::iterator iterator) {
+	void collectItem(Item* itemObject, vector<Item*>& itemList) {
+		vector<Item*>::iterator index = find(itemList.begin(), itemList.end(), itemObject);
+		itemList.erase(index);
 		if (itemObject->name == "Golden Key") {
-			itemList.erase(iterator, iterator);
 			playerInv.goldenKey.quantity += itemObject->quantity;
-			delete itemObject;
 		}
+		delete itemObject;
 	}
 	void printInventory() {
+		cout << endl;
 		cout << playerInv.slowOrbs.name << " : " << playerInv.slowOrbs.quantity << endl;
 		cout << playerInv.teleOrbs.name << " : " << playerInv.teleOrbs.quantity << endl;
 		cout << playerInv.killOrbs.name << " : " << playerInv.killOrbs.quantity << endl;
@@ -592,7 +613,7 @@ public:
 	static bool isGameOver() {
 		return gameOver;
 	}
-	int getEnemyStep() {
+	static int getEnemyStep() {
 		return enemyStep;
 	}
 };
