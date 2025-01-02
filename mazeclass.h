@@ -10,7 +10,6 @@ public:
 	string name;
 	MazePoint itemPos;
 	int quantity;
-	Item() {}
 	virtual void use() = 0;
 };
 
@@ -134,6 +133,7 @@ private:
 	int pathCount;
 	int maxPathCount;
 	stack<MazePoint> backtrack;
+	vector<Item> itemList;
 
 	int weightedRandomPercX(int k) {
 		float PercValue;
@@ -153,6 +153,10 @@ private:
 		PercValue = 100 * PercValue;
 		if (PercValue < 1) PercValue = 1;
 		return int(PercValue);
+	}
+
+	void generateGoldenKey() { //only one golden key is generated for each maze
+
 	}
 
 public:
@@ -364,7 +368,8 @@ public:
 		}
 	}
 	void generateItems() {
-	} //to be implemented
+
+	} //to be implemented - golden key should spawn opposite side of the exit door.
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
 			delete[] mazeArr[i];
@@ -498,7 +503,7 @@ public:
 			r = rand() % 4;
 			switch (r) {
 			case 0:
-				if (pathArr[enemyPos.y - 1][enemyPos.x] == true) {
+				if (pathArr[enemyPos.y - 1][enemyPos.x] == true && mazeArr[enemyPos.y -1][enemyPos.x] != 'D') {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.y--;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
@@ -506,7 +511,7 @@ public:
 				}
 				break;
 			case 1:
-				if (pathArr[enemyPos.y + 1][enemyPos.x] == true) {
+				if (pathArr[enemyPos.y + 1][enemyPos.x] == true && mazeArr[enemyPos.y + 1][enemyPos.x] != 'D') {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.y++;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
@@ -514,7 +519,7 @@ public:
 				}
 				break;
 			case 2:
-				if (pathArr[enemyPos.y][enemyPos.x - 1] == true) {
+				if (pathArr[enemyPos.y][enemyPos.x - 1] == true && mazeArr[enemyPos.y][enemyPos.x - 1] != 'D') {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.x--;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
@@ -522,7 +527,7 @@ public:
 				}
 				break;
 			case 3:
-				if (pathArr[enemyPos.y][enemyPos.x + 1] == true) {
+				if (pathArr[enemyPos.y][enemyPos.x + 1] == true && mazeArr[enemyPos.y][enemyPos.x + 1] != 'D') {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.x++;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';

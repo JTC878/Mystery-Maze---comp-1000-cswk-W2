@@ -2,6 +2,7 @@
 #include <string>
 #include <random>
 #include <cmath>
+#include <vector>
 #include <stack>
 #include <conio.h>
 
