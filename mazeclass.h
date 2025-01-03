@@ -303,6 +303,7 @@ public:
 			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
 		}
+		maxPathCount = (mazeX * mazeY) * percPathsofMaze;
 	}
 	void initialiseMazeArray() { //need to delete the arrays like in the destructor, then allocate new memory to the arrays with the same name, then initialise.
 		for (int i = 0; i < mazeY; i++) {

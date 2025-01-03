@@ -9,13 +9,13 @@
 #include <conio.h>
 
 using namespace std;
-#define MAZE_X 30
-#define MAZE_Y 20
+#define MAZE_X 100
+#define MAZE_Y 50
 
 #include "mazeclass.h"
 
 const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
-	{MAZE_X, MAZE_Y, 2, 1, 5, 3, 1, 1, 1, 1, 1},
+	{MAZE_X, MAZE_Y, 5, 1, 5, 3, 1, 1, 1, 1, 1},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
