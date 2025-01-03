@@ -72,6 +72,7 @@ int main() {
 			maze1.generateMaze();
 			player1.setPos(maze1.midPoint);
 			player1.setLevelClear(false);
+			system("cls");
 			printFunctions();
 			
 		}
