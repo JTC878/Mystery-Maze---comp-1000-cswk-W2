@@ -316,10 +316,17 @@ private:
 	int maxSlow, maxTele, maxKill, maxSUTele, maxKeys;
 	stack<MazePoint> backtrack;
 
+	void deleteMazeArrays() {
+		for (int i = 0; i < mazeY; i++) {
+			delete[] mazeArr[i];
+			delete[] pathArr[i];
+		}
+		delete[] mazeArr;
+		delete[] pathArr;
+	}
 	void setMaxPathCount() {
 		maxPathCount = (mazeX * mazeY) * percPathsofMaze;
 	}
-
 	int weightedRandomPercX(int k) {
 		float PercValue;
 		PercValue = abs(k - midPoint.x);
@@ -329,7 +336,6 @@ private:
 		if (PercValue < 1) PercValue = 1;
 		return int(PercValue);
 	}
-
 	int weightedRandomPercY(int k) {
 		float PercValue;
 		PercValue = abs(k - midPoint.y);
@@ -339,7 +345,6 @@ private:
 		if (PercValue < 1) PercValue = 1;
 		return int(PercValue);
 	}
-
 	void generateGoldenKey() { //only one golden key is generated for each maze
 		bool pathFound = false;
 		int i, j;
@@ -357,7 +362,6 @@ private:
 			}
 		}
 	}
-
 	void generateSlowOrbs() {
 		//random range dependant on maxSlowOrbs
 		int loopCounter = 0;
@@ -380,7 +384,6 @@ private:
 			}
 		}
 	}
-
 	void generateTeleOrbs() {
 		int loopCounter = 0;
 		int range = maxTele * 0.5; 
@@ -402,7 +405,6 @@ private:
 			}
 		}
 	}
-
 	void generateKillOrbs() {
 		int loopCounter = 0;
 		int range = maxKill * 0.5;
@@ -425,7 +427,6 @@ private:
 		}
 	}
 
-
 public:
 	unsigned char** mazeArr;
 	bool** pathArr;
@@ -442,7 +443,18 @@ public:
 		}
 		maxPathCount = (mazeX * mazeY) * percPathsofMaze;
 	}
-	void initialiseMazeArray() { //need to delete the arrays like in the destructor, then allocate new memory to the arrays with the same name, then initialise.
+	void initialiseMazeArray() { //need to delete the arrays like in the destructor, then allocate new memory to the arrays with the same name, then initialise for new depth mazes
+
+		unsigned char** newMazeArray = new unsigned char* [mazeY];
+		bool** newPathArray = new bool* [mazeY];
+		for (int i = 0; i < mazeY; i++) {
+			newMazeArray[i] = new unsigned char[mazeX]; //'mazeX' ammount of pointers are initialised for each row
+			newPathArray[i] = new bool[mazeX];
+		}
+
+		mazeArr = newMazeArray;
+		pathArr = newPathArray; //assign the members to the new arrays
+
 		for (int i = 0; i < mazeY; i++) {
 			for (int j = 0; j < mazeX; j++) {
 				mazeArr[i][j] = 219;
@@ -474,8 +486,11 @@ public:
 			}
 		}
 	}
-	void printPathCount() {
+	void printDepthEnemyPathCount() {
+		cout << endl;
+		cout << endl << "Depth: " << depthCounter << endl;
 		cout << endl << "Number of paths: " << pathCount << endl;
+		cout << endl << "Number of enemies: " << enemyList.size() << endl;
 	}
 	void generateMazePaths() {
 		mazeArr[midPoint.y][midPoint.x] = 'C';
@@ -659,6 +674,7 @@ public:
 		}
 	}
 	void generateMaze() {
+		deleteMazeArrays();
 		depthUpdateValues();
 		setMaxPathCount();
 		initialiseMazeArray();
@@ -681,6 +697,9 @@ public:
 		maxSUTele = depthValues[depthCounter][9];
 		maxKeys = depthValues[depthCounter][10];
 		depthCounter++;
+	}
+	int getDepthCounter() {
+		return depthCounter;
 	}
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
@@ -834,6 +853,13 @@ public:
 		cout << playerInv.suteleOrbs.name << "(" << playerInv.suteleOrbs.mazeChar << ")" << " : " << playerInv.suteleOrbs.quantity << endl;
 		cout << playerInv.keys.name << "(" << playerInv.keys.mazeChar << ")" << " : " << playerInv.keys.quantity << endl;
 		cout << playerInv.goldenKey.name << "(" << playerInv.goldenKey.mazeChar << ")" << " : " << playerInv.goldenKey.quantity << endl;
+	}
+	void setPos(MazePoint midpoint) {
+		playerPos.y = midpoint.y;
+		playerPos.x = midpoint.x;
+	}
+	void setLevelClear(bool T) {
+		levelClear = T;
 	}
 };
 

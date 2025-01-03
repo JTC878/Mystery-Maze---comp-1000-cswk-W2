@@ -12,7 +12,7 @@ using namespace std;
 
 const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
 	{30, 20, 3, 5, 5, 3, 10, 5, 10, 1, 1},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{50, 30, 3, 8, 5, 3, 10, 5, 10, 1, 1},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
@@ -36,18 +36,17 @@ float Enemy::stepRemainder = 0;
 Maze maze1;
 Player player1(maze1.midPoint);
 
+void levelClearedScreen(int depth);
 void deathScreen();
 void endScreen();
+void printFunctions();
 
 int main() {
 	char key;
 
 	srand(time(0));
 	maze1.generateMaze();
-	maze1.printMazeArray();
-	maze1.printPathCount();
-	Enemy::printEnemyStep();
-	player1.printInventory();
+	printFunctions();
 
 	while (true) {
 		key = _getche();
@@ -65,11 +64,16 @@ int main() {
 			}
 		}
 		system("cls"); //windows dependant - ncurses?
-		maze1.printMazeArray();
-		Enemy::printEnemyStep();
-		player1.printInventory();
+		printFunctions();
 		if (player1.isLevelClear()) {
-			endScreen();
+			levelClearedScreen(maze1.getDepthCounter());
+			maze1.enemyList.clear();
+			maze1.itemList.clear();
+			maze1.generateMaze();
+			player1.setPos(maze1.midPoint);
+			player1.setLevelClear(false);
+			printFunctions();
+			
 		}
 		if (Enemy::isGameOver()) {
 			deathScreen();
@@ -96,8 +100,37 @@ void endScreen() {
 	exit(0);
 }
 
+void levelClearedScreen(int depth) {
+	char c;
+	system("pause");
+	system("cls");
+	switch (depth) {
+	case 1:
+		cout << "<enter to continue>" << endl;
+		c = getchar();
+		cout << "*As you crawl through the pitch black sewers you hear a faint whisper in your ear*" << endl << "<enter to continue>" << endl;
+		c = getchar();
+		cout << "Well done. However, you have only cleared the very first hurdle." << endl << "<enter to continue>" << endl;
+		c = getchar();
+		cout << "Be prepared for what lurks in the depths, stock up on anything you can get your hands on." << endl << "<enter to continue>" << endl;
+		c = getchar();
+		cout << "I'll be waiting for you at the bottom~" << endl << "<enter to continue>" << endl;
+		c = getchar();
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	}
+	
+}
 
-
+void printFunctions() {
+	maze1.printMazeArray();
+	maze1.printDepthEnemyPathCount();
+	Enemy::printEnemyStep();
+	player1.printInventory();
+}
 
 
 
