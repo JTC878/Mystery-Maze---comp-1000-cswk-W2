@@ -322,9 +322,13 @@ private:
 		}
 		delete[] mazeArr;
 		delete[] pathArr;
+		while (!backtrack.empty()) {
+			backtrack.pop();
+		}
 	}
 	void setMaxPathCount() {
 		maxPathCount = (mazeX * mazeY) * percPathsofMaze;
+		pathCount = 1;
 	}
 	int weightedRandomPercX(int k) {
 		float PercValue;
@@ -436,7 +440,7 @@ public:
 	static vector<Enemy*> enemyList;
 	MazePoint midPoint;
 	MazePoint exitDoor;
-	Maze() : depthCounter(9), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]), 
+	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]), 
 		pathCount(1), midPoint({(mazeY / 2), (mazeX / 2)}), exitDoor({0, 0}), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]), 
 		maxSlow(depthValues[depthCounter][6]), maxTele(depthValues[depthCounter][7]), maxKill(depthValues[depthCounter][8]), maxSUTele(depthValues[depthCounter][9]), maxKeys(depthValues[depthCounter][10]) {
 		for (int i = 0; i < mazeY; i++) {
@@ -851,7 +855,6 @@ public:
 	}
 	void printInventory() {
 		cout << endl;
-		cout << "Inventory" << endl << endl;
 		cout << playerInv.slowOrbs.name << "(" << playerInv.slowOrbs.mazeChar << ")" << " : " << playerInv.slowOrbs.quantity;
 		cout << setw(18) << playerInv.teleOrbs.name << "(" << playerInv.teleOrbs.mazeChar << ")" << " : " << playerInv.teleOrbs.quantity;
 		cout << setw(20) << playerInv.killOrbs.name << "(" << playerInv.killOrbs.mazeChar << ")" << " : " << playerInv.killOrbs.quantity;
