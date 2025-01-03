@@ -85,14 +85,12 @@ public:
 		int rmDec = (int)enemyStep;
 		stepRemainder += enemyStep - rmDec;
 		if (stepRemainder >= 1.0) {
-			enemyStep += 1;
-			int copyRound = (int)enemyStep;
-			enemyStep = copyRound;
+			rmDec = (int)enemyStep + 1;
 			stepRemainder = 0;
 		}
 		if (enemyStep < 0) enemyStep = 0;
-		return enemyStep;
-	}
+		return rmDec;
+	} //This allows fractional numbers to be faster or slower than whole numbers - this means slowOrbs have an impact even if they remove a half a step for example.
 	static void printEnemyStep() {
 		cout << endl;
 		cout << "Enemy Speed: " << enemyStep << endl;
