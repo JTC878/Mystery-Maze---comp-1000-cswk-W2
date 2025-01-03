@@ -136,12 +136,13 @@ public:
 		quantity = quant;
 	}
 	void use() override {
-		Enemy::enemyStep -= slowValue;
+		Enemy::enemyStep -= slowValue; 
 		quantity--;
 	}
 };
 //jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line until there is no more path.
 class TeleOrb : public Item {
+	const vector<Item*> itemList;
 public:
 	TeleOrb() {
 		name = "Tele Orb";
@@ -149,7 +150,7 @@ public:
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
-	TeleOrb(MazePoint pos, int quant) {
+	TeleOrb(MazePoint pos, int quant, vector<Item*>& itemsinaList) : itemList(itemsinaList) {
 		name = "Tele Orb";
 		mazeChar = 'T';
 		itemPos = pos;
@@ -158,7 +159,7 @@ public:
 	void use() override {
 
 	}
-};
+}; //teleport to a random item? or teleport to a random path
 
 class KillOrb : public Item {
 public:
@@ -177,7 +178,7 @@ public:
 	void use() override {
 
 	}
-};
+}; //kill orb kills the nearest enemy
 
 class SUTeleOrb : public Item {
 public:
@@ -197,7 +198,7 @@ public:
 
 	}
 };
-//super kill orb?? = kill the nearest enemy
+//super kill orb?? = kills randomly 50% of the enemies in the current maze
 class Key : public Item {
 public:
 	Key() {
@@ -715,3 +716,4 @@ public:
 		cout << playerInv.goldenKey.name << "(" << playerInv.goldenKey.mazeChar << ")" << " : " << playerInv.goldenKey.quantity << endl;
 	}
 };
+
