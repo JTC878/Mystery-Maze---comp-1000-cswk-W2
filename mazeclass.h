@@ -142,22 +142,40 @@ public:
 };
 //jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line until there is no more path.
 class TeleOrb : public Item {
-	const vector<Item*> itemList;
 public:
+	static vector<Item*> &itemList;
 	TeleOrb() {
 		name = "Tele Orb";
 		mazeChar = 'T';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
-	TeleOrb(MazePoint pos, int quant, vector<Item*>& itemsinaList) : itemList(itemsinaList) {
+	TeleOrb(MazePoint pos, int quant) {
 		name = "Tele Orb";
 		mazeChar = 'T';
 		itemPos = pos;
 		quantity = quant;
 	}
 	void use() override {
-
+		quantity--;
+	}
+	bool use(MazePoint& playerPos, unsigned char** mazeArr) { //you can spawn on enemies 
+		if (itemList.empty()) {
+			return false;
+		}
+		int size = itemList.size();
+		int i = rand() % size;
+		int index = 0;
+		for (Item* item : itemList) {
+			if (i == index) {
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos = item->itemPos;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+				quantity--;
+				return true;
+			}
+			index++;
+		}
 	}
 }; //teleport to a random item? or teleport to a random path
 
@@ -323,11 +341,30 @@ private:
 		}
 	}
 
+	void generateTeleOrbs() {
+		int range = maxTele * 0.5; 
+		int rRange = rand() % (range);
+		for (int z = 0; z < (maxTele - rRange); z++) {
+			bool pathFound = false;
+			int i, j;
+			while (pathFound == false) {
+				i = (rand() % (mazeY - 2)) + 1;
+				j = (rand() % (mazeX - 2)) + 1;
+				if (mazeArr[i][j] == ' ') {
+					pathFound = true;
+					Item* newTeleOrb = new TeleOrb({ i, j }, 1);
+					itemList.push_back(newTeleOrb);
+					mazeArr[i][j] = newTeleOrb->mazeChar;
+				}
+			}
+		}
+	}
+
 
 public:
 	unsigned char** mazeArr;
 	bool** pathArr;
-	vector<Item*> itemList;
+	static vector<Item*> itemList;
 	vector<Enemy*> enemyList;
 	MazePoint midPoint;
 	MazePoint exitDoor;
@@ -547,6 +584,7 @@ public:
 	void generateItems() {
 		generateGoldenKey();
 		generateSlowOrbs();
+		generateTeleOrbs();
 	} //to be implemented - golden key should spawn opposite side of the exit door.
 	void generateEnemies() { //make sure enemy objects are deleted whenever a kill orb is used or when you go to the next level/depth
 		for (int i = 0; i < enemyNumber; i++) {
@@ -673,6 +711,14 @@ public:
 		else if ((keyPress == '1' || keyPress == '!') && playerInv.slowOrbs.quantity > 0) { //use slowOrb
 			playerInv.slowOrbs.use();
 			return true;
+		}
+		else if ((keyPress == '2' || keyPress == '"') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
+			if (playerInv.teleOrbs.use(playerPos, mazeArr)) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		return false;
 	}
