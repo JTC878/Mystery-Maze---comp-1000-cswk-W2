@@ -103,7 +103,7 @@ public:
 class Item {
 public:
 	string name;
-	char mazeChar;
+	unsigned char mazeChar;
 	MazePoint itemPos;
 	int quantity;
 	Item() {
@@ -128,13 +128,13 @@ class SlowOrb : public Item {
 public:
 	SlowOrb() : slowValue(0.5) {
 		name = "Slow Orb";
-		mazeChar = 'S';
+		mazeChar = 248;
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	SlowOrb(MazePoint pos, int quant) : slowValue(0.5) {
 		name = "Slow Orb";
-		mazeChar = 'S';
+		mazeChar = 248;
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -149,13 +149,13 @@ public:
 	static vector<Item*> &itemList;
 	TeleOrb() {
 		name = "Tele Orb";
-		mazeChar = 'T';
+		mazeChar = 194;
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	TeleOrb(MazePoint pos, int quant) {
 		name = "Tele Orb";
-		mazeChar = 'T';
+		mazeChar = 194;
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -188,17 +188,19 @@ public:
 	static vector<Enemy*>& enemyList;
 	KillOrb() : noOfKills(1) {
 		name = "Kill Orb";
-		mazeChar = 'K';
+		mazeChar = 167;
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	KillOrb(MazePoint pos, int quant) : noOfKills(1) {
 		name = "Kill Orb";
-		mazeChar = 'K';
+		mazeChar = 167;
 		itemPos = pos;
 		quantity = quant;
 	}
-	void use() {}
+	void use() {
+		quantity--;
+	}
 	bool use(MazePoint playerPos, unsigned char** mazeArr) {
 		if (enemyList.empty()) {
 			return false;
@@ -358,15 +360,18 @@ private:
 
 	void generateSlowOrbs() {
 		//random range dependant on maxSlowOrbs
+		int loopCounter = 0;
 		int range = maxSlow * 0.5; //can be changed later. I want the range to be larger when maxSlow is larger.
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxSlow - rRange); z++) {
 			bool pathFound = false;
 			int i, j;
-			while (pathFound == false) {
+			while (pathFound == false && loopCounter < 50000) {
 				i = (rand() % (mazeY - 2)) + 1;
 				j = (rand() % (mazeX - 2)) + 1;
+				loopCounter++;
 				if (mazeArr[i][j] == ' ') {
+					loopCounter = 0;
 					pathFound = true;
 					Item* newSlowOrb = new SlowOrb({ i, j }, 1);
 					itemList.push_back(newSlowOrb);
@@ -377,19 +382,44 @@ private:
 	}
 
 	void generateTeleOrbs() {
+		int loopCounter = 0;
 		int range = maxTele * 0.5; 
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxTele - rRange); z++) {
 			bool pathFound = false;
 			int i, j;
-			while (pathFound == false) {
+			while (pathFound == false && loopCounter < 50000) {
 				i = (rand() % (mazeY - 2)) + 1;
 				j = (rand() % (mazeX - 2)) + 1;
+				loopCounter++;
 				if (mazeArr[i][j] == ' ') {
+					loopCounter = 0;
 					pathFound = true;
 					Item* newTeleOrb = new TeleOrb({ i, j }, 1);
 					itemList.push_back(newTeleOrb);
 					mazeArr[i][j] = newTeleOrb->mazeChar;
+				}
+			}
+		}
+	}
+
+	void generateKillOrbs() {
+		int loopCounter = 0;
+		int range = maxKill * 0.5;
+		int rRange = rand() % (range);
+		for (int z = 0; z < (maxKill - rRange); z++) {
+			bool pathFound = false;
+			int i, j;
+			while (pathFound == false && loopCounter < 50000) {
+				i = (rand() % (mazeY - 2)) + 1;
+				j = (rand() % (mazeX - 2)) + 1;
+				loopCounter++;
+				if (mazeArr[i][j] == ' ') {
+					loopCounter = 0;
+					pathFound = true;
+					Item* newKillOrb = new KillOrb({ i, j }, 1);
+					itemList.push_back(newKillOrb);
+					mazeArr[i][j] = newKillOrb->mazeChar;
 				}
 			}
 		}
@@ -620,6 +650,7 @@ public:
 		generateGoldenKey();
 		generateSlowOrbs();
 		generateTeleOrbs();
+		generateKillOrbs();
 	} //to be implemented - golden key should spawn opposite side of the exit door.
 	void generateEnemies() { //make sure enemy objects are deleted whenever a kill orb is used or when you go to the next level/depth
 		for (int i = 0; i < enemyNumber; i++) {

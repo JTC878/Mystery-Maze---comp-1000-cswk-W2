@@ -11,7 +11,7 @@ using namespace std;
 #include "mazeclass.h"
 
 const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
-	{100, 50, 5, 1, 5, 3, 50, 50, 1, 1, 1},
+	{30, 20, 3, 5, 5, 3, 10, 5, 10, 1, 1},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -84,6 +84,7 @@ void deathScreen() {
 	cout << endl << endl << "GAME OVER";
 	cout << endl << "You have died by getting hit by an enemy" << endl;
 	cout << "Press any button to exit" << endl << endl;
+	system("pause");
 	exit(0);
 }
 
@@ -91,6 +92,7 @@ void endScreen() {
 	cout << endl << endl << "Congratulations";
 	cout << endl << "You have made it out of the maze!" << endl;
 	cout << "Press any button to exit" << endl;
+	system("pause");
 	exit(0);
 }
 
