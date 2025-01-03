@@ -95,8 +95,7 @@ public:
 		return rmDec;
 	} //This allows fractional numbers to be faster or slower than whole numbers - this means slowOrbs have an impact even if they remove a half a step for example.
 	static void printEnemyStep() {
-		cout << endl;
-		cout << "Enemy Speed: " << enemyStep << endl;
+		cout << "      Enemy Speed: " << enemyStep << endl;
 	}
 };
 
@@ -488,9 +487,7 @@ public:
 	}
 	void printDepthEnemyPathCount() {
 		cout << endl;
-		cout << endl << "Depth: " << depthCounter << endl;
-		cout << endl << "Number of paths: " << pathCount << endl;
-		cout << endl << "Number of enemies: " << enemyList.size() << endl;
+		cout << endl << "Depth: " << depthCounter << "       Number of paths: " << pathCount << "      Number of enemies: " << enemyList.size();
 	}
 	void generateMazePaths() {
 		mazeArr[midPoint.y][midPoint.x] = 'C';
@@ -700,6 +697,11 @@ public:
 	}
 	int getDepthCounter() {
 		return depthCounter;
+	}
+	void setDepthCounter(int playerInput) {
+		if (playerInput < 1) depthCounter = 0;
+		if (playerInput > 10) depthCounter = 9;
+		depthCounter = playerInput - 1;
 	}
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {

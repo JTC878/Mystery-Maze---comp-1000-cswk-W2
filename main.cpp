@@ -18,7 +18,7 @@ const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enem
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+	{100, 50, 5, 50, 20, 19, 30, 15, 20, 1, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
 }; //placeholder values
@@ -33,7 +33,7 @@ int Enemy::enemySpotDistance = 5;
 float Enemy::enemyStep = 3;
 float Enemy::stepRemainder = 0;
 
-Maze maze1;
+Maze maze1; 
 Player player1(maze1.midPoint);
 
 void levelClearedScreen(int depth);
@@ -43,9 +43,17 @@ void printFunctions();
 
 int main() {
 	char key;
+	int playerSetDepth = 0;
+
+	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the start of the game." << endl;
+	cout << "Enter a Depth: ";
+	cin >> playerSetDepth;
+	maze1.setDepthCounter(playerSetDepth);
 
 	srand(time(0));
 	maze1.generateMaze();
+	player1.setPos(maze1.midPoint);
+	system("cls");
 	printFunctions();
 
 	while (true) {
