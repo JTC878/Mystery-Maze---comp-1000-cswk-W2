@@ -11,7 +11,7 @@ using namespace std;
 #include "mazeclass.h"
 
 const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
-	{100, 50, 5, 50, 5, 3, 1, 1, 1, 1, 1},
+	{100, 50, 5, 1, 5, 3, 50, 1, 1, 1, 1},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -25,7 +25,8 @@ const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enem
 
 bool Enemy::gameOver = false;
 int Enemy::enemySpotDistance = 5;
-int Enemy::enemyStep = 3;
+float Enemy::enemyStep = 3;
+float Enemy::stepRemainder = 0;
 
 Maze maze1;
 Player player1(maze1.midPoint);
@@ -40,6 +41,7 @@ int main() {
 	maze1.generateMaze();
 	maze1.printMazeArray();
 	maze1.printPathCount();
+	Enemy::printEnemyStep();
 	player1.printInventory();
 
 	while (true) {
@@ -59,6 +61,7 @@ int main() {
 		}
 		system("cls"); //windows dependant - ncurses?
 		maze1.printMazeArray();
+		Enemy::printEnemyStep();
 		player1.printInventory();
 		if (player1.isLevelClear()) {
 			endScreen();

@@ -5,6 +5,100 @@ struct MazePoint {
 	int x;
 };
 
+class Enemy {
+	MazePoint enemyPos;
+	static bool gameOver;
+	static float stepRemainder;
+public:
+	static float enemyStep;
+	static int enemySpotDistance;
+	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }) {
+		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
+		int radiusY = mazeY * 0.1; //these can be changed later if necessary
+		int radiusX = mazeX * 0.1;
+		bool pathFound = false;
+		int i, j;
+		while (pathFound == false) {
+			i = (rand() % (mazeY - 4)) + 2;
+			j = (rand() % (mazeX - 4)) + 2;
+			if (i < (midPoint.y + radiusY) && i >(midPoint.y - radiusY) && j < (midPoint.x + radiusX) && j >(midPoint.x - radiusX)) {} //do nothing if enemy is within certain range of the middle
+			else if (mazeArr[i][j] == ' ') {
+				pathFound = true;
+				enemyPos.y = i;
+				enemyPos.x = j;
+				mazeArr[i][j] = 'E';
+			}
+		}
+	}
+	void enemyRandomMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
+		bool hasMoved = false;
+		int r;
+		while (hasMoved == false) {
+			r = rand() % 4;
+			switch (r) {
+			case 0:
+				if (pathArr[enemyPos.y - 1][enemyPos.x] == true && mazeArr[enemyPos.y - 1][enemyPos.x] != 'D') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.y--;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+				}
+				break;
+			case 1:
+				if (pathArr[enemyPos.y + 1][enemyPos.x] == true && mazeArr[enemyPos.y + 1][enemyPos.x] != 'D') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.y++;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+				}
+				break;
+			case 2:
+				if (pathArr[enemyPos.y][enemyPos.x - 1] == true && mazeArr[enemyPos.y][enemyPos.x - 1] != 'D') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.x--;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+				}
+				break;
+			case 3:
+				if (pathArr[enemyPos.y][enemyPos.x + 1] == true && mazeArr[enemyPos.y][enemyPos.x + 1] != 'D') {
+					mazeArr[enemyPos.y][enemyPos.x] = ' ';
+					enemyPos.x++;
+					mazeArr[enemyPos.y][enemyPos.x] = 'E';
+					hasMoved = true;
+				}
+				break;
+			default:
+				cout << "Something went wrong - enemyRandomMove";
+			}
+		}
+		if (enemyPos.y == playerPos.y && enemyPos.x == playerPos.x) {
+			gameOver = true;
+		}
+	}
+	void enemyTargetedMove() {}
+	void movementChoice() {}
+	static bool isGameOver() {
+		return gameOver;
+	}
+	static int getEnemyStep() { //use getEnemyStep instead of the enemyStep attribute when you want to apply this behaviour
+		int rmDec = (int)enemyStep;
+		stepRemainder += enemyStep - rmDec;
+		if (stepRemainder >= 1.0) {
+			enemyStep += 1;
+			int copyRound = (int)enemyStep;
+			enemyStep = copyRound;
+			stepRemainder = 0;
+		}
+		if (enemyStep < 0) enemyStep = 0;
+		return enemyStep;
+	}
+	static void printEnemyStep() {
+		cout << endl;
+		cout << "Enemy Speed: " << enemyStep << endl;
+	}
+};
+
 class Item {
 public:
 	string name;
@@ -29,21 +123,23 @@ public:
 }; //each item has placeholder mazeChars. Probably should be changed later.
 
 class SlowOrb : public Item {
+	float slowValue;
 public:
-	SlowOrb() {
+	SlowOrb() : slowValue(0.5) {
 		name = "Slow Orb";
 		mazeChar = 'S';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
-	SlowOrb(MazePoint pos, int quant) {
+	SlowOrb(MazePoint pos, int quant) : slowValue(0.5) {
 		name = "Slow Orb";
 		mazeChar = 'S';
 		itemPos = pos;
 		quantity = quant;
 	}
 	void use() override {
-
+		Enemy::enemyStep -= slowValue;
+		quantity--;
 	}
 };
 //jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line until there is no more path.
@@ -122,7 +218,7 @@ public:
 
 	}
 };
-
+//Potential random item generation with a random mazeChar??
 class GoldenKey : public Item {
 public:
 	GoldenKey() {
@@ -149,87 +245,6 @@ struct Inventory {
 	SUTeleOrb suteleOrbs;
 	Key keys;
 	GoldenKey goldenKey;
-};
-
-
-class Enemy {
-	MazePoint enemyPos;
-	static bool gameOver;
-public:
-	static int enemyStep;
-	static int enemySpotDistance;
-	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }) {
-		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
-		int radiusY = mazeY * 0.1; //these can be changed later if necessary
-		int radiusX = mazeX * 0.1;
-		bool pathFound = false;
-		int i, j;
-		while (pathFound == false) {
-			i = (rand() % (mazeY - 4)) + 2;
-			j = (rand() % (mazeX - 4)) + 2;
-			if (i < (midPoint.y + radiusY) && i >(midPoint.y - radiusY) && j < (midPoint.x + radiusX) && j >(midPoint.x - radiusX)) {} //do nothing if enemy is within certain range of the middle
-			else if (mazeArr[i][j] == ' ') {
-				pathFound = true;
-				enemyPos.y = i;
-				enemyPos.x = j;
-				mazeArr[i][j] = 'E';
-			}
-		}
-	}
-	void enemyRandomMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
-		bool hasMoved = false;
-		int r;
-		while (hasMoved == false) {
-			r = rand() % 4;
-			switch (r) {
-			case 0:
-				if (pathArr[enemyPos.y - 1][enemyPos.x] == true && mazeArr[enemyPos.y - 1][enemyPos.x] != 'D') {
-					mazeArr[enemyPos.y][enemyPos.x] = ' ';
-					enemyPos.y--;
-					mazeArr[enemyPos.y][enemyPos.x] = 'E';
-					hasMoved = true;
-				}
-				break;
-			case 1:
-				if (pathArr[enemyPos.y + 1][enemyPos.x] == true && mazeArr[enemyPos.y + 1][enemyPos.x] != 'D') {
-					mazeArr[enemyPos.y][enemyPos.x] = ' ';
-					enemyPos.y++;
-					mazeArr[enemyPos.y][enemyPos.x] = 'E';
-					hasMoved = true;
-				}
-				break;
-			case 2:
-				if (pathArr[enemyPos.y][enemyPos.x - 1] == true && mazeArr[enemyPos.y][enemyPos.x - 1] != 'D') {
-					mazeArr[enemyPos.y][enemyPos.x] = ' ';
-					enemyPos.x--;
-					mazeArr[enemyPos.y][enemyPos.x] = 'E';
-					hasMoved = true;
-				}
-				break;
-			case 3:
-				if (pathArr[enemyPos.y][enemyPos.x + 1] == true && mazeArr[enemyPos.y][enemyPos.x + 1] != 'D') {
-					mazeArr[enemyPos.y][enemyPos.x] = ' ';
-					enemyPos.x++;
-					mazeArr[enemyPos.y][enemyPos.x] = 'E';
-					hasMoved = true;
-				}
-				break;
-			default:
-				cout << "Something went wrong - enemyRandomMove";
-			}
-		}
-		if (enemyPos.y == playerPos.y && enemyPos.x == playerPos.x) {
-			gameOver = true;
-		}
-	}
-	void enemyTargetedMove() {}
-	void movementChoice() {}
-	static bool isGameOver() {
-		return gameOver;
-	}
-	static int getEnemyStep() {
-		return enemyStep;
-	}
 };
 
 //(rand() % 101) <= weightedRandomPercY(i)
@@ -275,8 +290,8 @@ private:
 		bool pathFound = false;
 		int i, j;
 		while (pathFound == false) {
-			i = (rand() % (mazeY - 4)) + 2;
-			j = (rand() % (mazeX - 4)) + 2;
+			i = (rand() % (mazeY - 2)) + 1;
+			j = (rand() % (mazeX - 2)) + 1;
 			int yDifference = abs(exitDoor.y - i);
 			int xDifference = abs(exitDoor.x - j);
 			//spawn key opposite side of exit door
@@ -284,10 +299,31 @@ private:
 				pathFound = true;
 				Item* gKey = new GoldenKey({ i, j }, 1);
 				itemList.push_back(gKey);
-				mazeArr[i][j] = 184;
+				mazeArr[i][j] = gKey->mazeChar;
 			}
 		}
 	}
+
+	void generateSlowOrbs() {
+		//random range dependant on maxSlowOrbs
+		int range = maxSlow * 0.5; //can be changed later. I want the range to be larger when maxSlow is larger.
+		int rRange = rand() % (range);
+		for (int z = 0; z < (maxSlow - rRange); z++) {
+			bool pathFound = false;
+			int i, j;
+			while (pathFound == false) {
+				i = (rand() % (mazeY - 2)) + 1;
+				j = (rand() % (mazeX - 2)) + 1;
+				if (mazeArr[i][j] == ' ') {
+					pathFound = true;
+					Item* newSlowOrb = new SlowOrb({ i, j }, 1);
+					itemList.push_back(newSlowOrb);
+					mazeArr[i][j] = newSlowOrb->mazeChar;
+				}
+			}
+		}
+	}
+
 
 public:
 	unsigned char** mazeArr;
@@ -511,6 +547,7 @@ public:
 	}
 	void generateItems() {
 		generateGoldenKey();
+		generateSlowOrbs();
 	} //to be implemented - golden key should spawn opposite side of the exit door.
 	void generateEnemies() { //make sure enemy objects are deleted whenever a kill orb is used or when you go to the next level/depth
 		for (int i = 0; i < enemyNumber; i++) {
@@ -632,6 +669,10 @@ public:
 			return true;
 		}
 		else if (keyPress == ' ') { //space to pass your turn
+			return true;
+		}
+		else if ((keyPress == '1' || keyPress == '!') && playerInv.slowOrbs.quantity > 0) { //use slowOrb
+			playerInv.slowOrbs.use();
 			return true;
 		}
 		return false;
