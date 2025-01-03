@@ -631,6 +631,9 @@ public:
 			mazeArr[playerPos.y][playerPos.x] = 'C';
 			return true;
 		}
+		else if (keyPress == ' ') { //space to pass your turn
+			return true;
+		}
 		return false;
 	}
 	MazePoint getPlayerPos() {
