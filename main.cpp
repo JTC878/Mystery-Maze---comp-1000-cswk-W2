@@ -24,7 +24,10 @@ const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enem
 }; //placeholder values
 
 vector<Item*> Maze::itemList = {};
+vector<Enemy*> Maze::enemyList = {};
 vector<Item*>& TeleOrb::itemList = Maze::itemList;
+vector<Enemy*>& KillOrb::enemyList = Maze::enemyList;
+
 bool Enemy::gameOver = false;
 int Enemy::enemySpotDistance = 5;
 float Enemy::enemyStep = 3;

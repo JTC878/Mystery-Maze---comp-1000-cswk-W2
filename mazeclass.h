@@ -78,6 +78,9 @@ public:
 	}
 	void enemyTargetedMove() {}
 	void movementChoice() {}
+	MazePoint getEnemyPos() {
+		return enemyPos;
+	}
 	static bool isGameOver() {
 		return gameOver;
 	}
@@ -180,21 +183,53 @@ public:
 }; //teleport to a random item? or teleport to a random path
 
 class KillOrb : public Item {
+	int noOfKills;
 public:
-	KillOrb() {
+	static vector<Enemy*>& enemyList;
+	KillOrb() : noOfKills(1) {
 		name = "Kill Orb";
 		mazeChar = 'K';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
-	KillOrb(MazePoint pos, int quant) {
+	KillOrb(MazePoint pos, int quant) : noOfKills(1) {
 		name = "Kill Orb";
 		mazeChar = 'K';
 		itemPos = pos;
 		quantity = quant;
 	}
-	void use() override {
-
+	void use() {}
+	bool use(MazePoint playerPos, unsigned char** mazeArr) {
+		if (enemyList.empty()) {
+			return false;
+		}
+		double closestDistance = 1000;
+		vector<Enemy*>::iterator closestEnemyIndex;
+		double xDifference, yDifference, distanceFromPlayer;
+		MazePoint enemyPos;
+		Enemy* closestEnemy;
+		for (int i = 0; i < noOfKills; i++) {
+			if (enemyList.empty()) {
+				return true;
+			}
+			for (Enemy* enemy : enemyList) {
+				enemyPos = enemy->getEnemyPos();
+				xDifference = enemyPos.x - playerPos.x;
+				yDifference = enemyPos.y - playerPos.y;
+				distanceFromPlayer = hypot(xDifference, yDifference);
+				if (distanceFromPlayer < closestDistance) {
+					closestDistance = distanceFromPlayer;
+					closestEnemyIndex = find(enemyList.begin(), enemyList.end(), enemy);
+				}
+			}
+			closestEnemy = *closestEnemyIndex;
+			enemyPos = closestEnemy->getEnemyPos();
+			mazeArr[enemyPos.y][enemyPos.x] = ' ';
+			enemyList.erase(closestEnemyIndex);
+			delete closestEnemy;
+		}
+		quantity--;
+		return true;
 	}
 }; //kill orb kills the nearest enemy
 
@@ -365,7 +400,7 @@ public:
 	unsigned char** mazeArr;
 	bool** pathArr;
 	static vector<Item*> itemList;
-	vector<Enemy*> enemyList;
+	static vector<Enemy*> enemyList;
 	MazePoint midPoint;
 	MazePoint exitDoor;
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]), 
@@ -714,6 +749,14 @@ public:
 		}
 		else if ((keyPress == '2' || keyPress == '"') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
 			if (playerInv.teleOrbs.use(playerPos, mazeArr)) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		else if ((keyPress == '3' || keyPress == '£') && playerInv.killOrbs.quantity > 0) {
+			if (playerInv.killOrbs.use(playerPos, mazeArr)) {
 				return true;
 			}
 			else {
