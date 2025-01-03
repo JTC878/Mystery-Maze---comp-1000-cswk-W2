@@ -512,7 +512,8 @@ public:
 	void generateItems() {
 		generateGoldenKey();
 	} //to be implemented - golden key should spawn opposite side of the exit door.
-	void generateEnemies() {}
+	void generateEnemies() {
+	}
 	void generateMaze() {
 		depthUpdateValues();
 		setMaxPathCount();
@@ -639,6 +640,21 @@ public:
 		itemList.erase(index);
 		if (itemObject->name == "Golden Key") {
 			playerInv.goldenKey.quantity += itemObject->quantity;
+		}
+		else if (itemObject->name == "Slow Orb") {
+			playerInv.slowOrbs.quantity += itemObject->quantity;
+		}
+		else if (itemObject->name == "Tele Orb") {
+			playerInv.teleOrbs.quantity += itemObject->quantity;
+		}
+		else if (itemObject->name == "Kill Orb") {
+			playerInv.killOrbs.quantity += itemObject->quantity;
+		}
+		else if (itemObject->name == "Super Tele Orb") {
+			playerInv.suteleOrbs.quantity += itemObject->quantity;
+		}
+		else if (itemObject->name == "Key") {
+			playerInv.keys.quantity += itemObject->quantity;
 		}
 		delete itemObject;
 	}
