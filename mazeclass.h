@@ -365,6 +365,7 @@ private:
 		//random range dependant on maxSlowOrbs
 		int loopCounter = 0;
 		int range = maxSlow * 0.5; //can be changed later. I want the range to be larger when maxSlow is larger.
+		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxSlow - rRange); z++) {
 			bool pathFound = false;
@@ -386,6 +387,7 @@ private:
 	void generateTeleOrbs() {
 		int loopCounter = 0;
 		int range = maxTele * 0.5; 
+		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxTele - rRange); z++) {
 			bool pathFound = false;
@@ -407,6 +409,7 @@ private:
 	void generateKillOrbs() {
 		int loopCounter = 0;
 		int range = maxKill * 0.5;
+		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxKill - rRange); z++) {
 			bool pathFound = false;
@@ -433,7 +436,7 @@ public:
 	static vector<Enemy*> enemyList;
 	MazePoint midPoint;
 	MazePoint exitDoor;
-	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]), 
+	Maze() : depthCounter(9), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]), 
 		pathCount(1), midPoint({(mazeY / 2), (mazeX / 2)}), exitDoor({0, 0}), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]), 
 		maxSlow(depthValues[depthCounter][6]), maxTele(depthValues[depthCounter][7]), maxKill(depthValues[depthCounter][8]), maxSUTele(depthValues[depthCounter][9]), maxKeys(depthValues[depthCounter][10]) {
 		for (int i = 0; i < mazeY; i++) {
@@ -849,12 +852,12 @@ public:
 	void printInventory() {
 		cout << endl;
 		cout << "Inventory" << endl << endl;
-		cout << playerInv.slowOrbs.name << "(" << playerInv.slowOrbs.mazeChar << ")" << " : " << playerInv.slowOrbs.quantity << endl;
-		cout << playerInv.teleOrbs.name << "(" << playerInv.teleOrbs.mazeChar << ")" << " : " << playerInv.teleOrbs.quantity << endl;
-		cout << playerInv.killOrbs.name << "(" << playerInv.killOrbs.mazeChar << ")" << " : " << playerInv.killOrbs.quantity << endl;
-		cout << playerInv.suteleOrbs.name << "(" << playerInv.suteleOrbs.mazeChar << ")" << " : " << playerInv.suteleOrbs.quantity << endl;
-		cout << playerInv.keys.name << "(" << playerInv.keys.mazeChar << ")" << " : " << playerInv.keys.quantity << endl;
-		cout << playerInv.goldenKey.name << "(" << playerInv.goldenKey.mazeChar << ")" << " : " << playerInv.goldenKey.quantity << endl;
+		cout << playerInv.slowOrbs.name << "(" << playerInv.slowOrbs.mazeChar << ")" << " : " << playerInv.slowOrbs.quantity;
+		cout << setw(18) << playerInv.teleOrbs.name << "(" << playerInv.teleOrbs.mazeChar << ")" << " : " << playerInv.teleOrbs.quantity;
+		cout << setw(20) << playerInv.killOrbs.name << "(" << playerInv.killOrbs.mazeChar << ")" << " : " << playerInv.killOrbs.quantity;
+		cout << setw(22) << playerInv.suteleOrbs.name << "(" << playerInv.suteleOrbs.mazeChar << ")" << " : " << playerInv.suteleOrbs.quantity;
+		cout << setw(15) << playerInv.keys.name << "(" << playerInv.keys.mazeChar << ")" << " : " << playerInv.keys.quantity;
+		cout << setw(20) << playerInv.goldenKey.name << "(" << playerInv.goldenKey.mazeChar << ")" << " : " << playerInv.goldenKey.quantity;
 	}
 	void setPos(MazePoint midpoint) {
 		playerPos.y = midpoint.y;

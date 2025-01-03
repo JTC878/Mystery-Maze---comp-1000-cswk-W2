@@ -5,6 +5,7 @@
 #include <vector>
 #include <stack>
 #include <conio.h>
+#include <iomanip>
 
 using namespace std;
 
@@ -12,15 +13,15 @@ using namespace std;
 
 const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
 	{30, 20, 3, 5, 5, 3, 10, 5, 10, 1, 1},
-	{50, 30, 3, 8, 5, 3, 10, 5, 10, 1, 1},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+	{40, 20, 3, 8, 5, 3, 10, 5, 10, 1, 1},
+	{50, 30, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+	{60, 30, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+	{70, 40, 4, 0, 0, 0, 0, 0, 0, 1, 0},
+	{80, 40, 5, 0, 0, 0, 0, 0, 0, 1, 0},
+	{90, 50, 5, 0, 0, 0, 0, 0, 0, 1, 0},
 	{100, 50, 5, 50, 20, 19, 30, 15, 20, 1, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+	{110, 60, 5, 1, 1, 1, 1, 1, 1, 1, 0},
+	{120, 60, 5, 1, 1, 1, 1, 1, 1, 1, 0},
 }; //placeholder values
 
 vector<Item*> Maze::itemList = {};
