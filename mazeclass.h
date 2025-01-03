@@ -46,7 +46,7 @@ public:
 
 	}
 };
-
+//jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line until there is no more path.
 class TeleOrb : public Item {
 public:
 	TeleOrb() {
@@ -103,7 +103,7 @@ public:
 
 	}
 };
-
+//super kill orb?? = kill the nearest enemy
 class Key : public Item {
 public:
 	Key() {
@@ -512,7 +512,11 @@ public:
 	void generateItems() {
 		generateGoldenKey();
 	} //to be implemented - golden key should spawn opposite side of the exit door.
-	void generateEnemies() {
+	void generateEnemies() { //make sure enemy objects are deleted whenever a kill orb is used or when you go to the next level/depth
+		for (int i = 0; i < enemyNumber; i++) {
+			Enemy* newEnemy = new Enemy(mazeArr, mazeX, mazeY);
+			enemyList.push_back(newEnemy);
+		}
 	}
 	void generateMaze() {
 		depthUpdateValues();

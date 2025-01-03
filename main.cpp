@@ -7,22 +7,20 @@
 #include <conio.h>
 
 using namespace std;
-#define MAZE_X 30
-#define MAZE_Y 20
 
 #include "mazeclass.h"
 
 const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
-	{MAZE_X, MAZE_Y, 3, 1, 5, 3, 1, 1, 1, 1, 1},
+	{100, 50, 5, 50, 5, 3, 1, 1, 1, 1, 1},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
 }; //placeholder values
 
 bool Enemy::gameOver = false;
@@ -40,7 +38,6 @@ int main() {
 
 	srand(time(0));
 	maze1.generateMaze();
-	Enemy enemy1(maze1.mazeArr, MAZE_X, MAZE_Y);
 	maze1.printMazeArray();
 	maze1.printPathCount();
 	player1.printInventory();
@@ -48,14 +45,16 @@ int main() {
 	while (true) {
 		key = _getche();
 		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor)) { //for each item check collect method, if check collect is true then player.collect the item. 
-			for (Item* item : maze1.itemList) {
+			for (Item* item : maze1.itemList) { //this can be made a function if necessary inside Maze class just make the player object a reference parameter
 				if (item->checkCollect(player1.getPlayerPos())) {
 					player1.collectItem(item, maze1.itemList);
 				}
 			}
 			int enemyStep = Enemy::getEnemyStep();
-			for (int i = 0; i < enemyStep; i++) {
-				enemy1.enemyRandomMove(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos());
+			for (int i = 0; i < enemyStep; i++) { //all of this can easily be made into a function inside Maze class with player pos parameter
+				for (Enemy* enemy : maze1.enemyList) {
+					enemy->enemyRandomMove(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos());
+				}
 			}
 		}
 		system("cls"); //windows dependant - ncurses?
