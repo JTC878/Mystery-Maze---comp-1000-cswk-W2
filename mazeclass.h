@@ -81,7 +81,7 @@ public:
 	static bool isGameOver() {
 		return gameOver;
 	}
-	static int getEnemyStep() { //use getEnemyStep instead of the enemyStep attribute when you want to apply this behaviour
+	static int getEnemyStep() { //use getEnemyStep instead of the enemyStep attribute when you want to apply this behaviour(only when the enemy makes movements)
 		int rmDec = (int)enemyStep;
 		stepRemainder += enemyStep - rmDec;
 		if (stepRemainder >= 1.0) {
