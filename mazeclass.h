@@ -327,7 +327,7 @@ public:
 		int doorCounter = 0;
 		int i = 0;
 		int doorArr[4];
-		for (vector<MazePoint>::iterator it = doorPoints.begin(); it != doorPoints.end(); it++, i++) {
+		for (vector<MazePoint>::iterator it = doorPoints.begin(); it != doorPoints.end(); it++, i++) { //an iterator loop basically just a safe/smart pointer to an element of a vector. 
 			if (((playerPos.y - 1 == it->y || playerPos.y + 1 == it->y) && playerPos.x == it->x) ||
 				(playerPos.y == it->y && (playerPos.x - 1 == it->x || playerPos.x + 1 == it->x))) { //if theres a door somewhere around the player
 				if ((lastMoveKeyPressed == 'w' || lastMoveKeyPressed == 'W') && playerPos.y - 1 == it->y ||
