@@ -41,15 +41,11 @@ void levelClearedScreen(int depth);
 void deathScreen();
 void endScreen();
 void printFunctions();
+int initialDepthPrompt();
 
 int main() {
 	char key;
-	int playerSetDepth = 0;
-
-	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the start of the game." << endl;
-	cout << "Enter a Depth: ";
-	cin >> playerSetDepth;
-	maze1.setDepthCounter(playerSetDepth);
+	maze1.setDepthCounter(initialDepthPrompt());
 
 	srand(time(0));
 	maze1.generateMaze();
@@ -58,8 +54,8 @@ int main() {
 	printFunctions();
 
 	while (true) {
-		key = _getche();
-		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor)) { //for each item check collect method, if check collect is true then player.collect the item. 
+		key = _getche(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
+		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor, maze1.goldenKey, maze1.getMazeSize())) { //for each item check collect method, if check collect is true then player.collect the item. 
 			for (Item* item : maze1.itemList) { //this can be made a function if necessary inside Maze class just make the player object a reference parameter
 				if (item->checkCollect(player1.getPlayerPos())) {
 					player1.collectItem(item, maze1.itemList);
@@ -157,6 +153,15 @@ void printFunctions() {
 	player1.printInventory();
 }
 
+int initialDepthPrompt() {
+	int playerSetDepth = 0;
+
+	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the start of the game." << endl;
+	cout << "Enter a Depth: ";
+	cin >> playerSetDepth;
+	return playerSetDepth;
+}
+
 
 /*
 
@@ -184,7 +189,9 @@ not in use in the maze. attribute fogChar.
 Before this you 100% should implement the rest of the items and enemy pathfinding algorithm first. Also fix the screen flickering with some kind of library(search up online for an answer) 
 like ncurses.
 
+>Roadside picnic story inspiration~~~
 
+> You should print whatever item the player has last picked up(the name), it should increment if you pick up the same item such as +1 Tele Orb ~~ +2 Tele Orb (will make it better for teleports)
 
 
 

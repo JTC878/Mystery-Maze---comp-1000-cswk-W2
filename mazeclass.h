@@ -111,7 +111,10 @@ public:
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
-	virtual void use() = 0;
+	virtual bool use() {
+		quantity--;
+		return true;
+	}
 	bool checkCollect(MazePoint playerPos) {
 		if (playerPos.y == itemPos.y && playerPos.x == itemPos.x) {
 			return true;
@@ -137,9 +140,13 @@ public:
 		itemPos = pos;
 		quantity = quant;
 	}
-	void use() override {
+	bool use() override {
+		if (Enemy::enemyStep == 0) {
+			return false;
+		}
 		Enemy::enemyStep -= slowValue; 
 		quantity--;
+		return true;
 	}
 };
 //jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line until there is no more path.
@@ -158,9 +165,6 @@ public:
 		itemPos = pos;
 		quantity = quant;
 	}
-	void use() override {
-		quantity--;
-	}
 	bool use(MazePoint& playerPos, unsigned char** mazeArr) { //you can spawn on enemies 
 		if (itemList.empty()) {
 			return false;
@@ -178,6 +182,7 @@ public:
 			}
 			index++;
 		}
+		return false;
 	}
 }; //teleport to a random item? or teleport to a random path
 
@@ -196,9 +201,6 @@ public:
 		mazeChar = 167;
 		itemPos = pos;
 		quantity = quant;
-	}
-	void use() {
-		quantity--;
 	}
 	bool use(MazePoint playerPos, unsigned char** mazeArr) {
 		if (enemyList.empty()) {
@@ -248,8 +250,60 @@ public:
 		itemPos = pos;
 		quantity = quant;
 	}
-	void use() override {
-
+	bool use(MazePoint& playerPos, unsigned char** mazeArr, MazePoint exitDoor, MazePoint goldenKey, int playerGKeyQuant, MazePoint mazeSize)  {
+		if (playerGKeyQuant < 1) {
+			if (mazeArr[goldenKey.y][goldenKey.x] == 'E') return false; //we can add more to this check later, for example for fog of war or normal doors return false;
+			else {
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos = goldenKey;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+				quantity--;
+				return true;
+			}
+		}
+		else {
+			if (exitDoor.y == 0) {
+				if (mazeArr[exitDoor.y + 1][exitDoor.x] == 'E') return false;
+				else {
+					mazeArr[playerPos.y][playerPos.x] = ' ';
+					playerPos = {exitDoor.y + 1, exitDoor.x};
+					mazeArr[playerPos.y][playerPos.x] = 'C';
+					quantity--;
+					return true;
+				}
+			}
+			else if (exitDoor.y == mazeSize.y - 1) {
+				if (mazeArr[exitDoor.y - 1][exitDoor.x] == 'E') return false;
+				else {
+					mazeArr[playerPos.y][playerPos.x] = ' ';
+					playerPos = { exitDoor.y - 1, exitDoor.x };
+					mazeArr[playerPos.y][playerPos.x] = 'C';
+					quantity--;
+					return true;
+				}
+			}
+			else if (exitDoor.x == 0) {
+				if (mazeArr[exitDoor.y][exitDoor.x + 1] == 'E') return false;
+				else {
+					mazeArr[playerPos.y][playerPos.x] = ' ';
+					playerPos = { exitDoor.y, exitDoor.x + 1 };
+					mazeArr[playerPos.y][playerPos.x] = 'C';
+					quantity--;
+					return true;
+				}
+			}
+			else if (exitDoor.x == mazeSize.x - 1) {
+				if (mazeArr[exitDoor.y][exitDoor.x - 1] == 'E') return false;
+				else {
+					mazeArr[playerPos.y][playerPos.x] = ' ';
+					playerPos = { exitDoor.y, exitDoor.x - 1 };
+					mazeArr[playerPos.y][playerPos.x] = 'C';
+					quantity--;
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 };
 //super kill orb?? = kills randomly 50% of the enemies in the current maze
@@ -267,8 +321,8 @@ public:
 		itemPos = pos;
 		quantity = quant;
 	}
-	void use() override {
-
+	bool use() override {
+		return true;
 	}
 };
 //Potential random item generation with a random mazeChar??
@@ -285,9 +339,6 @@ public:
 		mazeChar = 184;
 		itemPos = pos;
 		quantity = quant;
-	}
-	void use() override {
-		quantity--;
 	}
 };
 
@@ -313,6 +364,7 @@ private:
 	float percPathsofMaze;
 	int enemyNumber;
 	int maxSlow, maxTele, maxKill, maxSUTele, maxKeys;
+	const float minItemPercOfMax, minSUItemPercOfMax;
 	stack<MazePoint> backtrack;
 
 	void deleteMazeArrays() {
@@ -357,18 +409,21 @@ private:
 			int yDifference = abs(exitDoor.y - i);
 			int xDifference = abs(exitDoor.x - j);
 			//spawn key opposite side of exit door
-			if (mazeArr[i][j] == ' ' && (yDifference > midPoint.y || xDifference > midPoint.x)) {
+			if (mazeArr[i][j] == ' ' && 
+				(exitDoor.y == 0 || exitDoor.y == mazeY - 1 && yDifference > midPoint.y) || 
+				(exitDoor.x == 0 || exitDoor.x == mazeX - 1 && xDifference > midPoint.x)) {
 				pathFound = true;
 				Item* gKey = new GoldenKey({ i, j }, 1);
+				goldenKey = { i, j };
 				itemList.push_back(gKey);
 				mazeArr[i][j] = gKey->mazeChar;
 			}
 		}
 	}
 	void generateSlowOrbs() {
-		//random range dependant on maxSlowOrbs
+		//random range dependant on max SlowOrbs
 		int loopCounter = 0;
-		int range = maxSlow * 0.5; //can be changed later. I want the range to be larger when maxSlow is larger.
+		int range = maxSlow * (1 - minItemPercOfMax); //can be changed later. I want the range to be larger when maxSlow is larger.
 		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxSlow - rRange); z++) {
@@ -390,7 +445,7 @@ private:
 	}
 	void generateTeleOrbs() {
 		int loopCounter = 0;
-		int range = maxTele * 0.5; 
+		int range = maxTele * (1 - minItemPercOfMax); 
 		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxTele - rRange); z++) {
@@ -412,7 +467,7 @@ private:
 	}
 	void generateKillOrbs() {
 		int loopCounter = 0;
-		int range = maxKill * 0.5;
+		int range = maxKill * (1 - minItemPercOfMax);
 		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxKill - rRange); z++) {
@@ -432,6 +487,30 @@ private:
 			}
 		}
 	}
+	void generateSUTeleOrbs() {
+		int loopCounter = 0;
+		int range = maxSUTele * (1 - minSUItemPercOfMax);
+		if (range == 0) range = 1;
+		int rRange = rand() % (range);
+		for (int z = 0; z < (maxSUTele - rRange); z++) {
+			bool pathFound = false;
+			int i, j;
+			while (pathFound == false && loopCounter < 50000) {
+				i = (rand() % (mazeY - 2)) + 1;
+				j = (rand() % (mazeX - 2)) + 1;
+				loopCounter++;
+				if (mazeArr[i][j] == ' ') {
+					loopCounter = 0;
+					pathFound = true;
+					Item* newSUTeleOrb = new SUTeleOrb({ i, j }, 1);
+					itemList.push_back(newSUTeleOrb);
+					mazeArr[i][j] = newSUTeleOrb->mazeChar;
+				}
+			}
+		}
+	}
+	
+
 
 public:
 	unsigned char** mazeArr;
@@ -440,9 +519,11 @@ public:
 	static vector<Enemy*> enemyList;
 	MazePoint midPoint;
 	MazePoint exitDoor;
-	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]), 
-		pathCount(1), midPoint({(mazeY / 2), (mazeX / 2)}), exitDoor({0, 0}), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]), 
-		maxSlow(depthValues[depthCounter][6]), maxTele(depthValues[depthCounter][7]), maxKill(depthValues[depthCounter][8]), maxSUTele(depthValues[depthCounter][9]), maxKeys(depthValues[depthCounter][10]) {
+	MazePoint goldenKey;
+	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
+		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
+		maxSlow(depthValues[depthCounter][6]), maxTele(depthValues[depthCounter][7]), maxKill(depthValues[depthCounter][8]), maxSUTele(depthValues[depthCounter][9]), maxKeys(depthValues[depthCounter][10]),
+		minItemPercOfMax(0.5), minSUItemPercOfMax(1), goldenKey({ NULL, NULL }) {
 		for (int i = 0; i < mazeY; i++) {
 			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
@@ -670,6 +751,7 @@ public:
 		generateSlowOrbs();
 		generateTeleOrbs();
 		generateKillOrbs();
+		generateSUTeleOrbs();
 	} //to be implemented - golden key should spawn opposite side of the exit door.
 	void generateEnemies() { //make sure enemy objects are deleted whenever a kill orb is used or when you go to the next level/depth
 		for (int i = 0; i < enemyNumber; i++) {
@@ -710,6 +792,9 @@ public:
 		if (playerInput > 10) depthCounter = 9;
 		depthCounter = playerInput - 1;
 	}
+	MazePoint getMazeSize() {
+		return { mazeY, mazeX };
+	}
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
 			delete[] mazeArr[i];
@@ -740,8 +825,7 @@ class Player {
 			playerPos.x = playerPosX;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
 			levelClear = true;
-			playerInv.goldenKey.use();
-			return true;
+			return playerInv.goldenKey.use();
 		}
 		else {
 			return false;
@@ -750,7 +834,7 @@ class Player {
 
 public:
 	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false) {}
-	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor) {
+	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize) {
 		if ((keyPress == 'w' || keyPress == 'W') && pathArr[playerPos.y - 1][playerPos.x] == true) {
 			if (checkExitDoor(playerPos.y - 1, playerPos.x, exitDoor)) {
 				return checkGoldenKey(playerPos.y - 1, playerPos.x, mazeArr);
@@ -791,14 +875,16 @@ public:
 			return true;
 		}
 		else if ((keyPress == '1' || keyPress == '!') && playerInv.slowOrbs.quantity > 0) { //use slowOrb
-			playerInv.slowOrbs.use();
-			return true;
+			return playerInv.slowOrbs.use();
 		}
 		else if ((keyPress == '2' || keyPress == '"') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
 			return playerInv.teleOrbs.use(playerPos, mazeArr);
 		}
 		else if ((keyPress == '3' || keyPress == '£') && playerInv.killOrbs.quantity > 0) { //use killOrb
 			return playerInv.killOrbs.use(playerPos, mazeArr);
+		}
+		else if ((keyPress == '4' || keyPress == '$') && playerInv.suteleOrbs.quantity > 0) {
+			return playerInv.suteleOrbs.use(playerPos, mazeArr, exitDoor, goldenKeyPos, playerInv.goldenKey.quantity, mazeSize);
 		}
 		return false;
 	}
