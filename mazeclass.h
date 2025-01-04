@@ -308,6 +308,7 @@ public:
 };
 //super kill orb?? = kills randomly 50% of the enemies in the current maze
 class Key : public Item {
+	const static string lockpickRiddles[38][2];
 public:
 	static vector<MazePoint>& doorPoints;
 	Key() {
@@ -354,6 +355,111 @@ public:
 			return true;
 		}
 		return false;
+	}
+	bool useLockpick(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos, Inventory& playerInv) { //https://logiclike.com/en/famous-riddles
+		int doorCounter = 0;
+		int i = 0;
+		int doorArr[4];
+		for (vector<MazePoint>::iterator it = doorPoints.begin(); it != doorPoints.end(); it++, i++) { //an iterator loop basically just a safe/smart pointer to an element of a vector. 
+			if (((playerPos.y - 1 == it->y || playerPos.y + 1 == it->y) && playerPos.x == it->x) ||
+				(playerPos.y == it->y && (playerPos.x - 1 == it->x || playerPos.x + 1 == it->x))) { //if theres a door somewhere around the player
+				if ((lastMoveKeyPressed == 'w' || lastMoveKeyPressed == 'W') && playerPos.y - 1 == it->y ||
+					(lastMoveKeyPressed == 's' || lastMoveKeyPressed == 'S') && playerPos.y + 1 == it->y ||
+					(lastMoveKeyPressed == 'a' || lastMoveKeyPressed == 'A') && playerPos.x - 1 == it->x ||
+					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && playerPos.x + 1 == it->x) { //If the door is associated with the direction of the lastKeyPress unlock that door.
+					if (!solveRiddle()) {
+						resetItemQuantity(playerInv);
+						return false;
+					}
+					pathArr[it->y][it->x] = true;
+					mazeArr[it->y][it->x] = ' ';
+					doorPoints.erase(it);
+					return true;
+				}
+				doorArr[doorCounter] = i;
+				doorCounter++;
+			}
+		}
+		if (doorCounter > 0) { //remove a random door
+			if (!solveRiddle()) {
+				resetItemQuantity(playerInv);
+				return false;
+			}
+			int randNum = rand() % doorCounter;
+			vector<MazePoint>::iterator it = next(doorPoints.begin(), doorArr[randNum]);
+			pathArr[it->y][it->x] = true;
+			mazeArr[it->y][it->x] = ' ';
+			doorPoints.erase(it);
+			quantity--;
+			return true;
+		}
+		return false;
+	}
+	bool solveRiddle() {
+		string answer;
+		int randRiddle = rand() % 38;
+		system("cls");
+		cout << "Solve this riddle to lockpick the door successfully." << endl << endl;
+		cout << lockpickRiddles[randRiddle][0] << endl << endl;
+		cout << "Your answer: ";
+		cin >> answer;
+		string riddleAnswer = lockpickRiddles[randRiddle][1];
+		transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
+		transform(riddleAnswer.begin(), riddleAnswer.end(), riddleAnswer.begin(), ::tolower);
+		if (answer == riddleAnswer) {
+			cout << endl << endl << "Correct.";
+			return true;
+		}
+		else {
+			cout << endl << endl << "The answer is " << lockpickRiddles[randRiddle][1] << endl;
+			return false;
+		}
+	}
+	void resetItemQuantity(Inventory& playerInv) {
+		bool done = false;
+		int loopCounter = 0;
+		int randNum;
+		while (done != true || loopCounter < 100) {
+			randNum = rand() % 5;
+			switch (randNum) {
+			case 0:
+				if (playerInv.slowOrbs.quantity > 0) {
+					playerInv.slowOrbs.quantity = 0;
+					cout << "Somehow your slow orbs have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			case 1:
+				if (playerInv.teleOrbs.quantity > 0) {
+					playerInv.teleOrbs.quantity = 0;
+					cout << "Somehow your teleport orbs have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			case 2:
+				if (playerInv.killOrbs.quantity > 0) {
+					playerInv.killOrbs.quantity = 0;
+					cout << "Somehow your kill orbs have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			case 3:
+				if (playerInv.suteleOrbs.quantity > 0) {
+					playerInv.suteleOrbs.quantity = 0;
+					cout << "Somehow your super teleport orbs have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			case 4:
+				if (playerInv.keys.quantity > 0) {
+					playerInv.keys.quantity = 0;
+					cout << "Somehow your keys have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			}
+		}
+		getchar();
 	}
 };
 //Potential random item generation with a random mazeChar??
@@ -972,6 +1078,9 @@ public:
 		else if (keyPress == ' ') { //space to pass your turn
 			return true;
 		}
+		else if (keyPress == 'x' || keyPress == 'X') {
+			playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos, playerInv);
+		}
 		else if ((keyPress == '1' || keyPress == '!') && playerInv.slowOrbs.quantity > 0) { //use slowOrb
 			return playerInv.slowOrbs.use();
 		}
@@ -1047,3 +1156,45 @@ public:
 	}
 };
 
+
+
+const string Key::lockpickRiddles[38][2] = {
+	{"As I walked along the path I saw something with four fingers and one thumb,\nbut it was not flesh, fish, bone or fowl.", "Glove"}, 
+	{"The sun bakes them,\nThe hand breaks them,\nThe foot treads on them,\nAnd the mouth tastes them.\nWhat are they ?", "Grapes"}, 
+	{"A precious stone, as clear as diamond.\nSeek it out whilst the sun's near the horizon.\nThough you can walk on water with its power,\nTry to keep it, and it'll vanish within an hour.", "Ice"}, 
+	{"I soar without wings, I see without eyes.\nI've traveled the universe to and fro.\nI've conquered the world, yet I've never been anywhere but home.\nWho am I ? ", "Imagination"}, 
+	{"Iron roof, glass walls Burns and burns And never falls.", "Lantern"}, 
+	{"Walk on the living, they don't even mumble.\nWalk on the dead, they mutter and grumble.", "Leaves"}, 
+	{"My tines are long.\nMy tines are short.\nMy tines end ere.\nMy first report.\nWhat am I ? ", "Lightning"}, 
+	{"What is always coming but never arrives?", "Tomorrow"}, 
+	{"Look at me. I can bring a smile to your face, A tear to your eye,\nOr even a thought to your mind.But, I can't be seen. What am I?", "Memories"}, 
+	{"I look at you, you look at me I raise my right,\nyou raise your left What is this object ? ", "Mirror"},
+	{"I work when I play and play when I work.", "Musician"}, 
+	{"What is so delicate that saying its name breaks it?", "Silence"}, 
+	{"What goes up the hill and down the hill, And spite of all, yet standeth still?", "Road"}, 
+	{"What is that which belongs to you\nBut others use it more than you do?", "Name"}, 
+	{"I have streets, but no pavement.\nI have cities, but no buildings.\nI have forests, yet no trees.\nI have rivers, yet no water.", "Map"}, 
+	{"The root tops the trunk on this backward thing,\nthat grows in the winter and dies in the spring.", "Icicle"}, 
+	{"What can travel around the world while staying in a corner?", "Stamp"}, 
+	{"What has to be broken before you use it?", "Egg"}, 
+	{"What has many keys but can't open a single lock?", "Piano"}, 
+	{"What runs all around a backyard, yet never moves?", "Fence"},
+	{"What has a bottom at the top?", "Legs"}, 
+	{"I am an odd number. Take away a letter and I become even.\nWhat number am I?", "Seven"}, 
+	{"What goes through cities and fields, but never moves?", "Road"}, 
+	{"I'm tall when I'm young and I'm short when I'm old.\nWhat am I ? ", "Candle"}, 
+	{"What has hands but can not clap?", "Clock"}, 
+	{"You can drop me from the tallest building and I'll be fine,\nbut if you drop me in water I die.\nWhat am I ? ", "Paper"}, 
+	{"What has an eye but can not see?", "Needle"}, 
+	{"What gets wetter and wetter the more it dries?", "Towel"}, 
+	{"There was a green house. Inside the green house there was a white house.\nInside the white house there was a red house.\nInside the red house there were lots of babies.\nWhat is it ? ", "Watermelon"}, 
+	{"What kind of room has no doors or windows?", "Mushroom"},
+	{"What kind of tree can you carry in your hand?", "Palm"}, 
+	{"Which creature walks on four legs in the morning,\ntwo legs in the afternoon, and three legs in the evening ? ", "Man"}, 
+	{"Which word in the dictionary is spelled incorrectly?", "Incorrectly"}, 
+	{"If you have me, you want to share me. If you share me, you haven't got me.\nWhat am I ? ", "Secret"}, 
+	{"What gets broken without being held?", "Promise"}, 
+	{"Feed me and I live, yet give me a drink and I die.", "Fire"}, 
+	{"Take off my skin - I won't cry, but you will! What am I?", "Onion"}, 
+	{"What invention lets you look right through a wall?", "Window"}
+};
