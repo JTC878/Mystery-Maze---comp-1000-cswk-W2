@@ -309,6 +309,7 @@ public:
 //super kill orb?? = kills randomly 50% of the enemies in the current maze
 class Key : public Item {
 public:
+	static vector<MazePoint>& doorPoints;
 	Key() {
 		name = "Key";
 		mazeChar = 'k';
@@ -324,7 +325,7 @@ public:
 	bool use(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) {
 		int doorCounter = 0;
 		MazePoint doorArr[4];
-		for (MazePoint door : Maze::doorPoints) {
+		for (MazePoint door : doorPoints) {
 			if (((door.y == playerPos.y - 1 || door.y == playerPos.y + 1) && door.x == playerPos.x) ||
 				(door.y == playerPos.y && (door.x == playerPos.x - 1 || door.x == playerPos.x + 1))) { //if theres a door somewhere around the player
 				if ((lastMoveKeyPressed == 'w' || lastMoveKeyPressed == 'W') && door.y == playerPos.y - 1 ||
@@ -333,8 +334,8 @@ public:
 					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && door.x == playerPos.x + 1) { //If the door is associated with the direction of the lastKeyPress unlock that door.
 					pathArr[door.y][door.x] = true;
 					mazeArr[door.y][door.x] = ' ';
-					vector<MazePoint>::iterator doorIndex = find(Maze::doorPoints.begin(), Maze::doorPoints.end(), door);
-					Maze::doorPoints.erase(doorIndex);
+					vector<MazePoint>::iterator doorIndex = find(doorPoints.begin(), doorPoints.end(), door);
+					doorPoints.erase(doorIndex);
 					quantity--;
 					return true;
 				}
@@ -346,8 +347,8 @@ public:
 			int randNum = rand() % doorCounter;
 			pathArr[doorArr[randNum].y][doorArr[randNum].x] = true;
 			mazeArr[doorArr[randNum].y][doorArr[randNum].x] = ' ';
-			vector<MazePoint>::iterator doorIndex = find(Maze::doorPoints.begin(), Maze::doorPoints.end(), doorArr[randNum]);
-			Maze::doorPoints.erase(doorIndex);
+			vector<MazePoint>::iterator doorIndex = find(doorPoints.begin(), doorPoints.end(), doorArr[randNum]);
+			doorPoints.erase(doorIndex);
 			quantity--;
 			return true;
 		}
@@ -983,7 +984,7 @@ public:
 			return playerInv.suteleOrbs.use(playerPos, mazeArr, exitDoor, goldenKeyPos, playerInv.goldenKey.quantity, mazeSize);
 		}
 		else if ((keyPress == '5' || keyPress == '%') && playerInv.keys.quantity > 0) {
-
+			return playerInv.keys.use(mazeArr, pathArr, lastMoveKeyPressed, playerPos);
 		}
 		return false;
 	}
@@ -1041,7 +1042,7 @@ public:
 		levelClear = false;
 		lastItemCollected = "None";
 		lastItemCollectedCounter = 0;
-		lastKeyPressed = ' ';
+		lastMoveKeyPressed = ' ';
 	}
 };
 

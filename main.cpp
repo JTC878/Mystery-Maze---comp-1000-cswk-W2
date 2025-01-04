@@ -28,6 +28,7 @@ const int Maze::depthValues[10][12] = {
 vector<Item*> Maze::itemList = {};
 vector<Enemy*> Maze::enemyList = {};
 vector<MazePoint> Maze::doorPoints = {};
+vector<MazePoint>& Key::doorPoints = Maze::doorPoints;
 vector<Item*>& TeleOrb::itemList = Maze::itemList;
 vector<Enemy*>& KillOrb::enemyList = Maze::enemyList;
 
