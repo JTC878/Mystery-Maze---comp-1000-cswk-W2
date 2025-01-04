@@ -158,6 +158,42 @@ void printFunctions() {
 }
 
 
+/*
+
+Project Backlog
+
+> The rest of the core items should be implemented such as Super Tele Orb and keys. 
+> For the keys and doors, when you generate doors you can check if there's a wall to the right and left AND if theres a path in front and behind you or vice versa.
+This ensures its more likely to be generated at a key part of the maze. There should be a mechanic to use a key or lockpick the door which will prompt a puzzle(not sure what it will be yet)
+if you fail the puzzle while lockpicking you will lose a random amount of items.
+There will be a seperate keybind for both using a key and choosing to lockpick, however if you press the key keybind without keys it should instead lockpick.
+
+>Enemy pathfinding algorithm should be implemented today. When the player is within the enemySpotDistance(hypotenuse), the enemy marks the point where the player was and pathfinds 
+towards that location. When the enemy reaches that location it will return to enemyRandomMove. The location is only updated when the player is within the enemySpotDistance. 
+
+>Jump orbs should be implemented(prob 100% necessary). Not too difficult to implement, lastKeyPressed by the player should be recorded as an attribute and when used the orb will loop until it reaches a wall in a 
+straight line and then set the player to the path before it. 
+
+>Fix screen flickering 'system("cls)' with a basic library like ncurses have a look if it includes what you need.
+
+>I think the best avenue for the game would be a fog of war option(fogOption maze attribute and isFogOn() public method) thus allows you to make the game, enemies way easier and items 
+more generous(no fog of war easy mode) and an item to expand the vision you have Fog orb. You would do this by editing the printMaze function to have an if statement in the print loop. 
+The function would need to take playerPosition as parameter and playerFogRange as parameter(in the Maze class you can assign this to an attribute as a reference to be able to change 
+the default value with depth. Aka fogRange attribute). You would check if the current loop for the printed maze is within that range, if it isn't print over it with any character 
+not in use in the maze. attribute fogChar. 
+Before this you 100% should implement the rest of the items and enemy pathfinding algorithm first. Also fix the screen flickering with some kind of library(search up online for an answer) 
+like ncurses.
+
+
+
+
+
+
+
+*/
+
+
+
 
 
 

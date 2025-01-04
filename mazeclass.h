@@ -753,10 +753,7 @@ public:
 	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor) {
 		if ((keyPress == 'w' || keyPress == 'W') && pathArr[playerPos.y - 1][playerPos.x] == true) {
 			if (checkExitDoor(playerPos.y - 1, playerPos.x, exitDoor)) {
-				if (checkGoldenKey(playerPos.y - 1, playerPos.x, mazeArr)) {
-					return true;
-				}
-				return false;
+				return checkGoldenKey(playerPos.y - 1, playerPos.x, mazeArr);
 			}
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y--;
@@ -765,10 +762,7 @@ public:
 		}
 		else if ((keyPress == 's' || keyPress == 'S') && pathArr[playerPos.y + 1][playerPos.x] == true) {
 			if (checkExitDoor(playerPos.y + 1, playerPos.x, exitDoor)) {
-				if (checkGoldenKey(playerPos.y + 1, playerPos.x, mazeArr)) {
-					return true;
-				}
-				return false;
+				return checkGoldenKey(playerPos.y + 1, playerPos.x, mazeArr);
 			}
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y++;
@@ -777,10 +771,7 @@ public:
 		}
 		else if ((keyPress == 'a' || keyPress == 'A') && pathArr[playerPos.y][playerPos.x - 1] == true) {
 			if (checkExitDoor(playerPos.y, playerPos.x - 1, exitDoor)) {
-				if (checkGoldenKey(playerPos.y, playerPos.x - 1, mazeArr)) {
-					return true;
-				}
-				return false;
+				return checkGoldenKey(playerPos.y, playerPos.x - 1, mazeArr);
 			}
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x--;
@@ -789,10 +780,7 @@ public:
 		}
 		else if ((keyPress == 'd' || keyPress == 'D') && pathArr[playerPos.y][playerPos.x + 1] == true) {
 			if (checkExitDoor(playerPos.y, playerPos.x + 1, exitDoor)) {
-				if (checkGoldenKey(playerPos.y, playerPos.x + 1, mazeArr)) {
-					return true;
-				}
-				return false;
+				return checkGoldenKey(playerPos.y, playerPos.x + 1, mazeArr);
 			}
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x++;
@@ -807,20 +795,10 @@ public:
 			return true;
 		}
 		else if ((keyPress == '2' || keyPress == '"') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
-			if (playerInv.teleOrbs.use(playerPos, mazeArr)) {
-				return true;
-			}
-			else {
-				return false;
-			}
+			return playerInv.teleOrbs.use(playerPos, mazeArr);
 		}
-		else if ((keyPress == '3' || keyPress == '£') && playerInv.killOrbs.quantity > 0) {
-			if (playerInv.killOrbs.use(playerPos, mazeArr)) {
-				return true;
-			}
-			else {
-				return false;
-			}
+		else if ((keyPress == '3' || keyPress == '£') && playerInv.killOrbs.quantity > 0) { //use killOrb
+			return playerInv.killOrbs.use(playerPos, mazeArr);
 		}
 		return false;
 	}
