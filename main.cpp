@@ -12,16 +12,16 @@ using namespace std;
 #include "mazeclass.h"
 
 const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
-	{30, 20, 4, 3, 5, 1, 6, 2, 6, 10, 1},
-	{40, 20, 4, 7, 5, 3, 8, 4, 7, 0, 1},
-	{50, 30, 4, 11, 5, 5, 12, 6, 10, 0, 1},
-	{60, 30, 4, 17, 5, 7, 16, 8, 10, 0, 1},
-	{70, 40, 4, 25, 5, 9, 20, 10, 16, 0, 1},
-	{80, 40, 5, 35, 5, 11, 26, 12, 18, 1, 1},
-	{90, 50, 5, 50, 5, 13, 35, 20, 30, 1, 1},
-	{100, 50, 5, 100, 5, 15, 45, 35, 40, 1, 1},
-	{110, 60, 5, 200, 5, 17, 55, 40, 65, 1, 1},
-	{120, 60, 5, 300, 5, 19, 65, 50, 70, 1, 1},
+	{30, 20, 4, 3, 5, 1, 6, 2, 6, 0, 1},
+	{40, 20, 4, 7, 5, 2, 8, 4, 7, 0, 1},
+	{50, 30, 4, 11, 5, 3, 12, 6, 10, 0, 1},
+	{60, 30, 4, 17, 5, 4, 16, 8, 10, 0, 1},
+	{70, 40, 4, 25, 5, 5, 20, 10, 16, 0, 1},
+	{80, 40, 5, 35, 5, 6, 26, 12, 18, 1, 1},
+	{90, 50, 5, 50, 5, 7, 35, 20, 30, 1, 1},
+	{100, 50, 5, 100, 5, 8, 45, 35, 40, 1, 1},
+	{110, 60, 5, 200, 5, 9, 55, 40, 65, 1, 1},
+	{120, 60, 5, 300, 5, 10, 65, 50, 70, 1, 1},
 }; //placeholder values
 
 vector<Item*> Maze::itemList = {};
@@ -76,7 +76,7 @@ int main() {
 			maze1.itemList.clear();
 			maze1.generateMaze();
 			player1.setPos(maze1.midPoint);
-			player1.setLevelClear(false);
+			player1.resetStatus();
 			system("cls");
 			printFunctions();
 			

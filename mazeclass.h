@@ -22,7 +22,7 @@ public:
 			i = (rand() % (mazeY - 4)) + 2;
 			j = (rand() % (mazeX - 4)) + 2;
 			if (i < (midPoint.y + radiusY) && i >(midPoint.y - radiusY) && j < (midPoint.x + radiusX) && j >(midPoint.x - radiusX)) {} //do nothing if enemy is within certain range of the middle
-			else if (mazeArr[i][j] == ' ') {
+			else if (mazeArr[i][j] == ' ') { //should be compared to pathArr if you want enemies to spawn on items
 				pathFound = true;
 				enemyPos.y = i;
 				enemyPos.x = j;
@@ -411,7 +411,7 @@ private:
 			//spawn key opposite side of exit door
 			if (mazeArr[i][j] == ' ' && 
 				((exitDoor.y == 0 || exitDoor.y == mazeY - 1) && yDifference > midPoint.y || 
-				(exitDoor.x == 0 || exitDoor.x == mazeX - 1) && xDifference > midPoint.x)) { //very important to remember the boolean operator precendance here - ANDs are done first over ORs so you have to add brackets to achieve the right results
+				(exitDoor.x == 0 || exitDoor.x == mazeX - 1) && xDifference > midPoint.x)) { //very important to remember the boolean operator precedance here - ANDs are done first over ORs so you have to add brackets to achieve the right results
 				pathFound = true;
 				Item* gKey = new GoldenKey({ i, j }, 1);
 				goldenKey = { i, j };
@@ -808,6 +808,9 @@ public:
 class Player {
 	Inventory playerInv;
 	MazePoint playerPos;
+	string lastItemCollected;
+	int lastItemCollectedCounter;
+	char lastKeyPressed;
 	bool levelClear;
 
 	bool checkExitDoor(int playerPosY, int playerPosX, MazePoint exitDoor) {
@@ -833,7 +836,7 @@ class Player {
 	}
 
 public:
-	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false) {}
+	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastKeyPressed(' ') {}
 	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize) {
 		if ((keyPress == 'w' || keyPress == 'W') && pathArr[playerPos.y - 1][playerPos.x] == true) {
 			if (checkExitDoor(playerPos.y - 1, playerPos.x, exitDoor)) {
@@ -897,6 +900,11 @@ public:
 	void collectItem(Item* itemObject, vector<Item*>& itemList) {
 		vector<Item*>::iterator index = find(itemList.begin(), itemList.end(), itemObject);
 		itemList.erase(index);
+		if (itemObject->name != lastItemCollected) {
+			lastItemCollected = itemObject->name;
+			lastItemCollectedCounter = 0;
+		}
+		lastItemCollectedCounter++;
 		if (itemObject->name == "Golden Key") {
 			playerInv.goldenKey.quantity += itemObject->quantity;
 		}
@@ -925,13 +933,19 @@ public:
 		cout << setw(22) << playerInv.suteleOrbs.name << "(" << playerInv.suteleOrbs.mazeChar << ")" << " : " << playerInv.suteleOrbs.quantity;
 		cout << setw(15) << playerInv.keys.name << "(" << playerInv.keys.mazeChar << ")" << " : " << playerInv.keys.quantity;
 		cout << setw(20) << playerInv.goldenKey.name << "(" << playerInv.goldenKey.mazeChar << ")" << " : " << playerInv.goldenKey.quantity;
+		if (lastItemCollectedCounter != 0) {
+			cout << endl;
+			cout << "+" << lastItemCollectedCounter << " " << lastItemCollected;
+		}
 	}
 	void setPos(MazePoint midpoint) {
-		playerPos.y = midpoint.y;
-		playerPos.x = midpoint.x;
+		playerPos = midpoint;
 	}
-	void setLevelClear(bool T) {
-		levelClear = T;
+	void resetStatus() {
+		levelClear = false;
+		lastItemCollected = "None";
+		lastItemCollectedCounter = 0;
+		lastKeyPressed = ' ';
 	}
 };
 
