@@ -330,7 +330,7 @@ public:
 				if ((lastMoveKeyPressed == 'w' || lastMoveKeyPressed == 'W') && door.y == playerPos.y - 1 ||
 					(lastMoveKeyPressed == 's' || lastMoveKeyPressed == 'S') && door.y == playerPos.y + 1 ||
 					(lastMoveKeyPressed == 'a' || lastMoveKeyPressed == 'A') && door.x == playerPos.x - 1 ||
-					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && door.x == playerPos.x + 1) {
+					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && door.x == playerPos.x + 1) { //If the door is associated with the direction of the lastKeyPress unlock that door.
 					pathArr[door.y][door.x] = true;
 					mazeArr[door.y][door.x] = ' ';
 					vector<MazePoint>::iterator doorIndex = find(Maze::doorPoints.begin(), Maze::doorPoints.end(), door);
