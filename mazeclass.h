@@ -321,8 +321,37 @@ public:
 		itemPos = pos;
 		quantity = quant;
 	}
-	bool use() override {
-		return true;
+	bool use(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) {
+		int doorCounter = 0;
+		MazePoint doorArr[4];
+		for (MazePoint door : Maze::doorPoints) {
+			if (((door.y == playerPos.y - 1 || door.y == playerPos.y + 1) && door.x == playerPos.x) ||
+				(door.y == playerPos.y && (door.x == playerPos.x - 1 || door.x == playerPos.x + 1))) { //if theres a door somewhere around the player
+				if ((lastMoveKeyPressed == 'w' || lastMoveKeyPressed == 'W') && door.y == playerPos.y - 1 ||
+					(lastMoveKeyPressed == 's' || lastMoveKeyPressed == 'S') && door.y == playerPos.y + 1 ||
+					(lastMoveKeyPressed == 'a' || lastMoveKeyPressed == 'A') && door.x == playerPos.x - 1 ||
+					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && door.x == playerPos.x + 1) {
+					pathArr[door.y][door.x] = true;
+					mazeArr[door.y][door.x] = ' ';
+					vector<MazePoint>::iterator doorIndex = find(Maze::doorPoints.begin(), Maze::doorPoints.end(), door);
+					Maze::doorPoints.erase(doorIndex);
+					quantity--;
+					return true;
+				}
+				doorArr[doorCounter] = door;
+				doorCounter++;
+			}
+		}
+		if (doorCounter > 0) { //remove a random door
+			int randNum = rand() % doorCounter;
+			pathArr[doorArr[randNum].y][doorArr[randNum].x] = true;
+			mazeArr[doorArr[randNum].y][doorArr[randNum].x] = ' ';
+			vector<MazePoint>::iterator doorIndex = find(Maze::doorPoints.begin(), Maze::doorPoints.end(), doorArr[randNum]);
+			Maze::doorPoints.erase(doorIndex);
+			quantity--;
+			return true;
+		}
+		return false;
 	}
 };
 //Potential random item generation with a random mazeChar??
@@ -870,7 +899,7 @@ class Player {
 	MazePoint playerPos;
 	string lastItemCollected;
 	int lastItemCollectedCounter;
-	char lastKeyPressed;
+	unsigned char lastMoveKeyPressed;
 	bool levelClear;
 
 	bool checkExitDoor(int playerPosY, int playerPosX, MazePoint exitDoor) {
@@ -896,7 +925,7 @@ class Player {
 	}
 
 public:
-	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastKeyPressed(' ') {}
+	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed(' ') {}
 	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize) {
 		if ((keyPress == 'w' || keyPress == 'W') && pathArr[playerPos.y - 1][playerPos.x] == true) {
 			if (checkExitDoor(playerPos.y - 1, playerPos.x, exitDoor)) {
@@ -905,6 +934,7 @@ public:
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y--;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
+			lastMoveKeyPressed = keyPress;
 			return true;
 		}
 		else if ((keyPress == 's' || keyPress == 'S') && pathArr[playerPos.y + 1][playerPos.x] == true) {
@@ -914,6 +944,7 @@ public:
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y++;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
+			lastMoveKeyPressed = keyPress;
 			return true;
 		}
 		else if ((keyPress == 'a' || keyPress == 'A') && pathArr[playerPos.y][playerPos.x - 1] == true) {
@@ -923,6 +954,7 @@ public:
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x--;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
+			lastMoveKeyPressed = keyPress;
 			return true;
 		}
 		else if ((keyPress == 'd' || keyPress == 'D') && pathArr[playerPos.y][playerPos.x + 1] == true) {
@@ -932,6 +964,7 @@ public:
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x++;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
+			lastMoveKeyPressed = keyPress;
 			return true;
 		}
 		else if (keyPress == ' ') { //space to pass your turn
@@ -948,6 +981,9 @@ public:
 		}
 		else if ((keyPress == '4' || keyPress == '$') && playerInv.suteleOrbs.quantity > 0) {
 			return playerInv.suteleOrbs.use(playerPos, mazeArr, exitDoor, goldenKeyPos, playerInv.goldenKey.quantity, mazeSize);
+		}
+		else if ((keyPress == '5' || keyPress == '%') && playerInv.keys.quantity > 0) {
+
 		}
 		return false;
 	}
