@@ -312,43 +312,44 @@ public:
 	static vector<MazePoint>& doorPoints;
 	Key() {
 		name = "Key";
-		mazeChar = 'k';
+		mazeChar = 191;
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	Key(MazePoint pos, int quant) {
 		name = "Key";
-		mazeChar = 'k';
+		mazeChar = 191;
 		itemPos = pos;
 		quantity = quant;
 	}
+	
 	bool use(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) {
 		int doorCounter = 0;
-		MazePoint doorArr[4];
-		for (MazePoint door : doorPoints) {
-			if (((door.y == playerPos.y - 1 || door.y == playerPos.y + 1) && door.x == playerPos.x) ||
-				(door.y == playerPos.y && (door.x == playerPos.x - 1 || door.x == playerPos.x + 1))) { //if theres a door somewhere around the player
-				if ((lastMoveKeyPressed == 'w' || lastMoveKeyPressed == 'W') && door.y == playerPos.y - 1 ||
-					(lastMoveKeyPressed == 's' || lastMoveKeyPressed == 'S') && door.y == playerPos.y + 1 ||
-					(lastMoveKeyPressed == 'a' || lastMoveKeyPressed == 'A') && door.x == playerPos.x - 1 ||
-					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && door.x == playerPos.x + 1) { //If the door is associated with the direction of the lastKeyPress unlock that door.
-					pathArr[door.y][door.x] = true;
-					mazeArr[door.y][door.x] = ' ';
-					vector<MazePoint>::iterator doorIndex = find(doorPoints.begin(), doorPoints.end(), door);
-					doorPoints.erase(doorIndex);
+		int i = 0;
+		int doorArr[4];
+		for (vector<MazePoint>::iterator it = doorPoints.begin(); it != doorPoints.end(); it++, i++) {
+			if (((playerPos.y - 1 == it->y || playerPos.y + 1 == it->y) && playerPos.x == it->x) ||
+				(playerPos.y == it->y && (playerPos.x - 1 == it->x || playerPos.x + 1 == it->x))) { //if theres a door somewhere around the player
+				if ((lastMoveKeyPressed == 'w' || lastMoveKeyPressed == 'W') && playerPos.y - 1 == it->y ||
+					(lastMoveKeyPressed == 's' || lastMoveKeyPressed == 'S') && playerPos.y + 1 == it->y ||
+					(lastMoveKeyPressed == 'a' || lastMoveKeyPressed == 'A') && playerPos.x - 1 == it->x ||
+					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && playerPos.x + 1 == it->x) { //If the door is associated with the direction of the lastKeyPress unlock that door.
+					pathArr[it->y][it->x] = true;
+					mazeArr[it->y][it->x] = ' ';
+					doorPoints.erase(it);
 					quantity--;
 					return true;
 				}
-				doorArr[doorCounter] = door;
+				doorArr[doorCounter] = i;
 				doorCounter++;
 			}
 		}
 		if (doorCounter > 0) { //remove a random door
 			int randNum = rand() % doorCounter;
-			pathArr[doorArr[randNum].y][doorArr[randNum].x] = true;
-			mazeArr[doorArr[randNum].y][doorArr[randNum].x] = ' ';
-			vector<MazePoint>::iterator doorIndex = find(doorPoints.begin(), doorPoints.end(), doorArr[randNum]);
-			doorPoints.erase(doorIndex);
+			vector<MazePoint>::iterator it = next(doorPoints.begin(), doorArr[randNum]);
+			pathArr[it->y][it->x] = true;
+			mazeArr[it->y][it->x] = ' ';
+			doorPoints.erase(it);
 			quantity--;
 			return true;
 		}
