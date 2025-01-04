@@ -356,7 +356,7 @@ public:
 		}
 		return false;
 	}
-	bool useLockpick(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos, Inventory& playerInv) { //https://logiclike.com/en/famous-riddles
+	int useLockpick(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) { //https://logiclike.com/en/famous-riddles
 		int doorCounter = 0;
 		int i = 0;
 		int doorArr[4];
@@ -368,13 +368,12 @@ public:
 					(lastMoveKeyPressed == 'a' || lastMoveKeyPressed == 'A') && playerPos.x - 1 == it->x ||
 					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && playerPos.x + 1 == it->x) { //If the door is associated with the direction of the lastKeyPress unlock that door.
 					if (!solveRiddle()) {
-						resetItemQuantity(playerInv);
-						return false;
+						return 2;
 					}
 					pathArr[it->y][it->x] = true;
 					mazeArr[it->y][it->x] = ' ';
 					doorPoints.erase(it);
-					return true;
+					return 1;
 				}
 				doorArr[doorCounter] = i;
 				doorCounter++;
@@ -382,8 +381,7 @@ public:
 		}
 		if (doorCounter > 0) { //remove a random door
 			if (!solveRiddle()) {
-				resetItemQuantity(playerInv);
-				return false;
+				return 2;
 			}
 			int randNum = rand() % doorCounter;
 			vector<MazePoint>::iterator it = next(doorPoints.begin(), doorArr[randNum]);
@@ -391,9 +389,9 @@ public:
 			mazeArr[it->y][it->x] = ' ';
 			doorPoints.erase(it);
 			quantity--;
-			return true;
+			return 1;
 		}
-		return false;
+		return 3;
 	}
 	bool solveRiddle() {
 		string answer;
@@ -414,52 +412,6 @@ public:
 			cout << endl << endl << "The answer is " << lockpickRiddles[randRiddle][1] << endl;
 			return false;
 		}
-	}
-	void resetItemQuantity(Inventory& playerInv) {
-		bool done = false;
-		int loopCounter = 0;
-		int randNum;
-		while (done != true || loopCounter < 100) {
-			randNum = rand() % 5;
-			switch (randNum) {
-			case 0:
-				if (playerInv.slowOrbs.quantity > 0) {
-					playerInv.slowOrbs.quantity = 0;
-					cout << "Somehow your slow orbs have completely disappeared from your pouch";
-					done = true;
-				}
-				break;
-			case 1:
-				if (playerInv.teleOrbs.quantity > 0) {
-					playerInv.teleOrbs.quantity = 0;
-					cout << "Somehow your teleport orbs have completely disappeared from your pouch";
-					done = true;
-				}
-				break;
-			case 2:
-				if (playerInv.killOrbs.quantity > 0) {
-					playerInv.killOrbs.quantity = 0;
-					cout << "Somehow your kill orbs have completely disappeared from your pouch";
-					done = true;
-				}
-				break;
-			case 3:
-				if (playerInv.suteleOrbs.quantity > 0) {
-					playerInv.suteleOrbs.quantity = 0;
-					cout << "Somehow your super teleport orbs have completely disappeared from your pouch";
-					done = true;
-				}
-				break;
-			case 4:
-				if (playerInv.keys.quantity > 0) {
-					playerInv.keys.quantity = 0;
-					cout << "Somehow your keys have completely disappeared from your pouch";
-					done = true;
-				}
-				break;
-			}
-		}
-		getchar();
 	}
 };
 //Potential random item generation with a random mazeChar??
@@ -1031,6 +983,52 @@ class Player {
 			return false;
 		}
 	}
+	void resetItemQuantity() {
+		bool done = false;
+		int loopCounter = 0;
+		int randNum;
+		while (done != true || loopCounter < 100) {
+			randNum = rand() % 5;
+			switch (randNum) {
+			case 0:
+				if (playerInv.slowOrbs.quantity > 0) {
+					playerInv.slowOrbs.quantity = 0;
+					cout << "Somehow your slow orbs have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			case 1:
+				if (playerInv.teleOrbs.quantity > 0) {
+					playerInv.teleOrbs.quantity = 0;
+					cout << "Somehow your teleport orbs have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			case 2:
+				if (playerInv.killOrbs.quantity > 0) {
+					playerInv.killOrbs.quantity = 0;
+					cout << "Somehow your kill orbs have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			case 3:
+				if (playerInv.suteleOrbs.quantity > 0) {
+					playerInv.suteleOrbs.quantity = 0;
+					cout << "Somehow your super teleport orbs have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			case 4:
+				if (playerInv.keys.quantity > 0) {
+					playerInv.keys.quantity = 0;
+					cout << "Somehow your keys have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			}
+		}
+		getchar();
+	}
 
 public:
 	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed(' ') {}
@@ -1079,7 +1077,13 @@ public:
 			return true;
 		}
 		else if (keyPress == 'x' || keyPress == 'X') {
-			playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos, playerInv);
+			int outcome = playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos);
+			if (outcome == 1) return true;
+			if (outcome == 2) { 
+				resetItemQuantity(); 
+				return false;
+			}
+			if (outcome == 3) return false;
 		}
 		else if ((keyPress == '1' || keyPress == '!') && playerInv.slowOrbs.quantity > 0) { //use slowOrb
 			return playerInv.slowOrbs.use();
@@ -1159,6 +1163,7 @@ public:
 
 
 const string Key::lockpickRiddles[38][2] = {
+	//Reference https://logiclike.com/en/famous-riddles
 	{"As I walked along the path I saw something with four fingers and one thumb,\nbut it was not flesh, fish, bone or fowl.", "Glove"}, 
 	{"The sun bakes them,\nThe hand breaks them,\nThe foot treads on them,\nAnd the mouth tastes them.\nWhat are they ?", "Grapes"}, 
 	{"A precious stone, as clear as diamond.\nSeek it out whilst the sun's near the horizon.\nThough you can walk on water with its power,\nTry to keep it, and it'll vanish within an hour.", "Ice"}, 
