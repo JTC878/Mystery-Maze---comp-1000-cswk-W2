@@ -12,7 +12,7 @@ using namespace std;
 #include "mazeclass.h"
 
 const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
-	{30, 20, 4, 3, 5, 1, 6, 2, 6, 0, 1},
+	{30, 20, 4, 3, 5, 1, 6, 2, 6, 10, 1},
 	{40, 20, 4, 7, 5, 3, 8, 4, 7, 0, 1},
 	{50, 30, 4, 11, 5, 5, 12, 6, 10, 0, 1},
 	{60, 30, 4, 17, 5, 7, 16, 8, 10, 0, 1},
@@ -156,9 +156,15 @@ void printFunctions() {
 int initialDepthPrompt() {
 	int playerSetDepth = 0;
 
-	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the start of the game." << endl;
+	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the start." << endl;
 	cout << "Enter a Depth: ";
 	cin >> playerSetDepth;
+	while (cin.fail()) {
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cout << endl << "You have entered a wrong input. Enter any depth between 1 and 10: ";
+		cin >> playerSetDepth;
+	}
 	return playerSetDepth;
 }
 

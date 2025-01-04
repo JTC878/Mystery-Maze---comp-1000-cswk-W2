@@ -410,8 +410,8 @@ private:
 			int xDifference = abs(exitDoor.x - j);
 			//spawn key opposite side of exit door
 			if (mazeArr[i][j] == ' ' && 
-				(exitDoor.y == 0 || exitDoor.y == mazeY - 1 && yDifference > midPoint.y) || 
-				(exitDoor.x == 0 || exitDoor.x == mazeX - 1 && xDifference > midPoint.x)) {
+				((exitDoor.y == 0 || exitDoor.y == mazeY - 1) && yDifference > midPoint.y || 
+				(exitDoor.x == 0 || exitDoor.x == mazeX - 1) && xDifference > midPoint.x)) { //very important to remember the boolean operator precendance here - ANDs are done first over ORs so you have to add brackets to achieve the right results
 				pathFound = true;
 				Item* gKey = new GoldenKey({ i, j }, 1);
 				goldenKey = { i, j };
