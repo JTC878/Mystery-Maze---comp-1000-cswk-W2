@@ -13,7 +13,7 @@ using namespace std;
 
 const int Maze::depthValues[10][12] = { 
   //mazeX  mazeY percPathsofMaze*10  enemyNumber  enemySpotDistance  enemyStep  maxSlow  maxTele  maxKill  maxSUTele  maxKeys  maxDoorCount
-	{30,     20,         4,              3,               5,			 1,        6,       2,       6,        0,        1,         10},
+	{30,     20,         4,              3,               5,			 1,        6,       2,       6,        0,        5,         10},
 	{40,     20,         4,              7,               5,			 2,        8,       4,       7,        0,        1,         0},
 	{50,     30,         4,              11,              5,			 3,        12,      6,       10,       0,        1,         0},
 	{60,     30,         4,              17,              5,			 4,        16,      8,       10,       0,        1,         0},

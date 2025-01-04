@@ -515,7 +515,7 @@ private:
 		int range = (maxKeys + 1) * (1 - minItemPercOfMax);
 		if (range == 0) range = 1;
 		int rRange = rand() % (range);
-		for (int z = 0; z < (maxSUTele - rRange); z++) {
+		for (int z = 0; z < (maxKeys - rRange); z++) {
 			bool pathFound = false;
 			int i, j;
 			while (pathFound == false && loopCounter < 50000) {
@@ -801,6 +801,7 @@ public:
 		generateTeleOrbs();
 		generateKillOrbs();
 		generateSUTeleOrbs();
+		generateKeys();
 	} //to be implemented - golden key should spawn opposite side of the exit door.
 	void generateEnemies() { //make sure enemy objects are deleted whenever a kill orb is used or when you go to the next level/depth
 		for (int i = 0; i < enemyNumber; i++) {
@@ -832,6 +833,7 @@ public:
 		maxKill = depthValues[depthCounter][8];
 		maxSUTele = depthValues[depthCounter][9];
 		maxKeys = depthValues[depthCounter][10];
+		maxDoorCount = depthValues[depthCounter][11];
 		depthCounter++;
 	}
 	int getDepthCounter() {
