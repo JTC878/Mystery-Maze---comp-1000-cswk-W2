@@ -155,13 +155,13 @@ public:
 	static vector<Item*> &itemList;
 	TeleOrb() {
 		name = "Tele Orb";
-		mazeChar = 194;
+		mazeChar = 94;
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	TeleOrb(MazePoint pos, int quant) {
 		name = "Tele Orb";
-		mazeChar = 194;
+		mazeChar = 94;
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -510,6 +510,28 @@ private:
 			}
 		}
 	}
+	void generateKeys() {
+		int loopCounter = 0;
+		int range = (maxKeys + 1) * (1 - minItemPercOfMax);
+		if (range == 0) range = 1;
+		int rRange = rand() % (range);
+		for (int z = 0; z < (maxSUTele - rRange); z++) {
+			bool pathFound = false;
+			int i, j;
+			while (pathFound == false && loopCounter < 50000) {
+				i = (rand() % (mazeY - 2)) + 1;
+				j = (rand() % (mazeX - 2)) + 1;
+				loopCounter++;
+				if (mazeArr[i][j] == ' ') {
+					loopCounter = 0;
+					pathFound = true;
+					Item* newKey = new Key({ i, j }, 1);
+					itemList.push_back(newKey);
+					mazeArr[i][j] = newKey->mazeChar;
+				}
+			}
+		}
+	}
 	void generateKeyDoors() {
 		/*When you generate a door the position it is at in the pathArr should be set to false
 		when you generate doors you should check if there's a wall to the right and left AND if theres a path in front and behind you or vice versa.*/
@@ -528,6 +550,7 @@ private:
 					(mazeArr[i][j - 1] == ' ' && mazeArr[i][j + 1] == ' ' && mazeArr[i - 1][j] == mazeWallChar && mazeArr[i + 1][j] == mazeWallChar)) {
 					loopCounter = 0;
 					pathFound = true;
+					doorPoints.push_back({ i, j });
 					pathArr[i][j] = false;
 					mazeArr[i][j] = doorChar;
 				}
@@ -542,13 +565,14 @@ public:
 	bool** pathArr;
 	static vector<Item*> itemList;
 	static vector<Enemy*> enemyList;
+	static vector<MazePoint> doorPoints;
 	MazePoint midPoint;
 	MazePoint exitDoor;
 	MazePoint goldenKey;
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
 		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
 		maxSlow(depthValues[depthCounter][6]), maxTele(depthValues[depthCounter][7]), maxKill(depthValues[depthCounter][8]), maxSUTele(depthValues[depthCounter][9]), maxKeys(depthValues[depthCounter][10]),
-		maxDoorCount(depthValues[depthCounter][11]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar('d'), goldenKey({NULL, NULL}) {
+		maxDoorCount(depthValues[depthCounter][11]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), goldenKey({NULL, NULL}) {
 		for (int i = 0; i < mazeY; i++) {
 			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
@@ -820,6 +844,14 @@ public:
 	}
 	MazePoint getMazeSize() {
 		return { mazeY, mazeX };
+	}
+	void clearVectors() {
+		enemyList.clear();
+		itemList.clear();
+		doorPoints.clear();
+		enemyList.shrink_to_fit();
+		itemList.shrink_to_fit();
+		doorPoints.shrink_to_fit();
 	}
 	~Maze() {
 		for (int i = 0; i < mazeY; i++) {
