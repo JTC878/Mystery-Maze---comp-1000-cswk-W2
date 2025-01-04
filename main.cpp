@@ -11,17 +11,17 @@ using namespace std;
 
 #include "mazeclass.h"
 
-const int Maze::depthValues[10][11] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
-	{30, 20, 4, 3, 5, 1, 6, 2, 6, 0, 1},
-	{40, 20, 4, 7, 5, 2, 8, 4, 7, 0, 1},
-	{50, 30, 4, 11, 5, 3, 12, 6, 10, 0, 1},
-	{60, 30, 4, 17, 5, 4, 16, 8, 10, 0, 1},
-	{70, 40, 4, 25, 5, 5, 20, 10, 16, 0, 1},
-	{80, 40, 5, 35, 5, 6, 26, 12, 18, 1, 1},
-	{90, 50, 5, 50, 5, 7, 35, 20, 30, 1, 1},
-	{100, 50, 5, 100, 5, 8, 45, 35, 40, 1, 1},
-	{110, 60, 5, 200, 5, 9, 55, 40, 65, 1, 1},
-	{120, 60, 5, 300, 5, 10, 65, 50, 70, 1, 1},
+const int Maze::depthValues[10][12] = { //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
+	{30, 20, 4, 3, 5, 1, 6, 2, 6, 10, 1, 0},
+	{40, 20, 4, 7, 5, 2, 8, 4, 7, 0, 1, 0},
+	{50, 30, 4, 11, 5, 3, 12, 6, 10, 0, 1, 0},
+	{60, 30, 4, 17, 5, 4, 16, 8, 10, 0, 1, 0},
+	{70, 40, 4, 25, 5, 5, 20, 10, 16, 0, 1, 0},
+	{80, 40, 5, 35, 5, 6, 26, 12, 18, 1, 1, 0},
+	{90, 50, 5, 50, 5, 7, 35, 20, 30, 1, 1, 0},
+	{100, 50, 5, 100, 5, 8, 45, 35, 40, 1, 1, 0},
+	{110, 60, 5, 200, 5, 9, 55, 40, 65, 1, 1, 0},
+	{120, 60, 5, 300, 5, 10, 65, 50, 70, 1, 1, 0},
 }; //placeholder values
 
 vector<Item*> Maze::itemList = {};
@@ -178,6 +178,9 @@ Project Backlog
 This ensures its more likely to be generated at a key part of the maze. There should be a mechanic to use a key or lockpick the door which will prompt a puzzle(not sure what it will be yet)
 if you fail the puzzle while lockpicking you will lose a random amount of items.
 There will be a seperate keybind for both using a key and choosing to lockpick, however if you press the key keybind without keys it should instead lockpick.
+
+When you generate a door the position it is at in the pathArr should be set to false
+
 
 >Enemy pathfinding algorithm should be implemented today. When the player is within the enemySpotDistance(hypotenuse), the enemy marks the point where the player was and pathfinds 
 towards that location. When the enemy reaches that location it will return to enemyRandomMove. The location is only updated when the player is within the enemySpotDistance. 

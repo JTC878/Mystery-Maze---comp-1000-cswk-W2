@@ -240,13 +240,13 @@ class SUTeleOrb : public Item {
 public:
 	SUTeleOrb() {
 		name = "Super Tele Orb";
-		mazeChar = 'S';
+		mazeChar = 173;
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	SUTeleOrb(MazePoint pos, int quant) {
 		name = "Super Tele Orb";
-		mazeChar = 'S';
+		mazeChar = 173;
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -357,14 +357,15 @@ struct Inventory {
 class Maze {
 private:
 	int depthCounter;
-	const static int depthValues[10][11]; //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys
+	const static int depthValues[10][12]; //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys, doorCount
 	int mazeX, mazeY;
 	int pathCount;
 	int maxPathCount;
 	float percPathsofMaze;
 	int enemyNumber;
-	int maxSlow, maxTele, maxKill, maxSUTele, maxKeys;
-	const float minItemPercOfMax, minSUItemPercOfMax;
+	unsigned char mazeWallChar, doorChar;
+	int maxSlow, maxTele, maxKill, maxSUTele, maxKeys, maxDoorCount;
+	const float minItemPercOfMax, minSUItemPercOfMax, minDoorPercOfMax;
 	stack<MazePoint> backtrack;
 
 	void deleteMazeArrays() {
@@ -423,7 +424,7 @@ private:
 	void generateSlowOrbs() {
 		//random range dependant on max SlowOrbs
 		int loopCounter = 0;
-		int range = maxSlow * (1 - minItemPercOfMax); //can be changed later. I want the range to be larger when maxSlow is larger.
+		int range = (maxSlow + 1) * (1 - minItemPercOfMax); 
 		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxSlow - rRange); z++) {
@@ -445,7 +446,7 @@ private:
 	}
 	void generateTeleOrbs() {
 		int loopCounter = 0;
-		int range = maxTele * (1 - minItemPercOfMax); 
+		int range = (maxTele + 1) * (1 - minItemPercOfMax);
 		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxTele - rRange); z++) {
@@ -467,7 +468,7 @@ private:
 	}
 	void generateKillOrbs() {
 		int loopCounter = 0;
-		int range = maxKill * (1 - minItemPercOfMax);
+		int range = (maxKill + 1) * (1 - minItemPercOfMax);
 		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxKill - rRange); z++) {
@@ -489,7 +490,7 @@ private:
 	}
 	void generateSUTeleOrbs() {
 		int loopCounter = 0;
-		int range = maxSUTele * (1 - minSUItemPercOfMax);
+		int range = (maxSUTele + 1) * (1 - minSUItemPercOfMax);
 		if (range == 0) range = 1;
 		int rRange = rand() % (range);
 		for (int z = 0; z < (maxSUTele - rRange); z++) {
@@ -509,6 +510,30 @@ private:
 			}
 		}
 	}
+	void generateKeyDoors() {
+		/*When you generate a door the position it is at in the pathArr should be set to false
+		when you generate doors you should check if there's a wall to the right and left AND if theres a path in front and behind you or vice versa.*/
+		int loopCounter = 0;
+		int range = (maxDoorCount + 1) * (1 - minDoorPercOfMax);
+		if (range == 0) range = 1;
+		int rRange = rand() % (range);
+		for (int z = 0; z < (maxDoorCount - rRange); z++) {
+			bool pathFound = false;
+			int i, j;
+			while (pathFound == false && loopCounter < 50000) {
+				i = (rand() % (mazeY - 2)) + 1;
+				j = (rand() % (mazeX - 2)) + 1;
+				loopCounter++;
+				if ((mazeArr[i - 1][j] == ' ' && mazeArr[i + 1][j] == ' ' && mazeArr[i][j - 1] == mazeWallChar && mazeArr[i][j + 1] == mazeWallChar) ||
+					(mazeArr[i][j - 1] == ' ' && mazeArr[i][j + 1] == ' ' && mazeArr[i - 1][j] == mazeWallChar && mazeArr[i + 1][j] == mazeWallChar)) {
+					loopCounter = 0;
+					pathFound = true;
+					pathArr[i][j] = false;
+					mazeArr[i][j] = doorChar;
+				}
+			}
+		}
+	}
 	
 
 
@@ -523,7 +548,7 @@ public:
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
 		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
 		maxSlow(depthValues[depthCounter][6]), maxTele(depthValues[depthCounter][7]), maxKill(depthValues[depthCounter][8]), maxSUTele(depthValues[depthCounter][9]), maxKeys(depthValues[depthCounter][10]),
-		minItemPercOfMax(0.5), minSUItemPercOfMax(1), goldenKey({ NULL, NULL }) {
+		maxDoorCount(depthValues[depthCounter][11]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar('d'), goldenKey({NULL, NULL}) {
 		for (int i = 0; i < mazeY; i++) {
 			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
@@ -544,7 +569,7 @@ public:
 
 		for (int i = 0; i < mazeY; i++) {
 			for (int j = 0; j < mazeX; j++) {
-				mazeArr[i][j] = 219;
+				mazeArr[i][j] = mazeWallChar;
 				pathArr[i][j] = false;
 			}
 		}
@@ -765,6 +790,7 @@ public:
 		setMaxPathCount();
 		initialiseMazeArray();
 		generateMazePaths();
+		generateKeyDoors();
 		generateItems();
 		generateEnemies();
 	}
