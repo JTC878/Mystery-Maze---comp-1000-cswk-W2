@@ -157,7 +157,6 @@ public:
 			}
 			else {
 				currentStack.pop();
-				currentPos = currentStack.top();
 				recursiveValidPaths(currentStack.top(), pathArr, currentStack, totalPathCount);
 			}
 			return;
