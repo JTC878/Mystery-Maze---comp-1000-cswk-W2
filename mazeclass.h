@@ -405,11 +405,16 @@ public:
 		transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
 		transform(riddleAnswer.begin(), riddleAnswer.end(), riddleAnswer.begin(), ::tolower);
 		if (answer == riddleAnswer) {
-			cout << endl << endl << "Correct.";
+			cout << endl << endl << "Correct." << endl;
+			cout << "Press enter to continue." << endl;
+			cin.get();
+			cin.get();
 			return true;
 		}
 		else {
 			cout << endl << endl << "The answer is " << lockpickRiddles[randRiddle][1] << endl;
+			cout << "Press enter to continue." << endl;
+			cin.get();
 			return false;
 		}
 	}
@@ -987,7 +992,7 @@ class Player {
 		bool done = false;
 		int loopCounter = 0;
 		int randNum;
-		while (done != true || loopCounter < 100) {
+		while (done != true && loopCounter < 100) {
 			randNum = rand() % 5;
 			switch (randNum) {
 			case 0:
@@ -1027,7 +1032,7 @@ class Player {
 				break;
 			}
 		}
-		getchar();
+		cin.get();
 	}
 
 public:
