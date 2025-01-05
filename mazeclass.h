@@ -452,8 +452,7 @@ class Maze {
 private:
 	int depthCounter;
 	const static int depthValues[10][12]; //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys, doorCount
-	int mazeX, mazeY;
-	int pathCount; //Now should be accurate to the amount of paths that are in the maze, exitDoor is not a path nor any normalKeyDoors. and pathCount is decremented for each generated. 
+	int mazeX, mazeY; 
 	int maxPathCount;
 	float percPathsofMaze;
 	int enemyNumber;
@@ -658,6 +657,7 @@ private:
 public:
 	unsigned char** mazeArr;
 	bool** pathArr;
+	int pathCount; //Now should be accurate to the amount of paths that are in the maze, exitDoor is not a path nor any normalKeyDoors. and pathCount is decremented for each generated.
 	static vector<Item*> itemList;
 	static vector<Enemy*> enemyList;
 	static vector<MazePoint> doorPoints;
@@ -935,9 +935,6 @@ public:
 	}
 	int getDepthCounter() {
 		return depthCounter;
-	}
-	int getPathCount() {
-		return pathCount;
 	}
 	void setDepthCounter(int playerInput) {
 		if (playerInput < 1) depthCounter = 0;
