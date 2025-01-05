@@ -29,7 +29,7 @@ class Enemy {
 public:
 	static float enemyStep;
 	static int enemySpotDistance;
-	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }), mazeX(mazeX), mazeY(mazeY) { //enemy spawning done within constructor, could be moved to another method if necessary. 
+	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }), mazeX(mazeX), mazeY(mazeY), pathVisitedCount(1) { //enemy spawning done within constructor, could be moved to another method if necessary. 
 		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
 		int radiusY = mazeY * 0.1; //these can be changed later if necessary
 		int radiusX = mazeX * 0.1;
@@ -108,24 +108,28 @@ public:
 			currentPos.y--;
 			currentStack.push(currentPos);
 			pathArr[currentPos.y][currentPos.x] = false;
+			pathVisitedCount++;
 			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
 		}
 		else if (pathArr[currentPos.y + 1][currentPos.x] = true) {
 			currentPos.y++;
 			currentStack.push(currentPos);
 			pathArr[currentPos.y][currentPos.x] = false;
+			pathVisitedCount++;
 			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
 		}
 		else if (pathArr[currentPos.y][currentPos.x - 1] = true) {
 			currentPos.x--;
 			currentStack.push(currentPos);
 			pathArr[currentPos.y][currentPos.x] = false;
+			pathVisitedCount++;
 			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
 		}
 		else if (pathArr[currentPos.y][currentPos.x + 1] = true) {
 			currentPos.x++;
 			currentStack.push(currentPos);
 			pathArr[currentPos.y][currentPos.x] = false;
+			pathVisitedCount++;
 			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
 		}
 		else {
