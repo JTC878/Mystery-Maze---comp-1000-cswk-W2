@@ -148,11 +148,8 @@ public:
 		}
 	}
 	void updatePathfinding(bool** pathArr, MazePoint playerPos, int totalPathCount) { //start from playerPos where enemyPos is destination
-		int loopCounter = 0;
 		stack<MazePoint> currentStack;
 		MazePoint currentPos;
-		float pathHypotDistance;
-
 
 		currentStack.push(playerPos);
 		currentPos = currentStack.top();
