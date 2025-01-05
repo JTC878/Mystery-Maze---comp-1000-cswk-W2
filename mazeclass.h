@@ -104,7 +104,7 @@ public:
 				currentPos = currentStack.top();
 			}
 		}
-		if (pathArr[currentPos.y - 1][currentPos.x] = true) {
+		if (pathArr[currentPos.y - 1][currentPos.x] = true) { //check around the player position for a valid path
 			currentPos.y--;
 			currentStack.push(currentPos);
 			pathArr[currentPos.y][currentPos.x] = false;
@@ -129,7 +129,7 @@ public:
 			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
 		}
 		else {
-			if (currentStack.empty()) {
+			if (currentStack.empty()) { //if currentstack is empty, this means it backtracked to the middle and there were no valid paths left
 				return;
 			}
 			else if (pathVisitedCount = totalPathCount) {
@@ -154,14 +154,18 @@ public:
 		currentPos = currentStack.top();
 		pathArr[playerPos.y][playerPos.x] = false;
 		pathVisitedCount = 1;
-		//check around the player position for a valid path. All valid paths will have a distance calculated from the enemyPos.
+		
+		recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
 
-		while (!currentStack.empty() && pathVisitedCount < totalPathCount) { //if currentstack is empty, this means it backtracked to the middle and there were no valid paths left.
-			if (pathArr[currentPos.y - 1][currentPos.x] = true) {
-
-			}
+		while (!shortestPathQueue.empty()) {
+			shortestPathQueue.pop();
 		}
 
+		if (!shortestPathStack.empty()) shortestPathStack.pop(); //pop the enemy position at the top of the stack, so when you use the queue it is the next position the enemy will move to.
+		while (!shortestPathStack.empty()) {
+			shortestPathQueue.push(shortestPathStack.top());
+			shortestPathStack.pop();
+		}
 	} //this method is only about updating the shortestPathQueue
 	void movementChoice(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos, int mazePathCount) { 
 		int xDifference = playerPos.x - enemyPos.x;
