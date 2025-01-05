@@ -12,7 +12,7 @@ class Enemy {
 public:
 	static float enemyStep;
 	static int enemySpotDistance;
-	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }) {
+	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }) { //enemy spawning done within constructor, could be moved to another method if necessary. 
 		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
 		int radiusY = mazeY * 0.1; //these can be changed later if necessary
 		int radiusX = mazeX * 0.1;
@@ -37,7 +37,7 @@ public:
 			r = rand() % 4;
 			switch (r) {
 			case 0:
-				if (pathArr[enemyPos.y - 1][enemyPos.x] == true && mazeArr[enemyPos.y - 1][enemyPos.x] != 'D') {
+				if (pathArr[enemyPos.y - 1][enemyPos.x] == true) {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.y--;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
@@ -45,7 +45,7 @@ public:
 				}
 				break;
 			case 1:
-				if (pathArr[enemyPos.y + 1][enemyPos.x] == true && mazeArr[enemyPos.y + 1][enemyPos.x] != 'D') {
+				if (pathArr[enemyPos.y + 1][enemyPos.x] == true) {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.y++;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
@@ -53,7 +53,7 @@ public:
 				}
 				break;
 			case 2:
-				if (pathArr[enemyPos.y][enemyPos.x - 1] == true && mazeArr[enemyPos.y][enemyPos.x - 1] != 'D') {
+				if (pathArr[enemyPos.y][enemyPos.x - 1] == true) {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.x--;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
@@ -61,7 +61,7 @@ public:
 				}
 				break;
 			case 3:
-				if (pathArr[enemyPos.y][enemyPos.x + 1] == true && mazeArr[enemyPos.y][enemyPos.x + 1] != 'D') {
+				if (pathArr[enemyPos.y][enemyPos.x + 1] == true) {
 					mazeArr[enemyPos.y][enemyPos.x] = ' ';
 					enemyPos.x++;
 					mazeArr[enemyPos.y][enemyPos.x] = 'E';
@@ -453,7 +453,7 @@ private:
 	int depthCounter;
 	const static int depthValues[10][12]; //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys, doorCount
 	int mazeX, mazeY;
-	int pathCount;
+	int pathCount; //Now should be accurate to the amount of paths that are in the maze, exitDoor is not a path nor any normalKeyDoors. and pathCount is decremented for each generated. 
 	int maxPathCount;
 	float percPathsofMaze;
 	int enemyNumber;
@@ -646,6 +646,7 @@ private:
 					pathFound = true;
 					doorPoints.push_back({ i, j });
 					pathArr[i][j] = false;
+					pathCount--;
 					mazeArr[i][j] = doorChar;
 				}
 			}
@@ -877,8 +878,10 @@ public:
 				if (found != true) {
 					found = true;
 					mazeArr[i][j] = 'D'; //door will be added at the edge of the maze
+					pathArr[i][j] = false;
 					exitDoor.y = i;
 					exitDoor.x = j;
+					pathCount--;
 				}
 				i = midPoint.y;
 				j = midPoint.x;
@@ -932,6 +935,9 @@ public:
 	}
 	int getDepthCounter() {
 		return depthCounter;
+	}
+	int getPathCount() {
+		return pathCount;
 	}
 	void setDepthCounter(int playerInput) {
 		if (playerInput < 1) depthCounter = 0;
@@ -1037,8 +1043,8 @@ class Player {
 
 public:
 	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed(' ') {}
-	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize) {
-		if ((keyPress == 'w' || keyPress == 'W') && pathArr[playerPos.y - 1][playerPos.x] == true) {
+	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount) {
+		if ((keyPress == 'w' || keyPress == 'W') && (pathArr[playerPos.y - 1][playerPos.x] == true || mazeArr[playerPos.y - 1][playerPos.x] == 'D')) {
 			if (checkExitDoor(playerPos.y - 1, playerPos.x, exitDoor)) {
 				return checkGoldenKey(playerPos.y - 1, playerPos.x, mazeArr);
 			}
@@ -1048,7 +1054,7 @@ public:
 			lastMoveKeyPressed = keyPress;
 			return true;
 		}
-		else if ((keyPress == 's' || keyPress == 'S') && pathArr[playerPos.y + 1][playerPos.x] == true) {
+		else if ((keyPress == 's' || keyPress == 'S') && (pathArr[playerPos.y + 1][playerPos.x] == true || mazeArr[playerPos.y + 1][playerPos.x] == 'D')) {
 			if (checkExitDoor(playerPos.y + 1, playerPos.x, exitDoor)) {
 				return checkGoldenKey(playerPos.y + 1, playerPos.x, mazeArr);
 			}
@@ -1058,7 +1064,7 @@ public:
 			lastMoveKeyPressed = keyPress;
 			return true;
 		}
-		else if ((keyPress == 'a' || keyPress == 'A') && pathArr[playerPos.y][playerPos.x - 1] == true) {
+		else if ((keyPress == 'a' || keyPress == 'A') && (pathArr[playerPos.y][playerPos.x - 1] == true || mazeArr[playerPos.y][playerPos.x - 1] == 'D')) {
 			if (checkExitDoor(playerPos.y, playerPos.x - 1, exitDoor)) {
 				return checkGoldenKey(playerPos.y, playerPos.x - 1, mazeArr);
 			}
@@ -1068,7 +1074,7 @@ public:
 			lastMoveKeyPressed = keyPress;
 			return true;
 		}
-		else if ((keyPress == 'd' || keyPress == 'D') && pathArr[playerPos.y][playerPos.x + 1] == true) {
+		else if ((keyPress == 'd' || keyPress == 'D') && (pathArr[playerPos.y][playerPos.x + 1] == true || mazeArr[playerPos.y][playerPos.x + 1] == 'D')) {
 			if (checkExitDoor(playerPos.y, playerPos.x + 1, exitDoor)) {
 				return checkGoldenKey(playerPos.y, playerPos.x + 1, mazeArr);
 			}
@@ -1083,10 +1089,13 @@ public:
 		}
 		else if (keyPress == 'x' || keyPress == 'X') {
 			int outcome = playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos);
-			if (outcome == 1) return true;
+			if (outcome == 1) {
+				pathCount++;
+				return true;
+			}
 			if (outcome == 2) { 
 				resetItemQuantity(); 
-				return false;
+				return true;
 			}
 			if (outcome == 3) return false;
 		}
@@ -1103,7 +1112,11 @@ public:
 			return playerInv.suteleOrbs.use(playerPos, mazeArr, exitDoor, goldenKeyPos, playerInv.goldenKey.quantity, mazeSize);
 		}
 		else if ((keyPress == '5' || keyPress == '%') && playerInv.keys.quantity > 0) {
-			return playerInv.keys.use(mazeArr, pathArr, lastMoveKeyPressed, playerPos);
+			if (playerInv.keys.use(mazeArr, pathArr, lastMoveKeyPressed, playerPos)) {
+				pathCount++;
+				return true;
+			}
+			else return false;
 		}
 		return false;
 	}
