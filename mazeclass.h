@@ -93,7 +93,23 @@ public:
 			gameOver = true;
 		}
 	}
-	void enemyTargetedMove() {} //using the queue to move.
+	void enemyTargetedMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
+		MazePoint nextPos = shortestPathQueue.front();
+		if (pathArr[nextPos.y][nextPos.x] == true) {
+			mazeArr[enemyPos.y][enemyPos.x] = ' ';
+			enemyPos = nextPos;
+			mazeArr[enemyPos.y][enemyPos.x] = 'E';
+			shortestPathQueue.pop();
+		}
+		else {
+			while (!shortestPathQueue.empty()) {
+				shortestPathQueue.pop();
+			}
+		}
+		if (enemyPos.y == playerPos.y && enemyPos.x == playerPos.x) {
+			gameOver = true;
+		}
+	} //using the queue to move.
 	void recursiveValidPaths(MazePoint currentPos, bool** pathArr, stack<MazePoint> currentStack, const int totalPathCount) {
 		if (currentPos.y == enemyPos.y && currentPos.x == enemyPos.x) {
 			if (currentStack.size() < shortestPathStack.size() || shortestPathStack.empty()) {
@@ -176,7 +192,7 @@ public:
 			updatePathfinding(copyPathArray(pathArr), playerPos, mazePathCount);
 		}
 		if (!shortestPathQueue.empty()) {
-			enemyTargetedMove();
+			enemyTargetedMove(mazeArr, pathArr, playerPos);
 		}
 		else {
 			enemyRandomMove(mazeArr, pathArr, playerPos);
