@@ -69,7 +69,7 @@ int main() {
 			int enemyStep = Enemy::getEnemyStep();
 			for (int i = 0; i < enemyStep; i++) { //all of this can easily be made into a function inside Maze class with player pos parameter
 				for (Enemy* enemy : maze1.enemyList) {
-					enemy->movementChoice(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos(), maze1.pathCount);
+					enemy->enemyRandomMove(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos());
 				}
 			}
 		}

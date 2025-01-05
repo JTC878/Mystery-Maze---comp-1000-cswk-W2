@@ -12,7 +12,11 @@ class Enemy {
 	static float stepRemainder;
 	queue<MazePoint> shortestPathQueue;
 	stack<MazePoint> shortestPathStack;
-	int pathVisitedCount;
+	int pathVisitedCount; //recursive function attributes
+	bool** copyPathArr;
+	stack<MazePoint> currentStack;
+	MazePoint currentPos;
+	int totalPathCount;
 	bool** copyPathArray(bool** pathArr) {
 		bool** newPathArr; //This is a pointer to arrays(pointers) which in turn points to values
 		newPathArr = new bool* [mazeY]; //create new dynamically allocated arrays(pointers) in newPathArray
@@ -110,7 +114,7 @@ public:
 			gameOver = true;
 		}
 	} //using the queue to move.
-	void recursiveValidPaths(MazePoint currentPos, bool** pathArr, stack<MazePoint> currentStack, const int totalPathCount) {
+	void recursiveValidPaths() {
 		if (currentPos.y == enemyPos.y && currentPos.x == enemyPos.x) {
 			if (currentStack.size() < shortestPathStack.size() || shortestPathStack.empty()) {
 				shortestPathStack = currentStack;
@@ -120,58 +124,52 @@ public:
 				currentPos = currentStack.top();
 			}
 		}
-		if (pathArr[currentPos.y - 1][currentPos.x] = true) { //check around the player position for a valid path
+		if (copyPathArr[currentPos.y - 1][currentPos.x] = true) { //check around the player position for a valid path
 			currentPos.y--;
 			currentStack.push(currentPos);
-			pathArr[currentPos.y][currentPos.x] = false;
+			copyPathArr[currentPos.y][currentPos.x] = false;
 			pathVisitedCount++;
-			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
+			recursiveValidPaths();
 		}
-		else if (pathArr[currentPos.y + 1][currentPos.x] = true) {
+		if (copyPathArr[currentPos.y + 1][currentPos.x] = true) {
 			currentPos.y++;
 			currentStack.push(currentPos);
-			pathArr[currentPos.y][currentPos.x] = false;
+			copyPathArr[currentPos.y][currentPos.x] = false;
 			pathVisitedCount++;
-			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
+			recursiveValidPaths();
 		}
-		else if (pathArr[currentPos.y][currentPos.x - 1] = true) {
+		if (copyPathArr[currentPos.y][currentPos.x - 1] = true) {
 			currentPos.x--;
 			currentStack.push(currentPos);
-			pathArr[currentPos.y][currentPos.x] = false;
+			copyPathArr[currentPos.y][currentPos.x] = false;
 			pathVisitedCount++;
-			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
+			recursiveValidPaths();
 		}
-		else if (pathArr[currentPos.y][currentPos.x + 1] = true) {
+		if (copyPathArr[currentPos.y][currentPos.x + 1] = true) {
 			currentPos.x++;
 			currentStack.push(currentPos);
-			pathArr[currentPos.y][currentPos.x] = false;
+			copyPathArr[currentPos.y][currentPos.x] = false;
 			pathVisitedCount++;
-			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
+			recursiveValidPaths();
 		}
-		else {
-			if (currentStack.empty()) { //if currentstack is empty, this means it backtracked to the middle and there were no valid paths left
+		if (currentStack.empty()) { //if currentstack is empty, this means it backtracked to the middle and there were no valid paths left
 				return;
-			}
-			else if (pathVisitedCount = totalPathCount) {
-				return;
-			}
-			else {
-				currentStack.pop();
-				recursiveValidPaths(currentStack.top(), pathArr, currentStack, totalPathCount);
-			}
+		}
+		else if (pathVisitedCount = totalPathCount) {
 			return;
 		}
+		else {
+			currentStack.pop();
+		}
+		return;
 	}
-	void updatePathfinding(bool** pathArr, MazePoint playerPos, int totalPathCount) { //start from playerPos where enemyPos is destination
-		stack<MazePoint> currentStack;
-		MazePoint currentPos;
-
+	void updatePathfinding(MazePoint playerPos) { //start from playerPos where enemyPos is destination
 		currentStack.push(playerPos);
 		currentPos = currentStack.top();
-		pathArr[playerPos.y][playerPos.x] = false;
+		copyPathArr[playerPos.y][playerPos.x] = false;
 		pathVisitedCount = 1;
 		
-		recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
+		recursiveValidPaths();
 
 		while (!shortestPathQueue.empty()) {
 			shortestPathQueue.pop();
@@ -188,7 +186,9 @@ public:
 		int yDifference = playerPos.y - enemyPos.y;
 		int playerDistance = hypot(xDifference, yDifference);
 		if (playerDistance <= enemySpotDistance) {
-			updatePathfinding(copyPathArray(pathArr), playerPos, mazePathCount);
+			copyPathArr = copyPathArray(pathArr);
+			totalPathCount = mazePathCount;
+			updatePathfinding(playerPos);
 		}
 		if (!shortestPathQueue.empty()) {
 			enemyTargetedMove(mazeArr, pathArr, playerPos);
