@@ -3,6 +3,7 @@
 #include <random>
 #include <cmath>
 #include <vector>
+#include <queue>
 #include <stack>
 #include <conio.h>
 #include <iomanip>
@@ -47,6 +48,7 @@ void printFunctions();
 int initialDepthPrompt();
 
 int main() {
+
 	char key;
 	maze1.setDepthCounter(initialDepthPrompt());
 

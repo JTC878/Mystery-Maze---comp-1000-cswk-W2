@@ -6,13 +6,30 @@ struct MazePoint {
 };
 
 class Enemy {
+	int mazeX, mazeY;
 	MazePoint enemyPos;
 	static bool gameOver;
 	static float stepRemainder;
+	queue<MazePoint> shortestPathQueue;
+	stack<MazePoint> shortestPathStack;
+	int pathVisitedCount;
+	bool** copyPathArray(bool** pathArr) {
+		bool** newPathArr; //This is a pointer to arrays(pointers) which in turn points to values
+		newPathArr = new bool* [mazeY]; //create new dynamically allocated arrays(pointers) in newPathArray
+		for (int i = 0; i < mazeY; i++) {
+			newPathArr[i] = new bool[mazeX]; //Allocate 'mazeX' boolean values to each array row in newPathArray 
+		} 
+		for (int i = 0; i < mazeY; i++) {
+			for (int j = 0; j < mazeX; j++) {
+				newPathArr[i][j] = pathArr[i][j];
+			}
+		}
+		return newPathArr;
+	}
 public:
 	static float enemyStep;
 	static int enemySpotDistance;
-	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }) { //enemy spawning done within constructor, could be moved to another method if necessary. 
+	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }), mazeX(mazeX), mazeY(mazeY) { //enemy spawning done within constructor, could be moved to another method if necessary. 
 		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
 		int radiusY = mazeY * 0.1; //these can be changed later if necessary
 		int radiusX = mazeX * 0.1;
@@ -76,8 +93,90 @@ public:
 			gameOver = true;
 		}
 	}
-	void enemyTargetedMove() {}
-	void movementChoice() {}
+	void enemyTargetedMove() {} //using the queue to move.
+	void recursiveValidPaths(MazePoint currentPos, bool** pathArr, stack<MazePoint> currentStack, const int totalPathCount) {
+		if (currentPos.y == enemyPos.y && currentPos.x == enemyPos.x) {
+			if (currentStack.size() < shortestPathStack.size() || shortestPathStack.empty()) {
+				shortestPathStack = currentStack;
+			}
+			if (!currentStack.empty()) {
+				currentStack.pop();
+				currentPos = currentStack.top();
+			}
+		}
+		if (pathArr[currentPos.y - 1][currentPos.x] = true) {
+			currentPos.y--;
+			currentStack.push(currentPos);
+			pathArr[currentPos.y][currentPos.x] = false;
+			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
+		}
+		else if (pathArr[currentPos.y + 1][currentPos.x] = true) {
+			currentPos.y++;
+			currentStack.push(currentPos);
+			pathArr[currentPos.y][currentPos.x] = false;
+			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
+		}
+		else if (pathArr[currentPos.y][currentPos.x - 1] = true) {
+			currentPos.x--;
+			currentStack.push(currentPos);
+			pathArr[currentPos.y][currentPos.x] = false;
+			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
+		}
+		else if (pathArr[currentPos.y][currentPos.x + 1] = true) {
+			currentPos.x++;
+			currentStack.push(currentPos);
+			pathArr[currentPos.y][currentPos.x] = false;
+			recursiveValidPaths(currentPos, pathArr, currentStack, totalPathCount);
+		}
+		else {
+			if (currentStack.empty()) {
+				return;
+			}
+			else if (pathVisitedCount = totalPathCount) {
+				return;
+			}
+			else {
+				currentStack.pop();
+				currentPos = currentStack.top();
+				recursiveValidPaths(currentStack.top(), pathArr, currentStack, totalPathCount);
+			}
+			return;
+		}
+	}
+	void updatePathfinding(bool** pathArr, MazePoint playerPos, int totalPathCount) { //start from playerPos where enemyPos is destination
+		int loopCounter = 0;
+		stack<MazePoint> currentStack;
+		MazePoint currentPos;
+		float pathHypotDistance;
+
+
+		currentStack.push(playerPos);
+		currentPos = currentStack.top();
+		pathArr[playerPos.y][playerPos.x] = false;
+		pathVisitedCount = 1;
+		//check around the player position for a valid path. All valid paths will have a distance calculated from the enemyPos.
+
+		while (!currentStack.empty() && pathVisitedCount < totalPathCount) { //if currentstack is empty, this means it backtracked to the middle and there were no valid paths left.
+			if (pathArr[currentPos.y - 1][currentPos.x] = true) {
+
+			}
+		}
+
+	} //this method is only about updating the shortestPathQueue
+	void movementChoice(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos, int mazePathCount) { 
+		int xDifference = playerPos.x - enemyPos.x;
+		int yDifference = playerPos.y - enemyPos.y;
+		int playerDistance = hypot(xDifference, yDifference);
+		if (playerDistance <= enemySpotDistance) {
+			updatePathfinding(copyPathArray(pathArr), playerPos, mazePathCount);
+		}
+		if (!shortestPathQueue.empty()) {
+			enemyTargetedMove();
+		}
+		else {
+			enemyRandomMove(mazeArr, pathArr, playerPos);
+		}
+	} 
 	MazePoint getEnemyPos() {
 		return enemyPos;
 	}
