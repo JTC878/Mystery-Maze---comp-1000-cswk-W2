@@ -304,7 +304,7 @@ public:
 		quantity = quant;
 	}
 
-	bool use(MazePoint& playerPos, unsigned char** mazeArr, bool** pathArr) {
+	bool use(MazePoint& playerPos, unsigned char** mazeArr, bool** pathArr, MazePoint mazeSize, unsigned char lastMoveKeyPressed) {
 
 	}
 };
@@ -1228,6 +1228,9 @@ class Player {
 public:
 	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed(' ') {}
 	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount) {
+		if (keyPress == 'w' || keyPress == 'W' || keyPress == 's' || keyPress == 'S' || keyPress == 'a' || keyPress == 'A' || keyPress == 'd' || keyPress == 'D') {
+			lastMoveKeyPressed = keyPress;
+		}
 		if ((keyPress == 'w' || keyPress == 'W') && (pathArr[playerPos.y - 1][playerPos.x] == true || mazeArr[playerPos.y - 1][playerPos.x] == 'D')) {
 			if (checkExitDoor(playerPos.y - 1, playerPos.x, exitDoor)) {
 				return checkGoldenKey(playerPos.y - 1, playerPos.x, mazeArr);
@@ -1235,7 +1238,6 @@ public:
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y--;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
-			lastMoveKeyPressed = keyPress;
 			return true;
 		}
 		else if ((keyPress == 's' || keyPress == 'S') && (pathArr[playerPos.y + 1][playerPos.x] == true || mazeArr[playerPos.y + 1][playerPos.x] == 'D')) {
@@ -1245,7 +1247,6 @@ public:
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y++;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
-			lastMoveKeyPressed = keyPress;
 			return true;
 		}
 		else if ((keyPress == 'a' || keyPress == 'A') && (pathArr[playerPos.y][playerPos.x - 1] == true || mazeArr[playerPos.y][playerPos.x - 1] == 'D')) {
@@ -1255,7 +1256,6 @@ public:
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x--;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
-			lastMoveKeyPressed = keyPress;
 			return true;
 		}
 		else if ((keyPress == 'd' || keyPress == 'D') && (pathArr[playerPos.y][playerPos.x + 1] == true || mazeArr[playerPos.y][playerPos.x + 1] == 'D')) {
@@ -1265,7 +1265,6 @@ public:
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.x++;
 			mazeArr[playerPos.y][playerPos.x] = 'C';
-			lastMoveKeyPressed = keyPress;
 			return true;
 		}
 		else if (keyPress == ' ') { //space to pass your turn
