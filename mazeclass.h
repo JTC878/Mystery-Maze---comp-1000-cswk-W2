@@ -333,7 +333,6 @@ public:
 					}
 					inc++;
 				}
-				inc--;
 				mazeArr[playerPos.y][playerPos.x] = ' ';
 				playerPos.y -= inc;
 				mazeArr[playerPos.y][playerPos.x] = 'C';
@@ -356,7 +355,6 @@ public:
 					}
 					inc++;
 				}
-				inc--;
 				mazeArr[playerPos.y][playerPos.x] = ' ';
 				playerPos.y += inc;
 				mazeArr[playerPos.y][playerPos.x] = 'C';
@@ -379,7 +377,6 @@ public:
 					}
 					inc++;
 				}
-				inc--;
 				mazeArr[playerPos.y][playerPos.x] = ' ';
 				playerPos.x -= inc;
 				mazeArr[playerPos.y][playerPos.x] = 'C';
@@ -402,7 +399,6 @@ public:
 					}
 					inc++;
 				}
-				inc--;
 				mazeArr[playerPos.y][playerPos.x] = ' ';
 				playerPos.x += inc;
 				mazeArr[playerPos.y][playerPos.x] = 'C';
