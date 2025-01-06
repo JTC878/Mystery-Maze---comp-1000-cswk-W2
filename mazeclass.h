@@ -106,7 +106,7 @@ public:
 			mazeArr[enemyPos.y][enemyPos.x] = ' ';
 			enemyPos = nextPos;
 			mazeArr[enemyPos.y][enemyPos.x] = 'E';
-			if (shortestPathQueue.empty()) {
+			if (!shortestPathQueue.empty()) {
 				shortestPathQueue.pop();
 			}
 		}
@@ -140,6 +140,8 @@ public:
 			}
 			if (!currentStack.empty()) {
 				currentStack.pop();
+			}
+			if (!currentStack.empty()) {
 				currentPos = currentStack.top();
 			}
 		}
@@ -180,6 +182,8 @@ public:
 		else {
 			if (!currentStack.empty()) {
 				currentStack.pop();
+			}
+			if (!currentStack.empty()) {
 				currentPos = currentStack.top();
 			}
 		}
