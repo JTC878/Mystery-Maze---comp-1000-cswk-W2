@@ -746,7 +746,7 @@ struct Inventory {
 class Maze {
 private:
 	int depthCounter;
-	const static int depthValues[10][13]; //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys, doorCount
+	const static int depthValues[10][13]; //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxJump, maxTele, maxKill, maxSUTele, maxKeys, doorCount
 	int mazeX, mazeY; 
 	int maxPathCount;
 	float percPathsofMaze;
