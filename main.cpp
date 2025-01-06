@@ -112,7 +112,6 @@ void levelClearedScreen(int depth) {
 	system("cls");
 	switch (depth) {
 	case 1:
-		cout << "<enter to continue>" << endl << endl;
 		c = getchar();
 		cout << "*As you crawl through the pitch black sewers you hear a faint whisper in your ear*" << endl << "<enter to continue>" << endl;
 		c = getchar();
