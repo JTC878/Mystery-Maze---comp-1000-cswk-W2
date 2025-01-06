@@ -98,12 +98,17 @@ public:
 		}
 	}
 	void enemyTargetedMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
-		MazePoint nextPos = shortestPathQueue.front();
+		MazePoint nextPos;
+		if (!shortestPathQueue.empty()) {
+			nextPos = shortestPathQueue.front();
+		}
 		if (pathArr[nextPos.y][nextPos.x] == true) {
 			mazeArr[enemyPos.y][enemyPos.x] = ' ';
 			enemyPos = nextPos;
 			mazeArr[enemyPos.y][enemyPos.x] = 'E';
-			shortestPathQueue.pop();
+			if (shortestPathQueue.empty()) {
+				shortestPathQueue.pop();
+			}
 		}
 		else {
 			while (!shortestPathQueue.empty()) {
@@ -123,9 +128,11 @@ public:
 				int elements = currentStack.size();
 				vector<MazePoint> top;
 				for (int i = 0; i < elements; i++) {
-					top.push_back(currentStack.top());
-					shortestPathQueue.push(currentStack.top());
-					currentStack.pop();
+					if (!currentStack.empty()) {
+						top.push_back(currentStack.top());
+						shortestPathQueue.push(currentStack.top());
+						currentStack.pop();
+					}
 				}
 				for (int i = elements - 1; i >= 0; i--) {
 					currentStack.push(top[i]);
@@ -171,14 +178,16 @@ public:
 			return;
 		}
 		else {
-			currentStack.pop();
-			if (!currentStack.empty()) currentPos = currentStack.top();
+			if (!currentStack.empty()) {
+				currentStack.pop();
+				currentPos = currentStack.top();
+			}
 		}
 		return;
 	}
 	void updatePathfinding(MazePoint playerPos) { //start from playerPos where enemyPos is destination
 		currentStack.push(playerPos);
-		currentPos = currentStack.top();
+		if (!currentStack.empty()) currentPos = currentStack.top();
 		copyPathArr[playerPos.y][playerPos.x] = false;
 		pathVisitedCount = 1;
 		while (!shortestPathQueue.empty()) shortestPathQueue.pop();
