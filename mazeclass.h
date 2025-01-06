@@ -290,6 +290,15 @@ public:
 };
 
 class JumpOrb : public Item {
+	bool isPathJump(bool** pathArr, MazePoint pos) {
+		return (pathArr[pos.y][pos.x] == true);
+	}
+	int directionCase(unsigned char lastMoveKeyPressed) {
+		if (lastMoveKeyPressed == 'w' || lastMoveKeyPressed == 'W') return 0;
+		if (lastMoveKeyPressed == 's' || lastMoveKeyPressed == 'S') return 1;
+		if (lastMoveKeyPressed == 'a' || lastMoveKeyPressed == 'A') return 2;
+		if (lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') return 3;
+	}
 public:
 	JumpOrb() {
 		name = "Jump Orb";
@@ -305,7 +314,104 @@ public:
 	}
 
 	bool use(MazePoint& playerPos, unsigned char** mazeArr, bool** pathArr, MazePoint mazeSize, unsigned char lastMoveKeyPressed) {
-
+		int inc = 1;
+		switch (directionCase(lastMoveKeyPressed)) {
+		case 0: //w case
+			if (isPathJump(pathArr, { playerPos.y - 1, playerPos.x })) {
+				while (pathArr[playerPos.y - inc][playerPos.x] != false) {
+					inc++;
+				}
+				inc--;
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos.y -= inc;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+			}
+			else { //walljump 
+				while (pathArr[playerPos.y - inc][playerPos.x] != true) { 
+					if (playerPos.y - inc < 1) {
+						return false;
+					}
+					inc++;
+				}
+				inc--;
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos.y -= inc;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+			}
+			break;
+		case 1:
+			if (isPathJump(pathArr, { playerPos.y + 1, playerPos.x })) {
+				while (pathArr[playerPos.y + inc][playerPos.x] != false) {
+					inc++;
+				}
+				inc--;
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos.y += inc;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+			}
+			else {
+				while (pathArr[playerPos.y + inc][playerPos.x] != true) {
+					if (playerPos.y + inc > mazeSize.y - 2) {
+						return false;
+					}
+					inc++;
+				}
+				inc--;
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos.y += inc;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+			}
+			break;
+		case 2:
+			if (isPathJump(pathArr, { playerPos.y, playerPos.x - 1 })) {
+				while (pathArr[playerPos.y][playerPos.x - inc] != false) {
+					inc++;
+				}
+				inc--;
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos.x -= inc;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+			}
+			else {
+				while (pathArr[playerPos.y][playerPos.x - inc] != true) {
+					if (playerPos.x - inc < 1) {
+						return false;
+					}
+					inc++;
+				}
+				inc--;
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos.x -= inc;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+			}
+			break;
+		case 3:
+			if (isPathJump(pathArr, { playerPos.y, playerPos.x + 1 })) {
+				while (pathArr[playerPos.y][playerPos.x + inc] != false) {
+					inc++;
+				}
+				inc--;
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos.x += inc;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+			}
+			else {
+				while (pathArr[playerPos.y][playerPos.x + inc] != true) {
+					if (playerPos.x + inc > mazeSize.x - 2) {
+						return false;
+					}
+					inc++;
+				}
+				inc--;
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos.x += inc;
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+			}
+			break;
+		default:
+			return false;
+		}
+		return true;
 	}
 };
 //jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line, you can either jump over enemies if the path infront if your lastKeyPressed is a path, or you can jump over walls if it is a wall.
@@ -1226,7 +1332,7 @@ class Player {
 	}
 
 public:
-	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed(' ') {}
+	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed('w') {}
 	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount) {
 		if (keyPress == 'w' || keyPress == 'W' || keyPress == 's' || keyPress == 'S' || keyPress == 'a' || keyPress == 'A' || keyPress == 'd' || keyPress == 'D') {
 			lastMoveKeyPressed = keyPress;
