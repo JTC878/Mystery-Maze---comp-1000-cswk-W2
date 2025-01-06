@@ -210,11 +210,16 @@ public:
 			totalPathCount = mazePathCount;
 			updatePathfinding(playerPos);
 		}
-		if (!shortestPathQueue.empty()) {
-			enemyTargetedMove(mazeArr, pathArr, playerPos);
+		for (int i = 0; i < enemyStep; i++) {
+			if (!shortestPathQueue.empty()) {
+				enemyTargetedMove(mazeArr, pathArr, playerPos);
+			}
+			else {
+				enemyRandomMove(mazeArr, pathArr, playerPos);
+			}
 		}
-		else {
-			enemyRandomMove(mazeArr, pathArr, playerPos);
+		if (enemyPos.y == playerPos.y && enemyPos.x == playerPos.x) {
+			gameOver = true;
 		}
 	} 
 	MazePoint getEnemyPos() {
