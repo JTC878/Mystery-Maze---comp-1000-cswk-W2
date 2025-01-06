@@ -11,11 +11,14 @@ class Enemy {
 	static bool gameOver;
 	static float stepRemainder;
 	queue<MazePoint> shortestPathQueue;
-	int pathVisitedCount; //recursive function attributes - be generous with the ammount of attributes you use
-	bool** copyPathArr; //copyPathArr should be initialised in the constructor, copyPathArray function should be deleted
+
+	//recursive function attributes - be generous with the ammount of attributes you use
+	int pathVisitedCount; 
+	bool** copyPathArr; 
 	stack<MazePoint> currentStack;
 	MazePoint currentPos;
 	int totalPathCount;
+
 	void copyPathArray(bool** pathArr) {
 		for (int i = 0; i < mazeY; i++) {
 			for (int j = 0; j < mazeX; j++) {
