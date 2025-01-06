@@ -286,7 +286,7 @@ public:
 		quantity = quant;
 	}
 	bool use() override {
-		if (Enemy::enemyStep == 0) {
+		if (Enemy::enemyStep <= slowValue) {
 			return false;
 		}
 		Enemy::enemyStep -= slowValue; 

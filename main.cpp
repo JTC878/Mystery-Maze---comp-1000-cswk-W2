@@ -156,6 +156,16 @@ void printFunctions() {
 int initialDepthPrompt() {
 	int playerSetDepth = 0;
 
+	cout << "Keybinds: WASD - player movement, SpaceBar - Wait a turn, x - lockpick regular doors, Number keys(1-6) - use items from left to right" << endl << endl;
+	cout << "Slow Orb: Slow enemies, useful in the deeper depths. Try to always keep enemy speed at 1 or below." << endl << endl;
+	cout << "Jump Orb: Jump in a straight path either over enemies or walls if you stand next to them, these are extremely helpful lifesavers to get away while stuck in a dead end. Direction of the jump is determined by the last movement key pressed." << endl << endl;
+	cout << "Tele Orb: Teleport to a random item in the maze, there's no safety precautions with these. Test your luck you might just end up teleporting to a space an enemy is on, or a golden key who knows. If there are no items left in the maze you will teleport to the exit door" << endl << endl;
+	cout << "Kill Orb: Kills the nearest enemy, very menacing name but also incredibly valuable. Use these sparingly so you can save them for dire situations or deeper depths..." << endl << endl;
+	cout << "Super Tele Orb: A super item. Very rare and also one of the best items to have. Compared to Tele Orbs, these have a safety precaution built in and will never teleport you on top of an enemy. Teleports you to the golden key if you don't have it, if you already do then it will teleport you to the exit door. Almost like a skip button" << endl << endl;
+	cout << "Key: Regular rusted old keys that have been scattered throughout the depths, luckily they can unlock any door except for the exit door. Just stand next to one and press the key. Hah." << endl << endl;
+	cout << "Golden Key: This is your ticket out of here, this unlocks the exit door to leave the current level, don't need to press anything just step through the door and it'll unlock!! Look for the 'D' at the edge of the maze, you can't miss it." << endl << endl;
+	cout << "Lockpicking: Since you're such a skilled and prepared adventurer you brought a magic talking lockpick with you, however it doesn't seem to like you very much, every time you ask for help it asks you to solve one of its riddles first. Be suspicious of this guy." << endl << endl;
+
 	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the recommended start." << endl;
 	cout << "Enter a Depth: ";
 	cin >> playerSetDepth;
