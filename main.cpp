@@ -14,7 +14,7 @@ using namespace std;
 
 const int Maze::depthValues[10][12] = { 
   //mazeX  mazeY percPathsofMaze*10  enemyNumber  enemySpotDistance  enemyStep  maxSlow  maxTele  maxKill  maxSUTele  maxKeys  maxDoorCount
-	{30,     20,         4,              1,               100,			 1,        6,       2,       6,        0,        1,         0},
+	{30,     20,         4,              1,               5,			 1,        6,       2,       6,        0,        1,         0},
 	{40,     20,         4,              7,               5,			 2,        8,       4,       7,        0,        1,         0},
 	{50,     30,         4,              11,              5,			 3,        12,      6,       10,       0,        1,         0},
 	{60,     30,         4,              17,              5,			 4,        16,      8,       10,       0,        1,         0},
@@ -205,6 +205,8 @@ like ncurses.
 >Roadside picnic story inspiration~~~
 
 > You should print whatever item the player has last picked up(the name), it should increment if you pick up the same item such as +1 Tele Orb ~~ +2 Tele Orb (will make it better for teleports)
+
+>If there are no items left in the maze(including golden key) you should be able to teleport to the door using normal tele orbs.  
 
 
 

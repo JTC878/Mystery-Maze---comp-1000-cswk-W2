@@ -288,8 +288,36 @@ public:
 		itemPos = pos;
 		quantity = quant;
 	}
-	bool use(MazePoint& playerPos, unsigned char** mazeArr) { //you can spawn on enemies 
+	bool use(MazePoint& playerPos, unsigned char** mazeArr, MazePoint exitDoor, MazePoint mazeSize) { //you can teleport on enemies be careful, if no items left it will teleport you to the door
 		if (itemList.empty()) {
+			if (exitDoor.y == 0) {
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos = { exitDoor.y + 1, exitDoor.x };
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+				quantity--;
+				return true;
+			}
+			else if (exitDoor.y == mazeSize.y - 1) {
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos = { exitDoor.y - 1, exitDoor.x };
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+				quantity--;
+				return true;
+			}
+			else if (exitDoor.x == 0) {
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos = { exitDoor.y, exitDoor.x + 1 };
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+				quantity--;
+				return true;
+			}
+			else if (exitDoor.x == mazeSize.x - 1) {
+				mazeArr[playerPos.y][playerPos.x] = ' ';
+				playerPos = { exitDoor.y, exitDoor.x - 1 };
+				mazeArr[playerPos.y][playerPos.x] = 'C';
+				quantity--;
+				return true;
+			}
 			return false;
 		}
 		int size = itemList.size();
@@ -307,7 +335,7 @@ public:
 		}
 		return false;
 	}
-}; //teleport to a random item? or teleport to a random path
+}; //teleport to a random item
 
 class KillOrb : public Item {
 	int noOfKills;
@@ -1223,7 +1251,7 @@ public:
 			return playerInv.slowOrbs.use();
 		}
 		else if ((keyPress == '2' || keyPress == '"') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
-			return playerInv.teleOrbs.use(playerPos, mazeArr);
+			return playerInv.teleOrbs.use(playerPos, mazeArr, exitDoor, mazeSize);
 		}
 		else if ((keyPress == '3' || keyPress == '£') && playerInv.killOrbs.quantity > 0) { //use killOrb
 			return playerInv.killOrbs.use(playerPos, mazeArr);
