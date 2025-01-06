@@ -12,18 +12,18 @@ using namespace std;
 
 #include "mazeclass.h"
 
-const int Maze::depthValues[10][12] = { 
-  //mazeX  mazeY percPathsofMaze*10  enemyNumber  enemySpotDistance  enemyStep  maxSlow  maxTele  maxKill  maxSUTele  maxKeys  maxDoorCount
-	{30,     20,         4,              1,               5,			 1,        6,       2,       6,        0,        10,         10},
-	{40,     20,         4,              7,               5,			 2,        8,       4,       7,        0,        1,         0},
-	{50,     30,         4,              11,              5,			 3,        12,      6,       10,       0,        1,         0},
-	{60,     30,         4,              17,              5,			 4,        16,      8,       10,       0,        1,         0},
-	{70,     40,         4,              25,              5,			 5,        20,      10,      16,       0,        1,         0},
-	{80,     40,         5,              35,			  5,			 6,        26,      12,      18,       1,        1,         0},
-	{90,     50,         5,              50,			  5,			 7,        35,      20,      30,       1,        1,         0},
-	{100,    50,         5,              100,			  5,			 8,        45,      35,      40,       1,        1,         0},
-	{110,    60,         5,              200,			  5,			 9,        55,      40,      65,       1,        1,         0},
-	{120,    60,         5,              300,			  5,			 10,       65,      50,      70,       1,        1,         0},
+const int Maze::depthValues[10][13] = { 
+  //mazeX  mazeY percPathsofMaze*10  enemyNumber  enemySpotDistance  enemyStep  maxSlow  maxJump  maxTele  maxKill  maxSUTele  maxKeys  maxDoorCount
+	{30,     20,         4,              1,               5,			 1,        6,       10,      2,       6,        0,        1,         1},
+	{40,     20,         4,              7,               5,			 2,        8,       1,      4,       7,        0,        1,         0},
+	{50,     30,         4,              11,              5,			 3,        12,      1,      6,       10,       0,        1,         0},
+	{60,     30,         4,              17,              5,			 4,        16,      1,      8,       10,       0,        1,         0},
+	{70,     40,         4,              25,              5,			 5,        20,      1,      10,      16,       0,        1,         0},
+	{80,     40,         5,              35,			  5,			 6,        26,      1,      12,      18,       1,        1,         0},
+	{90,     50,         5,              50,			  5,			 7,        35,      1,      20,      30,       1,        1,         0},
+	{100,    50,         5,              100,			  5,			 8,        45,      1,      35,      40,       1,        1,         0},
+	{110,    60,         5,              200,			  5,			 9,        55,      1,      40,      65,       1,        1,         0},
+	{120,    60,         5,              300,			  5,			 10,       65,      1,      50,      70,       1,        1,         0},
 }; //placeholder values
 
 vector<Item*> Maze::itemList = {};
@@ -112,11 +112,10 @@ void endScreen() {
 
 void levelClearedScreen(int depth) {
 	char c;
-	system("pause");
 	system("cls");
 	switch (depth) {
 	case 1:
-		cout << "<enter to continue>" << endl;
+		cout << "<enter to continue>" << endl << endl;
 		c = getchar();
 		cout << "*As you crawl through the pitch black sewers you hear a faint whisper in your ear*" << endl << "<enter to continue>" << endl;
 		c = getchar();
@@ -160,7 +159,7 @@ void printFunctions() {
 int initialDepthPrompt() {
 	int playerSetDepth = 0;
 
-	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the start." << endl;
+	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the recommended start." << endl;
 	cout << "Enter a Depth: ";
 	cin >> playerSetDepth;
 	while (cin.fail()) {

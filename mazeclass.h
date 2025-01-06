@@ -411,6 +411,7 @@ public:
 		default:
 			return false;
 		}
+		quantity--;
 		return true;
 	}
 };
@@ -731,6 +732,7 @@ public:
 
 struct Inventory {
 	SlowOrb slowOrbs;
+	JumpOrb jumpOrbs;
 	TeleOrb teleOrbs;
 	KillOrb killOrbs;
 	SUTeleOrb suteleOrbs;
@@ -744,13 +746,13 @@ struct Inventory {
 class Maze {
 private:
 	int depthCounter;
-	const static int depthValues[10][12]; //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys, doorCount
+	const static int depthValues[10][13]; //mazeX, mazeY, percPathsofMaze*10, enemyNumber, enemySpotDistance, enemyStep, maxSlow, maxTele, maxKill, maxSUTele, maxKeys, doorCount
 	int mazeX, mazeY; 
 	int maxPathCount;
 	float percPathsofMaze;
 	int enemyNumber;
 	unsigned char mazeWallChar, doorChar;
-	int maxSlow, maxTele, maxKill, maxSUTele, maxKeys, maxDoorCount;
+	int maxSlow, maxJump, maxTele, maxKill, maxSUTele, maxKeys, maxDoorCount;
 	const float minItemPercOfMax, minSUItemPercOfMax, minDoorPercOfMax;
 	stack<MazePoint> backtrack;
 
@@ -826,6 +828,28 @@ private:
 					Item* newSlowOrb = new SlowOrb({ i, j }, 1);
 					itemList.push_back(newSlowOrb);
 					mazeArr[i][j] = newSlowOrb->mazeChar;
+				}
+			}
+		}
+	}
+	void generateJumpOrbs() {
+		int loopCounter = 0;
+		int range = (maxJump + 1) * (1 - minItemPercOfMax);
+		if (range == 0) range = 1;
+		int rRange = rand() % (range);
+		for (int z = 0; z < (maxJump - rRange); z++) {
+			bool pathFound = false;
+			int i, j;
+			while (pathFound == false && loopCounter < 50000) {
+				i = (rand() % (mazeY - 2)) + 1;
+				j = (rand() % (mazeX - 2)) + 1;
+				loopCounter++;
+				if (mazeArr[i][j] == ' ') {
+					loopCounter = 0;
+					pathFound = true;
+					Item* newJumpOrb = new JumpOrb({ i, j }, 1);
+					itemList.push_back(newJumpOrb);
+					mazeArr[i][j] = newJumpOrb->mazeChar;
 				}
 			}
 		}
@@ -959,8 +983,8 @@ public:
 	MazePoint goldenKey;
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
 		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
-		maxSlow(depthValues[depthCounter][6]), maxTele(depthValues[depthCounter][7]), maxKill(depthValues[depthCounter][8]), maxSUTele(depthValues[depthCounter][9]), maxKeys(depthValues[depthCounter][10]),
-		maxDoorCount(depthValues[depthCounter][11]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), goldenKey({NULL, NULL}) {
+		maxSlow(depthValues[depthCounter][6]), maxJump(depthValues[depthCounter][7]), maxTele(depthValues[depthCounter][8]), maxKill(depthValues[depthCounter][9]), maxSUTele(depthValues[depthCounter][10]), maxKeys(depthValues[depthCounter][11]),
+		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), goldenKey({NULL, NULL}) {
 		for (int i = 0; i < mazeY; i++) {
 			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
@@ -1188,6 +1212,7 @@ public:
 	void generateItems() {
 		generateGoldenKey();
 		generateSlowOrbs();
+		generateJumpOrbs();
 		generateTeleOrbs();
 		generateKillOrbs();
 		generateSUTeleOrbs();
@@ -1219,11 +1244,12 @@ public:
 		Enemy::enemySpotDistance = depthValues[depthCounter][4];
 		Enemy::enemyStep = depthValues[depthCounter][5];
 		maxSlow = depthValues[depthCounter][6];
-		maxTele = depthValues[depthCounter][7];
-		maxKill = depthValues[depthCounter][8];
-		maxSUTele = depthValues[depthCounter][9];
-		maxKeys = depthValues[depthCounter][10];
-		maxDoorCount = depthValues[depthCounter][11];
+		maxJump = depthValues[depthCounter][7];
+		maxTele = depthValues[depthCounter][8];
+		maxKill = depthValues[depthCounter][9];
+		maxSUTele = depthValues[depthCounter][10];
+		maxKeys = depthValues[depthCounter][11];
+		maxDoorCount = depthValues[depthCounter][12];
 		depthCounter++;
 	}
 	int getDepthCounter() {
@@ -1289,7 +1315,7 @@ class Player {
 		int loopCounter = 0;
 		int randNum;
 		while (done != true && loopCounter < 100) {
-			randNum = rand() % 5;
+			randNum = rand() % 6;
 			switch (randNum) {
 			case 0:
 				if (playerInv.slowOrbs.quantity > 0) {
@@ -1299,27 +1325,34 @@ class Player {
 				}
 				break;
 			case 1:
+				if (playerInv.jumpOrbs.quantity > 0) {
+					playerInv.jumpOrbs.quantity = 0;
+					cout << "Somehow your jump orbs have completely disappeared from your pouch";
+					done = true;
+				}
+				break;
+			case 2:
 				if (playerInv.teleOrbs.quantity > 0) {
 					playerInv.teleOrbs.quantity = 0;
 					cout << "Somehow your teleport orbs have completely disappeared from your pouch";
 					done = true;
 				}
 				break;
-			case 2:
+			case 3:
 				if (playerInv.killOrbs.quantity > 0) {
 					playerInv.killOrbs.quantity = 0;
 					cout << "Somehow your kill orbs have completely disappeared from your pouch";
 					done = true;
 				}
 				break;
-			case 3:
+			case 4:
 				if (playerInv.suteleOrbs.quantity > 0) {
 					playerInv.suteleOrbs.quantity = 0;
 					cout << "Somehow your super teleport orbs have completely disappeared from your pouch";
 					done = true;
 				}
 				break;
-			case 4:
+			case 5:
 				if (playerInv.keys.quantity > 0) {
 					playerInv.keys.quantity = 0;
 					cout << "Somehow your keys have completely disappeared from your pouch";
@@ -1391,16 +1424,19 @@ public:
 		else if ((keyPress == '1' || keyPress == '!') && playerInv.slowOrbs.quantity > 0) { //use slowOrb
 			return playerInv.slowOrbs.use();
 		}
-		else if ((keyPress == '2' || keyPress == '"') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
+		else if ((keyPress == '2' || keyPress == '"') && playerInv.jumpOrbs.quantity > 0) {
+			return playerInv.jumpOrbs.use(playerPos, mazeArr, pathArr, mazeSize, lastMoveKeyPressed);
+		}
+		else if ((keyPress == '3' || keyPress == '£') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
 			return playerInv.teleOrbs.use(playerPos, mazeArr, exitDoor, mazeSize);
 		}
-		else if ((keyPress == '3' || keyPress == '£') && playerInv.killOrbs.quantity > 0) { //use killOrb
+		else if ((keyPress == '4' || keyPress == '$') && playerInv.killOrbs.quantity > 0) { //use killOrb
 			return playerInv.killOrbs.use(playerPos, mazeArr);
 		}
-		else if ((keyPress == '4' || keyPress == '$') && playerInv.suteleOrbs.quantity > 0) {
+		else if ((keyPress == '5' || keyPress == '%') && playerInv.suteleOrbs.quantity > 0) {
 			return playerInv.suteleOrbs.use(playerPos, mazeArr, exitDoor, goldenKeyPos, playerInv.goldenKey.quantity, mazeSize);
 		}
-		else if ((keyPress == '5' || keyPress == '%') && playerInv.keys.quantity > 0) {
+		else if ((keyPress == '6' || keyPress == '^') && playerInv.keys.quantity > 0) {
 			if (playerInv.keys.use(mazeArr, pathArr, lastMoveKeyPressed, playerPos)) {
 				pathCount++;
 				return true;
@@ -1429,6 +1465,9 @@ public:
 		else if (itemObject->name == "Slow Orb") {
 			playerInv.slowOrbs.quantity += itemObject->quantity;
 		}
+		else if (itemObject->name == "Jump Orb") {
+			playerInv.jumpOrbs.quantity += itemObject->quantity;
+		}
 		else if (itemObject->name == "Tele Orb") {
 			playerInv.teleOrbs.quantity += itemObject->quantity;
 		}
@@ -1446,6 +1485,7 @@ public:
 	void printInventory() {
 		cout << endl;
 		cout << playerInv.slowOrbs.name << "(" << playerInv.slowOrbs.mazeChar << ")" << " : " << playerInv.slowOrbs.quantity;
+		cout << setw(18) << playerInv.jumpOrbs.name << "(" << playerInv.jumpOrbs.mazeChar << ")" << " : " << playerInv.jumpOrbs.quantity;
 		cout << setw(18) << playerInv.teleOrbs.name << "(" << playerInv.teleOrbs.mazeChar << ")" << " : " << playerInv.teleOrbs.quantity;
 		cout << setw(20) << playerInv.killOrbs.name << "(" << playerInv.killOrbs.mazeChar << ")" << " : " << playerInv.killOrbs.quantity;
 		cout << setw(22) << playerInv.suteleOrbs.name << "(" << playerInv.suteleOrbs.mazeChar << ")" << " : " << playerInv.suteleOrbs.quantity;
