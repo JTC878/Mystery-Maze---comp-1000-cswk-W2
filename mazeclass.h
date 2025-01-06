@@ -219,6 +219,7 @@ public:
 			}
 		}
 		if (enemyPos.y == playerPos.y && enemyPos.x == playerPos.x) {
+			mazeArr[enemyPos.y][enemyPos.x] = 'E';
 			gameOver = true;
 		}
 	} 
