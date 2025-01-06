@@ -288,7 +288,27 @@ public:
 		return true;
 	}
 };
-//jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line until there is no more path.
+
+class JumpOrb : public Item {
+public:
+	JumpOrb() {
+		name = "Jump Orb";
+		mazeChar = 'J';
+		itemPos = { NULL, NULL };
+		quantity = 0;
+	}
+	JumpOrb(MazePoint pos, int quant) {
+		name = "Jump Orb";
+		mazeChar = 'J';
+		itemPos = pos;
+		quantity = quant;
+	}
+
+	bool use(MazePoint& playerPos, unsigned char** mazeArr, bool** pathArr) {
+
+	}
+};
+//jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line, you can either jump over enemies if the path infront if your lastKeyPressed is a path, or you can jump over walls if it is a wall.
 class TeleOrb : public Item {
 public:
 	static vector<Item*> &itemList;
@@ -803,8 +823,8 @@ private:
 			bool pathFound = false;
 			int i, j;
 			while (pathFound == false && loopCounter < 50000) {
-				i = (rand() % (mazeY - 2)) + 1;
-				j = (rand() % (mazeX - 2)) + 1;
+				i = (rand() % (mazeY - 3)) + 2;
+				j = (rand() % (mazeX - 3)) + 2;
 				loopCounter++;
 				if ((mazeArr[i - 1][j] == ' ' && mazeArr[i + 1][j] == ' ' && mazeArr[i][j - 1] == mazeWallChar && mazeArr[i][j + 1] == mazeWallChar) ||
 					(mazeArr[i][j - 1] == ' ' && mazeArr[i][j + 1] == ' ' && mazeArr[i - 1][j] == mazeWallChar && mazeArr[i + 1][j] == mazeWallChar)) {
