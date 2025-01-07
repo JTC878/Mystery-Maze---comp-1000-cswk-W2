@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <random>
@@ -5,12 +6,13 @@
 #include <vector>
 #include <queue>
 #include <stack>
-#include <conio.h>
 #include <iomanip>
+#include <wncurses.h>
+#include <locale.h>
 
 using namespace std;
 
-#include "mazeclass.h"
+#include <mazeclass.h>
 
 const int Maze::depthValues[10][13] = { 
   //mazeX  mazeY percPathsofMaze*10  enemyNumber  enemySpotDistance  enemyStep  maxSlow  maxJump  maxTele  maxKill  maxSUTele  maxKeys  maxDoorCount
@@ -46,20 +48,38 @@ void deathScreen();
 void endScreen();
 void printFunctions();
 int initialDepthPrompt();
+string readString() {
+	string input;
+	echo();
+	int ch;
+
+	do
+	{
+		ch = getch();
+		input.push_back(ch);
+	} while (ch != '\n');
+
+	noecho();
+	printw("%s", input);
+	getch();
+	return input;
+}
 
 int main() {
-
+	setlocale(LC_ALL, "");
+	initscr();
+	noecho();
 	char key;
-	maze1.setDepthCounter(initialDepthPrompt());
+	//maze1.setDepthCounter(initialDepthPrompt());
 
 	srand(time(0));
 	maze1.generateMaze();
 	player1.setPos(maze1.midPoint);
-	system("cls");
+	clear();
 	printFunctions();
 
 	while (true) {
-		key = _getche(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
+		key = getch(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
 		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor, maze1.goldenKey, maze1.getMazeSize(), maze1.pathCount)) { //for each item check collect method, if check collect is true then player.collect the item. 
 			for (Item* item : maze1.itemList) { //this can be made a function if necessary inside Maze class just make the player object a reference parameter
 				if (item->checkCollect(player1.getPlayerPos())) {
@@ -70,7 +90,7 @@ int main() {
 				enemy->movementChoice(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos(), maze1.pathCount);
 			}		
 		}
-		system("cls"); //windows dependant - ncurses?
+		clear(); //windows dependant - ncurses?
 		printFunctions();
 		if (player1.isLevelClear()) {
 			levelClearedScreen(maze1.getDepthCounter());
@@ -78,7 +98,7 @@ int main() {
 			maze1.generateMaze();
 			player1.setPos(maze1.midPoint);
 			player1.resetStatus();
-			system("cls");
+			clear();
 			printFunctions();
 			
 		}
@@ -96,6 +116,7 @@ void deathScreen() {
 	cout << endl << "You have died by getting hit by an enemy" << endl;
 	cout << "Press any button to exit" << endl << endl;
 	system("pause");
+	endwin();
 	exit(0);
 }
 
@@ -104,6 +125,7 @@ void endScreen() {
 	cout << endl << "You have made it out of the maze!" << endl;
 	cout << "Press any button to exit" << endl;
 	system("pause");
+	endwin();
 	exit(0);
 }
 
@@ -150,6 +172,7 @@ void printFunctions() {
 	maze1.printDepthEnemyPathCount();
 	Enemy::printEnemyStep();
 	player1.printInventory();
+	refresh();
 }
 
 int initialDepthPrompt() {
@@ -170,7 +193,7 @@ int initialDepthPrompt() {
 	cin >> playerSetDepth;
 	while (cin.fail()) {
 		cin.clear();
-		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cin.ignore(1000, '\n');
 		cout << endl << "You have entered a wrong input. Enter any depth between 1 and 10: ";
 		cin >> playerSetDepth;
 	}

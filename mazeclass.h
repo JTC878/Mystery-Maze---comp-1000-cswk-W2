@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 struct MazePoint {
 	int y;
@@ -98,9 +98,13 @@ public:
 		}
 	}
 	void enemyTargetedMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
-		MazePoint nextPos;
+		MazePoint nextPos = { NULL, NULL };
 		if (!shortestPathQueue.empty()) {
 			nextPos = shortestPathQueue.front();
+			
+		}
+		else {
+			return;
 		}
 		if (pathArr[nextPos.y][nextPos.x] == true) {
 			mazeArr[enemyPos.y][enemyPos.x] = ' ';
@@ -240,7 +244,7 @@ public:
 		return rmDec;
 	} //This allows fractional numbers to be faster or slower than whole numbers - this means slowOrbs have an impact even if they remove a half a step for example.
 	static void printEnemyStep() {
-		cout << "      Enemy Speed: " << enemyStep << endl;
+		printw("      Enemy Speed: %f", enemyStep);
 	}
 };
 
@@ -417,7 +421,7 @@ public:
 		return true;
 	}
 };
-//jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line, you can either jump over enemies if the path infront if your lastKeyPressed is a path, or you can jump over walls if it is a wall.
+
 class TeleOrb : public Item {
 public:
 	static vector<Item*> &itemList;
@@ -986,7 +990,7 @@ public:
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
 		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
 		maxSlow(depthValues[depthCounter][6]), maxJump(depthValues[depthCounter][7]), maxTele(depthValues[depthCounter][8]), maxKill(depthValues[depthCounter][9]), maxSUTele(depthValues[depthCounter][10]), maxKeys(depthValues[depthCounter][11]),
-		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), goldenKey({NULL, NULL}) {
+		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar('█'), doorChar(194), goldenKey({NULL, NULL}) {
 		for (int i = 0; i < mazeY; i++) {
 			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
@@ -1022,9 +1026,10 @@ public:
 		}
 
 		for (int i = 0; i < mazeY; i++) {
-			cout << endl;
+			printw("\n");
 			for (int j = 0; j < mazeX; j++) {
-				cout << mazeArr[i][j];
+				printw("%c", (char)mazeArr[i][j]);
+				//addch(mazeArr[i][j]);
 			}
 		}
 	}
@@ -1037,8 +1042,8 @@ public:
 		}
 	}
 	void printDepthEnemyPathCount() {
-		cout << endl;
-		cout << endl << "Depth: " << depthCounter << "       Number of paths: " << pathCount << "      Number of enemies: " << enemyList.size();
+		printw("\n");
+		printw("Depth: %d      Number of paths: %d      Number of enemies: %d", depthCounter, pathCount, enemyList.size());
 	}
 	void generateMazePaths() {
 		mazeArr[midPoint.y][midPoint.x] = 'C';
@@ -1429,7 +1434,7 @@ public:
 		else if ((keyPress == '2' || keyPress == '"') && playerInv.jumpOrbs.quantity > 0) {
 			return playerInv.jumpOrbs.use(playerPos, mazeArr, pathArr, mazeSize, lastMoveKeyPressed);
 		}
-		else if ((keyPress == '3' || keyPress == '�') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
+		else if ((keyPress == '3' || keyPress == '£') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
 			return playerInv.teleOrbs.use(playerPos, mazeArr, exitDoor, mazeSize);
 		}
 		else if ((keyPress == '4' || keyPress == '$') && playerInv.killOrbs.quantity > 0) { //use killOrb
@@ -1485,17 +1490,17 @@ public:
 		delete itemObject;
 	}
 	void printInventory() {
-		cout << endl;
-		cout << playerInv.slowOrbs.name << "(" << playerInv.slowOrbs.mazeChar << ")" << " : " << playerInv.slowOrbs.quantity;
-		cout << setw(18) << playerInv.jumpOrbs.name << "(" << playerInv.jumpOrbs.mazeChar << ")" << " : " << playerInv.jumpOrbs.quantity;
-		cout << setw(18) << playerInv.teleOrbs.name << "(" << playerInv.teleOrbs.mazeChar << ")" << " : " << playerInv.teleOrbs.quantity;
-		cout << setw(20) << playerInv.killOrbs.name << "(" << playerInv.killOrbs.mazeChar << ")" << " : " << playerInv.killOrbs.quantity;
-		cout << setw(22) << playerInv.suteleOrbs.name << "(" << playerInv.suteleOrbs.mazeChar << ")" << " : " << playerInv.suteleOrbs.quantity;
-		cout << setw(15) << playerInv.keys.name << "(" << playerInv.keys.mazeChar << ")" << " : " << playerInv.keys.quantity;
-		cout << setw(20) << playerInv.goldenKey.name << "(" << playerInv.goldenKey.mazeChar << ")" << " : " << playerInv.goldenKey.quantity;
+		printw("\n");
+		printw("%s(%c) :  %d", playerInv.slowOrbs.name, playerInv.slowOrbs.mazeChar, playerInv.slowOrbs.quantity);
+		printw("         %s(%c) :  %d", playerInv.jumpOrbs.name, playerInv.jumpOrbs.mazeChar, playerInv.jumpOrbs.quantity);
+		printw("         %s(%c) :  %d", playerInv.teleOrbs.name, playerInv.teleOrbs.mazeChar, playerInv.teleOrbs.quantity);
+		printw("         %s(%c) :  %d", playerInv.killOrbs.name, playerInv.killOrbs.mazeChar, playerInv.killOrbs.quantity);
+		printw("         %s(%c) :  %d", playerInv.suteleOrbs.name, playerInv.suteleOrbs.mazeChar, playerInv.suteleOrbs.quantity);
+		printw("         %s(%c) :  %d", playerInv.keys.name, playerInv.keys.mazeChar, playerInv.keys.quantity);
+		printw("         %s(%c) :  %d", playerInv.goldenKey.name, playerInv.goldenKey.mazeChar, playerInv.goldenKey.quantity);
 		if (lastItemCollectedCounter != 0) {
-			cout << endl;
-			cout << "+" << lastItemCollectedCounter << " " << lastItemCollected;
+			printw("\n");
+			printw("+%d  %s", lastItemCollectedCounter, lastItemCollected); 
 		}
 	}
 	void setPos(MazePoint midpoint) {
