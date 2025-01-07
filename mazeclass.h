@@ -31,8 +31,8 @@ public:
 	static int enemySpotDistance;
 	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }), mazeX(mazeX), mazeY(mazeY), pathVisitedCount(1), copyPathArr(new bool* [mazeY]), currentPos({}), totalPathCount(0) { //enemy spawning done within constructor, could be moved to another method if necessary. 
 		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
-		int radiusY = mazeY * 0.1; //these can be changed later if necessary
-		int radiusX = mazeX * 0.1;
+		int radiusY = mazeY * 0.15; //these can be changed later if necessary
+		int radiusX = mazeX * 0.15;
 		bool pathFound = false;
 		int i, j;
 		while (pathFound == false) {
@@ -311,13 +311,13 @@ class JumpOrb : public Item {
 public:
 	JumpOrb() {
 		name = "Jump Orb";
-		mazeChar = 'J';
+		mazeChar = 232;
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	JumpOrb(MazePoint pos, int quant) {
 		name = "Jump Orb";
-		mazeChar = 'J';
+		mazeChar = 232;
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -988,8 +988,9 @@ public:
 	MazePoint goldenKey;
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
 		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
-		maxSlow(depthValues[depthCounter][6]), maxJump(depthValues[depthCounter][7]), maxTele(depthValues[depthCounter][8]), maxKill(depthValues[depthCounter][9]), maxSUTele(depthValues[depthCounter][10]), maxKeys(depthValues[depthCounter][11]),
-		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), goldenKey({NULL, NULL}) {
+		maxSlow(depthValues[depthCounter][6]), maxJump(depthValues[depthCounter][7]), maxTele(depthValues[depthCounter][8]), maxKill(depthValues[depthCounter][9]), 
+		maxSUTele(depthValues[depthCounter][10]), maxKeys(depthValues[depthCounter][11]), maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), 
+		minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), goldenKey({NULL, NULL}) {
 		for (int i = 0; i < mazeY; i++) {
 			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
@@ -1001,7 +1002,8 @@ public:
 		unsigned char** newMazeArray = new unsigned char* [mazeY];
 		bool** newPathArray = new bool* [mazeY];
 		for (int i = 0; i < mazeY; i++) {
-			newMazeArray[i] = new unsigned char[mazeX]; //'mazeX' ammount of pointers are initialised for each row
+			newMazeArray[i] = new unsigned char[mazeX]; 
+			//'mazeX' ammount of unsigned chars are dynamically assigned memory for each 1D array(pointer) within the 2D array(pointer to pointers)
 			newPathArray[i] = new bool[mazeX];
 		}
 
@@ -1077,7 +1079,7 @@ public:
 			}
 			r = rand() % 4; //random variable corresponding to up,down,left,right to check whether carving a path is possible from the current position in the subsequent switch case.
 			switch (r) {
-			case 0: //ABOVE case - ISSUE Maze will never end at top or bottom but because of the way memory addressing works for arrays ending at the left or right side is possible 
+			case 0: //ABOVE case 
 				if ((rand() % 101) <= weightedRandomPercY(i)) { //if left, right and up is a wall
 					if (i < 3) { //because of the way memory addressing works for arrays this precaution is necessary
 						if (found != true) {
@@ -1096,6 +1098,7 @@ public:
 						}
 					}
 					else if (pathArr[i - 1][j] == false && pathArr[i - 2][j] == false && pathArr[i - 1][j - 1] == false && pathArr[i - 1][j + 1] == false) {
+						//if left, right and up is a wall
 						mazeArr[i - 1][j] = ' ';
 						i--;
 						backtrack.push({ i, j });
