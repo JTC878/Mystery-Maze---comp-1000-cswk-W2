@@ -98,9 +98,12 @@ public:
 		}
 	}
 	void enemyTargetedMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
-		MazePoint nextPos;
+		MazePoint nextPos = { 0, 0 };
 		if (!shortestPathQueue.empty()) {
 			nextPos = shortestPathQueue.front();
+		}
+		else {
+			return;
 		}
 		if (pathArr[nextPos.y][nextPos.x] == true) {
 			mazeArr[enemyPos.y][enemyPos.x] = ' ';
@@ -210,7 +213,7 @@ public:
 			totalPathCount = mazePathCount;
 			updatePathfinding(playerPos);
 		}
-		for (int i = 0; i < enemyStep; i++) {
+		for (int i = 0; i < getEnemyStep(); i++) {
 			if (!shortestPathQueue.empty()) {
 				enemyTargetedMove(mazeArr, pathArr, playerPos);
 			}
@@ -229,7 +232,7 @@ public:
 	static bool isGameOver() {
 		return gameOver;
 	}
-	static int getEnemyStep() { //use getEnemyStep instead of the enemyStep attribute when you want to apply this behaviour(only when the enemy makes movements)
+	int getEnemyStep() { //use getEnemyStep instead of the enemyStep attribute when you want to apply this behaviour(only when the enemy makes movements)
 		int rmDec = (int)enemyStep;
 		stepRemainder += enemyStep - rmDec;
 		if (stepRemainder >= 1.0) {
