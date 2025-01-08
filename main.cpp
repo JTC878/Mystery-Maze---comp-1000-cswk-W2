@@ -64,11 +64,11 @@ void testCurses() {
 
 	refresh(); //updates the screen to what you have in the memory buffer 
 
-	int c = getch(); //waits for user to press a key to continue, returns int value of whatever key was pressed 
+	int c = getch(); //waits for user to press a key to continue, returns int value of whatever key was pressed
+	clear(); //clears the standard screen - technically a type of window 
 
-	move(0, 0);
 	//mvprintw combines both move and printw in one. to move the cursor then print something. 
-	printw("%d", c);
+	mvprintw(0, 0, "%d", c);
 
 	getch();
 	//deallocates memory for the screen, ends curses mode
