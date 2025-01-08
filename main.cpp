@@ -48,16 +48,26 @@ void deathScreen();
 void endScreen();
 void printFunctions();
 int initialDepthPrompt();
+//in ncurses the cursor determines where on the screen things get printed
+//the cursor starts at 0, 0 by default which is the top left of the screen
 
-void testCurses() {
+void testCurses() { 
 	//initialises the screen, sets up memory 
 	initscr();
+
+	int x = 10, //10 columns, each column corresponds to a char
+		y = 10; //10 rows, each row corresponds to a newline \n
+
+	move(y, x); //moves the cursor to the specified location, the first parameter is the Y value, a common theme in many ncurses functions 
 
 	printw("Hello World!");
 
 	refresh(); //updates the screen to what you have in the memory buffer 
 
 	int c = getch(); //waits for user to press a key to continue, returns int value of whatever key was pressed 
+
+	move(0, 0);
+	//mvprintw combines both move and printw in one. to move the cursor then print something. 
 	printw("%d", c);
 
 	getch();
