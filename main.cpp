@@ -48,24 +48,26 @@ void deathScreen();
 void endScreen();
 void printFunctions();
 int initialDepthPrompt();
-string readString() {
-	string input;
-	echo();
-	int ch;
 
-	do
-	{
-		ch = getch();
-		input.push_back(ch);
-	} while (ch != '\n');
+void testCurses() {
+	//initialises the screen, sets up memory 
+	initscr();
 
-	noecho();
-	printw("%s", input);
+	printw("Hello World!");
+
+	refresh(); //updates the screen to what you have in the memory buffer 
+
+	int c = getch(); //waits for user to press a key to continue, returns int value of whatever key was pressed 
+	printw("%d", c);
+
 	getch();
-	return input;
+	//deallocates memory for the screen, ends curses mode
+	endwin();
 }
 
 int main() {
+	testCurses();
+	exit(0);
 	setlocale(LC_ALL, "");
 	initscr();
 	noecho();
