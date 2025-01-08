@@ -76,8 +76,8 @@ void testCurses() {
 }
 
 int main() {
-	testCurses();
-	exit(0);
+	//testCurses();
+	//exit(0);
 	setlocale(LC_ALL, "");
 	initscr();
 	noecho();
