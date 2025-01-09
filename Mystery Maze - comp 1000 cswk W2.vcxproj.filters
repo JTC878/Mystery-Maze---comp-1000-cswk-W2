@@ -18,142 +18,28 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="addch.c">
+    <ClCompile Include="change_output.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="addchstr.c">
+    <ClCompile Include="coord.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="addstr.c">
+    <ClCompile Include="cursor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="attr.c">
+    <ClCompile Include="depreciated.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="beep.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bkgd.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="border.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="clear.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="color.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="delch.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="deleteln.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="getch.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="getstr.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="getyx.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="inch.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="inchstr.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="initscr.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="inopts.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="insch.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="insstr.c">
+    <ClCompile Include="input.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="instr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="kernel.c">
+    <ClCompile Include="output.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="keyname.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mouse.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="move.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="outopts.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="overlay.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="panel.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pdcclip.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pdcdisp.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pdcgetsc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pdckbd.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pdcscrn.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pdcsetsc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pdcutil.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="printw.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="refresh.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="scanw.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="scr_dump.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="scroll.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="slk.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="termattr.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="touch.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="util.c">
+    <ClCompile Include="vars.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="window.c">
