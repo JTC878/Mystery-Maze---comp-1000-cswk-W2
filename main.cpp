@@ -52,35 +52,30 @@ int initialDepthPrompt();
 //the cursor starts at 0, 0 by default which is the top left of the screen
 
 void testCurses() { 
-	setlocale(LC_ALL, "");
 	//initialises the screen, sets up memory 
 	initscr();
 
-	int x = 10, //10 columns, each column corresponds to a char
-		y = 10; //10 rows, each row corresponds to a newline \n
+	int height, width, y, x;
+	height = 10;
+	width = 20;
+	y = 10;
+	x = 10;
 
-	move(y, x); //moves the cursor to the specified location, the first parameter is the Y value, a common theme in many ncurses functions 
+	WINDOW *win = newwin(height, width, y, x); //without doing anything to it, the window is an invisible part of the terminal
+	refresh();
 
-	printw("Hello World!");
+	box(win, 0, 0);
+	wrefresh(win); //refreshes a specific window, you don't need to refresh the whole screen if you only update one window 
+	//everything thats changed specifically in memory will never get updated to the screen until you call refresh
 
-	refresh(); //updates the screen to what you have in the memory buffer 
+	int c = getch();
 
-	int c = getch(); //waits for user to press a key to continue, returns int value of whatever key was pressed
-	clear(); //clears the standard screen - technically a type of window 
-
-	//mvprintw combines both move and printw in one. to move the cursor then print something. 
-	mvprintw(0, 0, "%d", c);
-
-	addstr("\u2663");
-
-	getch();
-	//deallocates memory for the screen, ends curses mode
 	endwin();
 }
 
 int main() {
-	//testCurses();
-	//exit(0);
+	testCurses();
+	exit(0);
 	setlocale(LC_ALL, "");
 	initscr();
 	noecho();

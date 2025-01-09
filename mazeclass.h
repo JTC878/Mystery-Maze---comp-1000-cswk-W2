@@ -990,7 +990,7 @@ public:
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
 		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
 		maxSlow(depthValues[depthCounter][6]), maxJump(depthValues[depthCounter][7]), maxTele(depthValues[depthCounter][8]), maxKill(depthValues[depthCounter][9]), maxSUTele(depthValues[depthCounter][10]), maxKeys(depthValues[depthCounter][11]),
-		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), goldenKey({NULL, NULL}) {
+		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(35), doorChar(194), goldenKey({NULL, NULL}) {
 		for (int i = 0; i < mazeY; i++) {
 			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
