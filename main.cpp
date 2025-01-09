@@ -52,6 +52,7 @@ int initialDepthPrompt();
 //the cursor starts at 0, 0 by default which is the top left of the screen
 
 void testCurses() { 
+	setlocale(LC_ALL, "");
 	//initialises the screen, sets up memory 
 	initscr();
 
@@ -69,6 +70,8 @@ void testCurses() {
 
 	//mvprintw combines both move and printw in one. to move the cursor then print something. 
 	mvprintw(0, 0, "%d", c);
+
+	addstr("\u2663");
 
 	getch();
 	//deallocates memory for the screen, ends curses mode

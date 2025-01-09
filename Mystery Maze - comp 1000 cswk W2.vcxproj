@@ -131,18 +131,57 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="change_output.c" />
-    <ClCompile Include="coord.c" />
-    <ClCompile Include="cursor.c" />
-    <ClCompile Include="depreciated.c" />
-    <ClCompile Include="input.c" />
+    <ClCompile Include="addch.c" />
+    <ClCompile Include="addchstr.c" />
+    <ClCompile Include="addstr.c" />
+    <ClCompile Include="attr.c" />
+    <ClCompile Include="beep.c" />
+    <ClCompile Include="bkgd.c" />
+    <ClCompile Include="border.c" />
+    <ClCompile Include="clear.c" />
+    <ClCompile Include="color.c" />
+    <ClCompile Include="debug.c" />
+    <ClCompile Include="delch.c" />
+    <ClCompile Include="deleteln.c" />
+    <ClCompile Include="getch.c" />
+    <ClCompile Include="getstr.c" />
+    <ClCompile Include="getyx.c" />
+    <ClCompile Include="inch.c" />
+    <ClCompile Include="inchstr.c" />
+    <ClCompile Include="initscr.c" />
+    <ClCompile Include="inopts.c" />
+    <ClCompile Include="insch.c" />
+    <ClCompile Include="insstr.c" />
     <ClCompile Include="instr.c" />
+    <ClCompile Include="kernel.c" />
+    <ClCompile Include="keyname.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="output.c" />
-    <ClCompile Include="vars.c" />
+    <ClCompile Include="mouse.c" />
+    <ClCompile Include="move.c" />
+    <ClCompile Include="outopts.c" />
+    <ClCompile Include="overlay.c" />
+    <ClCompile Include="pad.c" />
+    <ClCompile Include="panel.c" />
+    <ClCompile Include="pdcclip.c" />
+    <ClCompile Include="pdcdisp.c" />
+    <ClCompile Include="pdcgetsc.c" />
+    <ClCompile Include="pdckbd.c" />
+    <ClCompile Include="pdcscrn.c" />
+    <ClCompile Include="pdcsetsc.c" />
+    <ClCompile Include="pdcutil.c" />
+    <ClCompile Include="printw.c" />
+    <ClCompile Include="refresh.c" />
+    <ClCompile Include="scanw.c" />
+    <ClCompile Include="scroll.c" />
+    <ClCompile Include="scr_dump.c" />
+    <ClCompile Include="slk.c" />
+    <ClCompile Include="termattr.c" />
+    <ClCompile Include="touch.c" />
+    <ClCompile Include="util.c" />
     <ClCompile Include="window.c" />
   </ItemGroup>
   <ItemGroup>
