@@ -50,30 +50,9 @@ void deathScreen();
 void endScreen();
 void printFunctions();
 int initialDepthPrompt();
+void testCurses();
 //in ncurses the cursor determines where on the screen things get printed
 //the cursor starts at 0, 0 by default which is the top left of the screen
-
-void testCurses() { 
-	//initialises the screen, sets up memory 
-	initscr();
-
-	int height, width, y, x;
-	height = 10;
-	width = 20;
-	y = 10;
-	x = 10;
-
-	WINDOW *win = newwin(height, width, y, x); //without doing anything to it, the window is an invisible part of the terminal
-	refresh();
-
-	box(win, 0, 0);
-	wrefresh(win); //refreshes a specific window, you don't need to refresh the whole screen if you only update one window 
-	//everything thats changed specifically in memory will never get updated to the screen until you call refresh
-
-	int c = getch();
-
-	endwin();
-}
 
 int main() {
 	testCurses();
@@ -120,6 +99,28 @@ int main() {
 	}
 
 	return 0;
+}
+
+void testCurses() {
+	//initialises the screen, sets up memory 
+	initscr();
+
+	int height, width, y, x;
+	height = 10;
+	width = 20;
+	y = 10;
+	x = 10;
+
+	WINDOW* win = newwin(height, width, y, x); //without doing anything to it, the window is an invisible part of the terminal
+	refresh();
+
+	box(win, 0, 0);
+	wrefresh(win); //refreshes a specific window, you don't need to refresh the whole screen if you only update one window 
+	//everything thats changed specifically in memory will never get updated to the screen until you call refresh
+
+	int c = getch();
+
+	endwin();
 }
 
 
