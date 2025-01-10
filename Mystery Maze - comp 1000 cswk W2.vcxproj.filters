@@ -18,33 +18,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="change_output.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="coord.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cursor.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="depreciated.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="input.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="instr.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="output.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vars.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="window.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mazeclass.h">

@@ -7,12 +7,14 @@
 #include <queue>
 #include <stack>
 #include <iomanip>
-#include <wncurses.h>
+#define PDC_WIDE
+#include <curses.h>
+#include <wchar.h>
 #include <locale.h>
 
 using namespace std;
 
-#include <mazeclass.h>
+#include "mazeclass.h"
 
 const int Maze::depthValues[10][13] = { 
   //mazeX  mazeY percPathsofMaze*10  enemyNumber  enemySpotDistance  enemyStep  maxSlow  maxJump  maxTele  maxKill  maxSUTele  maxKeys  maxDoorCount
