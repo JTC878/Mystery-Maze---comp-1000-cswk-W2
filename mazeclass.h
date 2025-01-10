@@ -758,9 +758,11 @@ private:
 	float percPathsofMaze;
 	int enemyNumber;
 	unsigned char mazeWallChar, doorChar;
+	const wchar_t umazeWallChar[6], udoorChar[6];
 	int maxSlow, maxJump, maxTele, maxKill, maxSUTele, maxKeys, maxDoorCount;
 	const float minItemPercOfMax, minSUItemPercOfMax, minDoorPercOfMax;
 	stack<MazePoint> backtrack;
+	WINDOW *mazeWin;
 
 	void deleteMazeArrays() {
 		for (int i = 0; i < mazeY; i++) {
@@ -980,6 +982,7 @@ private:
 public:
 	unsigned char** mazeArr;
 	bool** pathArr;
+	wchar_t** printedMazeArr;
 	int pathCount; //Now should be accurate to the amount of paths that are in the maze, exitDoor is not a path nor any normalKeyDoors. and pathCount is decremented for each generated.
 	static vector<Item*> itemList;
 	static vector<Enemy*> enemyList;
@@ -990,7 +993,7 @@ public:
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
 		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
 		maxSlow(depthValues[depthCounter][6]), maxJump(depthValues[depthCounter][7]), maxTele(depthValues[depthCounter][8]), maxKill(depthValues[depthCounter][9]), maxSUTele(depthValues[depthCounter][10]), maxKeys(depthValues[depthCounter][11]),
-		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(35), doorChar(194), goldenKey({NULL, NULL}) {
+		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), umazeWallChar(L"\u2588"), udoorChar(L"\u2584"), goldenKey({NULL, NULL}), mazeWin(newwin(mazeY, mazeX, 0, 0)) {
 		for (int i = 0; i < mazeY; i++) {
 			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
@@ -1024,12 +1027,18 @@ public:
 				mazeArr[pos.y][pos.x] = item->mazeChar;
 			}
 		}
+		for (int i = 0; i < mazeY; i++) {
+			for (int j = 0; j < mazeX; j++) {
+				if (mazeArr[i][j] == mazeWallChar) printedMazeArr[i][j] = *umazeWallChar;
+				else if (mazeArr[i][j] == doorChar) printedMazeArr[i][j] = *udoorChar;
+			}
+		}
+
 		move(0, 0);
 		for (int i = 0; i < mazeY; i++) {
 			printw("\n");
 			for (int j = 0; j < mazeX; j++) {
 				printw("%lc", mazeArr[i][j]);
-				//addch(mazeArr[i][j]);
 			}
 		}
 	}
@@ -1244,6 +1253,7 @@ public:
 	void depthUpdateValues() {
 		mazeX = depthValues[depthCounter][0];
 		mazeY = depthValues[depthCounter][1];
+		wresize(mazeWin, mazeY, mazeX);
 		midPoint.x = mazeX / 2;
 		midPoint.y = mazeY / 2;
 		percPathsofMaze = (float)depthValues[depthCounter][2] * 0.1;
