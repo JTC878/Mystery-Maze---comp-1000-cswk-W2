@@ -1492,20 +1492,13 @@ public:
 	}
 	void printInventory(WINDOW* invWin) {
 		box(invWin, 0, 0);
-		mvwaddstr(invWin, 1, 1, playerInv.slowOrbs.name.c_str());
-		wprintw(invWin, "(%c) :  %d", playerInv.slowOrbs.mazeChar, playerInv.slowOrbs.quantity);
-		mvwaddstr(invWin, 3, 1, playerInv.jumpOrbs.name.c_str());
-		wprintw(invWin, "(%c) :  %d", playerInv.jumpOrbs.mazeChar, playerInv.jumpOrbs.quantity);
-		mvwaddstr(invWin, 5, 1, playerInv.teleOrbs.name.c_str());
-		wprintw(invWin, "(%c) :  %d", playerInv.teleOrbs.mazeChar, playerInv.teleOrbs.quantity);
-		mvwaddstr(invWin, 7, 1, playerInv.killOrbs.name.c_str());
-		wprintw(invWin, "(%c) :  %d", playerInv.killOrbs.mazeChar, playerInv.killOrbs.quantity);
-		mvwaddstr(invWin, 9, 1, playerInv.suteleOrbs.name.c_str());
-		wprintw(invWin, "(%c) :  %d", playerInv.suteleOrbs.mazeChar, playerInv.suteleOrbs.quantity);
-		mvwaddstr(invWin, 11, 1, playerInv.keys.name.c_str());
-		wprintw(invWin, "(%c) :  %d", playerInv.keys.mazeChar, playerInv.keys.quantity);
-		mvwaddstr(invWin, 13, 1, playerInv.goldenKey.name.c_str());
-		wprintw(invWin, "(%c) :  %d", playerInv.goldenKey.mazeChar, playerInv.goldenKey.quantity);
+		mvwprintw(invWin, 1, 1, "%s(%c) :  %d", playerInv.slowOrbs.name.c_str(), playerInv.slowOrbs.mazeChar, playerInv.slowOrbs.quantity);
+		mvwprintw(invWin, 3, 1, "%s(%c) :  %d", playerInv.jumpOrbs.name.c_str(), playerInv.jumpOrbs.mazeChar, playerInv.jumpOrbs.quantity);
+		mvwprintw(invWin, 5, 1, "%s(%c) :  %d", playerInv.teleOrbs.name.c_str(), playerInv.teleOrbs.mazeChar, playerInv.teleOrbs.quantity);
+		mvwprintw(invWin, 7, 1, "%s(%c) :  %d", playerInv.killOrbs.name.c_str(), playerInv.killOrbs.mazeChar, playerInv.killOrbs.quantity);
+		mvwprintw(invWin, 9, 1, "%s(%c) :  %d", playerInv.suteleOrbs.name.c_str(), playerInv.suteleOrbs.mazeChar, playerInv.suteleOrbs.quantity);
+		mvwprintw(invWin, 11, 1, "%s(%c) :  %d", playerInv.keys.name.c_str(), playerInv.keys.mazeChar, playerInv.keys.quantity);
+		mvwprintw(invWin, 13, 1, "%s(%c) :  %d", playerInv.goldenKey.name.c_str(), playerInv.goldenKey.mazeChar, playerInv.goldenKey.quantity);
 		if (lastItemCollectedCounter != 0) {
 			mvwprintw(invWin, 15, 1, "+%d  %s", lastItemCollectedCounter, lastItemCollected.c_str()); 
 		}
