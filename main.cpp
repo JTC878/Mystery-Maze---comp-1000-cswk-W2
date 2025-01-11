@@ -59,11 +59,10 @@ int main() {
 	//exit(0);
 	setlocale(LC_ALL, "");
 	initscr();
+	noecho();
 	WINDOW* mazeWin = newwin(maze1.getMazeSize().y, maze1.getMazeSize().x, 0, 0);
 	WINDOW* mazeStatus = newwin(4, 100, maze1.getMazeSize().y + 4, 10);
-	box(mazeStatus, 0, 0);
-	WINDOW* invWin = newwin(10, 30, 0, 60);
-	box(invWin, 0, 0);
+	WINDOW* invWin = newwin(20, 80, 1, 30);
 	char key;
 	//maze1.setDepthCounter(initialDepthPrompt());
 
@@ -183,6 +182,9 @@ void levelClearedScreen(int depth) {
 }
 
 void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin) {
+	wclear(mazeWin);
+	wclear(mazeStatus);
+	wclear(invWin);
 	clear();
 	refresh();
 	maze1.printMazeArray(mazeWin);
