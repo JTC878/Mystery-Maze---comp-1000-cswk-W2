@@ -48,26 +48,29 @@ Player player1(maze1.midPoint);
 void levelClearedScreen(int depth);
 void deathScreen();
 void endScreen();
-void printFunctions();
+void printFunctions(WINDOW*, WINDOW*, WINDOW*);
 int initialDepthPrompt();
 void testCurses();
 //in ncurses the cursor determines where on the screen things get printed
 //the cursor starts at 0, 0 by default which is the top left of the screen
 
 int main() {
-	testCurses();
-	exit(0);
+	//testCurses();
+	//exit(0);
 	setlocale(LC_ALL, "");
 	initscr();
-	noecho();
+	WINDOW* mazeWin = newwin(maze1.getMazeSize().y, maze1.getMazeSize().x, 0, 0);
+	WINDOW* mazeStatus = newwin(4, 100, maze1.getMazeSize().y + 4, 10);
+	box(mazeStatus, 0, 0);
+	WINDOW* invWin = newwin(10, 30, 0, 60);
+	box(invWin, 0, 0);
 	char key;
 	//maze1.setDepthCounter(initialDepthPrompt());
 
 	srand(time(0));
 	maze1.generateMaze();
 	player1.setPos(maze1.midPoint);
-	clear();
-	printFunctions();
+	printFunctions(mazeWin, mazeStatus, invWin);
 
 	while (true) {
 		key = getch(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
@@ -81,16 +84,15 @@ int main() {
 				enemy->movementChoice(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos(), maze1.pathCount);
 			}		
 		}
-		clear(); //windows dependant - ncurses?
-		printFunctions();
+		printFunctions(mazeWin, mazeStatus, invWin);
 		if (player1.isLevelClear()) {
 			levelClearedScreen(maze1.getDepthCounter());
 			maze1.clearVectors();
 			maze1.generateMaze();
+			wresize(mazeWin, maze1.getMazeSize().y, maze1.getMazeSize().x);
 			player1.setPos(maze1.midPoint);
 			player1.resetStatus();
-			clear();
-			printFunctions();
+			printFunctions(mazeWin, mazeStatus, invWin);
 			
 		}
 		if (Enemy::isGameOver()) {
@@ -180,11 +182,13 @@ void levelClearedScreen(int depth) {
 	
 }
 
-void printFunctions() {
-	maze1.printMazeArray();
-	maze1.printDepthEnemyPathCount();
-	Enemy::printEnemyStep();
-	player1.printInventory();
+void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin) {
+	clear();
+	refresh();
+	maze1.printMazeArray(mazeWin);
+	maze1.printDepthEnemyPathCount(mazeStatus);
+	//Enemy::printEnemyStep();
+	player1.printInventory(invWin);
 	refresh();
 }
 

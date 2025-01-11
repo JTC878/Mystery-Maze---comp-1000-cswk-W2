@@ -29,7 +29,7 @@ class Enemy {
 public:
 	static float enemyStep;
 	static int enemySpotDistance;
-	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }), mazeX(mazeX), mazeY(mazeY), pathVisitedCount(1), copyPathArr(new bool* [mazeY]), currentPos({}), totalPathCount(0) { //enemy spawning done within constructor, could be moved to another method if necessary. 
+	Enemy(wchar_t** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }), mazeX(mazeX), mazeY(mazeY), pathVisitedCount(1), copyPathArr(new bool* [mazeY]), currentPos({}), totalPathCount(0) { //enemy spawning done within constructor, could be moved to another method if necessary. 
 		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
 		int radiusY = mazeY * 0.1; //these can be changed later if necessary
 		int radiusX = mazeX * 0.1;
@@ -51,7 +51,7 @@ public:
 			copyPathArr[i] = new bool[mazeX];
 		}
 	}
-	void enemyRandomMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
+	void enemyRandomMove(wchar_t** mazeArr, bool** pathArr, MazePoint playerPos) {
 		bool hasMoved = false;
 		int r;
 		while (hasMoved == false) {
@@ -97,7 +97,7 @@ public:
 			gameOver = true;
 		}
 	}
-	void enemyTargetedMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
+	void enemyTargetedMove(wchar_t** mazeArr, bool** pathArr, MazePoint playerPos) {
 		MazePoint nextPos = { NULL, NULL };
 		if (!shortestPathQueue.empty()) {
 			nextPos = shortestPathQueue.front();
@@ -205,7 +205,7 @@ public:
 		if (!shortestPathQueue.empty()) shortestPathQueue.pop();
 		
 	} //this method is only about updating the shortestPathQueue
-	void movementChoice(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos, int mazePathCount) { 
+	void movementChoice(wchar_t** mazeArr, bool** pathArr, MazePoint playerPos, int mazePathCount) { 
 		int xDifference = playerPos.x - enemyPos.x;
 		int yDifference = playerPos.y - enemyPos.y;
 		int playerDistance = hypot(xDifference, yDifference);
@@ -251,7 +251,7 @@ public:
 class Item {
 public:
 	string name;
-	unsigned char mazeChar;
+	wchar_t mazeChar;
 	MazePoint itemPos;
 	int quantity;
 	Item() {
@@ -279,13 +279,13 @@ class SlowOrb : public Item {
 public:
 	SlowOrb() : slowValue(0.5) {
 		name = "Slow Orb";
-		mazeChar = 248;
+		mazeChar = L'°';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	SlowOrb(MazePoint pos, int quant) : slowValue(0.5) {
 		name = "Slow Orb";
-		mazeChar = 248;
+		mazeChar = L'°';
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -323,7 +323,7 @@ public:
 		quantity = quant;
 	}
 
-	bool use(MazePoint& playerPos, unsigned char** mazeArr, bool** pathArr, MazePoint mazeSize, unsigned char lastMoveKeyPressed) {
+	bool use(MazePoint& playerPos, wchar_t** mazeArr, bool** pathArr, MazePoint mazeSize, unsigned char lastMoveKeyPressed) {
 		int inc = 1;
 		switch (directionCase(lastMoveKeyPressed)) {
 		case 0: //w case
@@ -427,17 +427,17 @@ public:
 	static vector<Item*> &itemList;
 	TeleOrb() {
 		name = "Tele Orb";
-		mazeChar = 94;
+		mazeChar = '^';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	TeleOrb(MazePoint pos, int quant) {
 		name = "Tele Orb";
-		mazeChar = 94;
+		mazeChar = '^';
 		itemPos = pos;
 		quantity = quant;
 	}
-	bool use(MazePoint& playerPos, unsigned char** mazeArr, MazePoint exitDoor, MazePoint mazeSize) { //you can teleport on enemies be careful, if no items left it will teleport you to the door
+	bool use(MazePoint& playerPos, wchar_t** mazeArr, MazePoint exitDoor, MazePoint mazeSize) { //you can teleport on enemies be careful, if no items left it will teleport you to the door
 		if (itemList.empty()) {
 			if (exitDoor.y == 0) {
 				mazeArr[playerPos.y][playerPos.x] = ' ';
@@ -492,17 +492,17 @@ public:
 	static vector<Enemy*>& enemyList;
 	KillOrb() : noOfKills(1) {
 		name = "Kill Orb";
-		mazeChar = 167;
+		mazeChar = L'º';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	KillOrb(MazePoint pos, int quant) : noOfKills(1) {
 		name = "Kill Orb";
-		mazeChar = 167;
+		mazeChar = L'º';
 		itemPos = pos;
 		quantity = quant;
 	}
-	bool use(MazePoint playerPos, unsigned char** mazeArr) {
+	bool use(MazePoint playerPos, wchar_t** mazeArr) {
 		if (enemyList.empty()) {
 			return false;
 		}
@@ -540,17 +540,17 @@ class SUTeleOrb : public Item {
 public:
 	SUTeleOrb() {
 		name = "Super Tele Orb";
-		mazeChar = 173;
+		mazeChar = L'¡';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	SUTeleOrb(MazePoint pos, int quant) {
 		name = "Super Tele Orb";
-		mazeChar = 173;
+		mazeChar = L'¡';
 		itemPos = pos;
 		quantity = quant;
 	}
-	bool use(MazePoint& playerPos, unsigned char** mazeArr, MazePoint exitDoor, MazePoint goldenKey, int playerGKeyQuant, MazePoint mazeSize)  {
+	bool use(MazePoint& playerPos, wchar_t** mazeArr, MazePoint exitDoor, MazePoint goldenKey, int playerGKeyQuant, MazePoint mazeSize)  {
 		if (playerGKeyQuant < 1) {
 			if (mazeArr[goldenKey.y][goldenKey.x] == 'E') return false; //we can add more to this check later, for example for fog of war or normal doors return false;
 			else {
@@ -613,18 +613,18 @@ public:
 	static vector<MazePoint>& doorPoints;
 	Key() {
 		name = "Key";
-		mazeChar = 191;
+		mazeChar = L'┐';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	Key(MazePoint pos, int quant) {
 		name = "Key";
-		mazeChar = 191;
+		mazeChar = L'┐';
 		itemPos = pos;
 		quantity = quant;
 	}
 	
-	bool use(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) {
+	bool use(wchar_t** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) {
 		int doorCounter = 0;
 		int i = 0;
 		int doorArr[4];
@@ -656,7 +656,7 @@ public:
 		}
 		return false;
 	}
-	int useLockpick(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) { //https://logiclike.com/en/famous-riddles
+	int useLockpick(wchar_t** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) { //https://logiclike.com/en/famous-riddles
 		int doorCounter = 0;
 		int i = 0;
 		int doorArr[4];
@@ -724,13 +724,13 @@ class GoldenKey : public Item {
 public:
 	GoldenKey() {
 		name = "Golden Key";
-		mazeChar = 184;
+		mazeChar = L'╗';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	GoldenKey(MazePoint pos, int quant) {
 		name = "Golden Key";
-		mazeChar = 184;
+		mazeChar = L'╗';
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -757,12 +757,10 @@ private:
 	int maxPathCount;
 	float percPathsofMaze;
 	int enemyNumber;
-	unsigned char mazeWallChar, doorChar;
-	const wchar_t umazeWallChar[6], udoorChar[6];
+	wchar_t mazeWallChar, doorChar;
 	int maxSlow, maxJump, maxTele, maxKill, maxSUTele, maxKeys, maxDoorCount;
 	const float minItemPercOfMax, minSUItemPercOfMax, minDoorPercOfMax;
 	stack<MazePoint> backtrack;
-	WINDOW *mazeWin;
 
 	void deleteMazeArrays() {
 		for (int i = 0; i < mazeY; i++) {
@@ -980,9 +978,8 @@ private:
 
 
 public:
-	unsigned char** mazeArr;
+	wchar_t** mazeArr;
 	bool** pathArr;
-	wchar_t** printedMazeArr;
 	int pathCount; //Now should be accurate to the amount of paths that are in the maze, exitDoor is not a path nor any normalKeyDoors. and pathCount is decremented for each generated.
 	static vector<Item*> itemList;
 	static vector<Enemy*> enemyList;
@@ -991,21 +988,21 @@ public:
 	MazePoint exitDoor;
 	MazePoint goldenKey;
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
-		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
+		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new wchar_t* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
 		maxSlow(depthValues[depthCounter][6]), maxJump(depthValues[depthCounter][7]), maxTele(depthValues[depthCounter][8]), maxKill(depthValues[depthCounter][9]), maxSUTele(depthValues[depthCounter][10]), maxKeys(depthValues[depthCounter][11]),
-		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), umazeWallChar(L"\u2588"), udoorChar(L"\u2584"), goldenKey({NULL, NULL}), mazeWin(newwin(mazeY, mazeX, 0, 0)) {
+		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(L'█'), doorChar(L'┬'), goldenKey({NULL, NULL}) {
 		for (int i = 0; i < mazeY; i++) {
-			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
+			mazeArr[i] = new wchar_t[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
 		}
 		maxPathCount = (mazeX * mazeY) * percPathsofMaze;
 	}
 	void initialiseMazeArray() { //need to delete the arrays like in the destructor, then allocate new memory to the arrays with the same name, then initialise for new depth mazes
 
-		unsigned char** newMazeArray = new unsigned char* [mazeY];
+		wchar_t** newMazeArray = new wchar_t* [mazeY];
 		bool** newPathArray = new bool* [mazeY];
 		for (int i = 0; i < mazeY; i++) {
-			newMazeArray[i] = new unsigned char[mazeX]; //'mazeX' ammount of pointers are initialised for each row
+			newMazeArray[i] = new wchar_t[mazeX]; //'mazeX' ammount of pointers are initialised for each row
 			newPathArray[i] = new bool[mazeX];
 		}
 
@@ -1019,7 +1016,7 @@ public:
 			}
 		}
 	}
-	void printMazeArray() {
+	void printMazeArray(WINDOW* mazeWin) {
 		//seperate for each loop - get the position of each item and compare it to the mazeArr position, if there is no enemies on the space assign the position to the item.
 		for (Item* item : itemList) {
 			MazePoint pos = item->itemPos;
@@ -1029,18 +1026,11 @@ public:
 		}
 		for (int i = 0; i < mazeY; i++) {
 			for (int j = 0; j < mazeX; j++) {
-				if (mazeArr[i][j] == mazeWallChar) printedMazeArr[i][j] = *umazeWallChar;
-				else if (mazeArr[i][j] == doorChar) printedMazeArr[i][j] = *udoorChar;
+				wmove(mazeWin, i, j);
+				waddwstr(mazeWin, mazeArr[i] + j);
 			}
 		}
-
-		move(0, 0);
-		for (int i = 0; i < mazeY; i++) {
-			printw("\n");
-			for (int j = 0; j < mazeX; j++) {
-				printw("%lc", mazeArr[i][j]);
-			}
-		}
+		wrefresh(mazeWin);
 	}
 	void printPathArray() {
 		for (int i = 0; i < mazeY; i++) {
@@ -1050,9 +1040,9 @@ public:
 			}
 		}
 	}
-	void printDepthEnemyPathCount() {
-		printw("\n");
-		printw("Depth: %d      Number of paths: %d      Number of enemies: %d", depthCounter, pathCount, enemyList.size());
+	void printDepthEnemyPathCount(WINDOW* mazeStatus) {
+		mvwprintw(mazeStatus, 2, 1, "Depth: %d      Number of paths: %d      Number of enemies: %d      Enemy Speed: %f", depthCounter, pathCount, enemyList.size(), Enemy::enemyStep);
+		wrefresh(mazeStatus);
 	}
 	void generateMazePaths() {
 		mazeArr[midPoint.y][midPoint.x] = 'C';
@@ -1253,7 +1243,6 @@ public:
 	void depthUpdateValues() {
 		mazeX = depthValues[depthCounter][0];
 		mazeY = depthValues[depthCounter][1];
-		wresize(mazeWin, mazeY, mazeX);
 		midPoint.x = mazeX / 2;
 		midPoint.y = mazeY / 2;
 		percPathsofMaze = (float)depthValues[depthCounter][2] * 0.1;
@@ -1314,7 +1303,7 @@ class Player {
 			return false;
 		}
 	}
-	bool checkGoldenKey(int playerPosY, int playerPosX, unsigned char** mazeArr) {
+	bool checkGoldenKey(int playerPosY, int playerPosX, wchar_t** mazeArr) {
 		if (playerInv.goldenKey.quantity >= 1) {
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y = playerPosY;
@@ -1332,6 +1321,7 @@ class Player {
 		int loopCounter = 0;
 		int randNum;
 		while (done != true && loopCounter < 100) {
+			loopCounter++;
 			randNum = rand() % 6;
 			switch (randNum) {
 			case 0:
@@ -1383,7 +1373,7 @@ class Player {
 
 public:
 	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed('w') {}
-	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount) {
+	bool playerInput(unsigned char keyPress, wchar_t** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount) {
 		if (keyPress == 'w' || keyPress == 'W' || keyPress == 's' || keyPress == 'S' || keyPress == 'a' || keyPress == 'A' || keyPress == 'd' || keyPress == 'D') {
 			lastMoveKeyPressed = keyPress;
 		}
@@ -1499,19 +1489,18 @@ public:
 		}
 		delete itemObject;
 	}
-	void printInventory() {
-		printw("\n");
-		printw("%s(%c) :  %d", playerInv.slowOrbs.name, playerInv.slowOrbs.mazeChar, playerInv.slowOrbs.quantity);
-		printw("         %s(%c) :  %d", playerInv.jumpOrbs.name, playerInv.jumpOrbs.mazeChar, playerInv.jumpOrbs.quantity);
-		printw("         %s(%c) :  %d", playerInv.teleOrbs.name, playerInv.teleOrbs.mazeChar, playerInv.teleOrbs.quantity);
-		printw("         %s(%c) :  %d", playerInv.killOrbs.name, playerInv.killOrbs.mazeChar, playerInv.killOrbs.quantity);
-		printw("         %s(%c) :  %d", playerInv.suteleOrbs.name, playerInv.suteleOrbs.mazeChar, playerInv.suteleOrbs.quantity);
-		printw("         %s(%c) :  %d", playerInv.keys.name, playerInv.keys.mazeChar, playerInv.keys.quantity);
-		printw("         %s(%c) :  %d", playerInv.goldenKey.name, playerInv.goldenKey.mazeChar, playerInv.goldenKey.quantity);
+	void printInventory(WINDOW* invWin) {
+		mvwprintw(invWin, 1, 1, "%s(%c) :  %d", playerInv.slowOrbs.name, playerInv.slowOrbs.mazeChar, playerInv.slowOrbs.quantity);
+		mvwprintw(invWin, 2, 1, "%s(%c) :  %d", playerInv.jumpOrbs.name, playerInv.jumpOrbs.mazeChar, playerInv.jumpOrbs.quantity);
+		mvwprintw(invWin, 3, 1, "%s(%c) :  %d", playerInv.teleOrbs.name, playerInv.teleOrbs.mazeChar, playerInv.teleOrbs.quantity);
+		mvwprintw(invWin, 4, 1, "%s(%c) :  %d", playerInv.killOrbs.name, playerInv.killOrbs.mazeChar, playerInv.killOrbs.quantity);
+		mvwprintw(invWin, 5, 1, "%s(%c) :  %d", playerInv.suteleOrbs.name, playerInv.suteleOrbs.mazeChar, playerInv.suteleOrbs.quantity);
+		mvwprintw(invWin, 6, 1, "%s(%c) :  %d", playerInv.keys.name, playerInv.keys.mazeChar, playerInv.keys.quantity);
+		mvwprintw(invWin, 7, 1, "%s(%c) :  %d", playerInv.goldenKey.name, playerInv.goldenKey.mazeChar, playerInv.goldenKey.quantity);
 		if (lastItemCollectedCounter != 0) {
-			printw("\n");
-			printw("+%d  %s", lastItemCollectedCounter, lastItemCollected); 
+			mvwprintw(invWin, 8, 1, "+%d  %s", lastItemCollectedCounter, lastItemCollected); 
 		}
+		wrefresh(invWin);
 	}
 	void setPos(MazePoint midpoint) {
 		playerPos = midpoint;
