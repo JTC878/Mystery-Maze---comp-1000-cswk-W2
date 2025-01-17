@@ -224,23 +224,6 @@ int initialDepthPrompt() {
 
 Project Backlog
 
-> The rest of the core items should be implemented such as Super Tele Orb and keys. 
-> For the keys and doors, when you generate doors you can check if there's a wall to the right and left AND if theres a path in front and behind you or vice versa.
-This ensures its more likely to be generated at a key part of the maze. There should be a mechanic to use a key or lockpick the door which will prompt a puzzle(not sure what it will be yet)
-if you fail the puzzle while lockpicking you will lose a random amount of items.
-There will be a seperate keybind for both using a key and choosing to lockpick, however if you press the key keybind without keys it should instead lockpick.
-
-When you generate a door the position it is at in the pathArr should be set to false
-
-
->Enemy pathfinding algorithm should be implemented today. When the player is within the enemySpotDistance(hypotenuse), the enemy marks the point where the player was and pathfinds 
-towards that location. When the enemy reaches that location it will return to enemyRandomMove. The location is only updated when the player is within the enemySpotDistance. 
-
->Jump orbs should be implemented(prob 100% necessary). Not too difficult to implement, lastKeyPressed by the player should be recorded as an attribute and when used the orb will loop until it reaches a wall in a 
-straight line and then set the player to the path before it. 
-
->Fix screen flickering 'system("cls)' with a basic library like ncurses have a look if it includes what you need.
-
 >I think the best avenue for the game would be a fog of war option(fogOption maze attribute and isFogOn() public method) thus allows you to make the game, enemies way easier and items 
 more generous(no fog of war easy mode) and an item to expand the vision you have Fog orb. You would do this by editing the printMaze function to have an if statement in the print loop. 
 The function would need to take playerPosition as parameter and playerFogRange as parameter(in the Maze class you can assign this to an attribute as a reference to be able to change 
@@ -251,42 +234,23 @@ like ncurses.
 
 >Roadside picnic story inspiration~~~
 
-> You should print whatever item the player has last picked up(the name), it should increment if you pick up the same item such as +1 Tele Orb ~~ +2 Tele Orb (will make it better for teleports)
 
->If there are no items left in the maze(including golden key) you should be able to teleport to the door using normal tele orbs.  
+After implementing fog of war
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add a new item 'Vision orb' which reduces enemy spot distance and increases visibility for the player within the fog.
 
+Add a new item 'super kill orb' which kills a random 50% of the enemies within the maze.
 
+Put all classes with their declarations and definitions in seperate files.
 
+Implement NPC traders using pdcurses, whenever you interact with them open up a shop window UI.
 
+Print the distance to the nearest enemy and enemy vision distance so you can more accurately plan and predict your path in the fog. 
+
+Implement a main menu and save/load file saves 
 
 */
 
 
 
 
-
-
-
-
-/* MAZE GENERATION STEPS
-
-1. Make a starting path in the Center Point of the Maze
-2. Loop through the entire maze array while checking whether there are paths around the current element
-3. If there is a path around the current element, there should be a weighted random chance the path spreads to the current element
-4. This weighted random chance will depend on how far away the current element is from the edge of the maze(Top,Bottom,Right side,Left side)
-For example if the path is beneath the current element, then the current element will be compared to the top of the Maze ABS(current Y element - (MAZE_Y / 2 - 1))
-This absolute value is then 1 - ANSWER/(MAZE_Y / 2 - 1) to get the percentage value that the path will be initialised in the current element.
-5. We must also check whether we have reached the edge of the maze on our current element (eg. IF a path is above us we check if we are at the bottom of the maze - If we are, found
-variable will return as true)
-6. Additionally if we want one way paths we must check LEFT and RIGHT for other PATHS if you are checking ABOVE OR DOWN from the current element. Vice versa we must check ABOVE and BELOW for 
-other PATHS if we are checking RIGHT OR LEFT from the current element.
-
-DUMMY PATH CHARACTERISTICS
-
-1. Paths must always start from the main path (or dummy path) 
-2. The number of paths must be between a certain range eg. 100-300 the only exception is if there is no wall to make a path from, the dummy path will end prematurely.
-3. Dummy paths must always end in a dead end, they should never connect to another path or reach the end of the maze
-4. Dummy paths should be initialised until a total pathCounter reaches a certain number (30% of the maze should be paths when this number is reached, dummy paths will stop being generated)
-
-There should be a mainPaths vector, allPaths vector which stores the struct coords of every paths, and also a dummyPaths vector for storing dummy paths (in order to make puzzles later)
-*/
