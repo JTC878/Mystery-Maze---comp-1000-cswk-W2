@@ -249,6 +249,10 @@ Print the distance to the nearest enemy and enemy vision distance so you can mor
 
 Implement a main menu and save/load file saves 
 
+Make it so your vision is only what's printed and scrolls as you move.
+
+Maybe, Multiply the size of the maze so paths are more than one tile wide.
+
 */
 
 
