@@ -48,8 +48,9 @@ Player player1(maze1.midPoint);
 void levelClearedScreen(int depth);
 void deathScreen();
 void endScreen();
-void printFunctions(WINDOW*, WINDOW*, WINDOW*);
+void printFunctions(WINDOW*, WINDOW*, WINDOW*, int, MazePoint);
 int initialDepthPrompt(WINDOW*);
+void resizeAndMoveWindows(WINDOW*, WINDOW*, WINDOW*, int mazeWinY, int mazeWinX);
 void testCurses();
 //in ncurses the cursor determines where on the screen things get printed
 //the cursor starts at 0, 0 by default which is the top left of the screen
@@ -57,17 +58,20 @@ void testCurses();
 int main() {
 	setlocale(LC_ALL, "");
 	initscr();
-	noecho();
-	WINDOW* mazeWin = newwin(maze1.getMazeSize().y + 2, maze1.getMazeSize().x + 2, 0, 40);
-	WINDOW* mazeStatus = newwin(4, 100, maze1.getMazeSize().y + 2, 10);
-	WINDOW* invWin = newwin(18, 30, 1, maze1.getMazeSize().x + 42);
+	int mazeWinY = player1.getPlayerVisionDistance() * 2 + 3;
+	int mazeWinX = player1.getPlayerVisionDistance() * 4 + 3;
+	WINDOW* mazeWin = newwin(mazeWinY, mazeWinX, 0, 0);
+	WINDOW* mazeStatus = newwin(4, 90, mazeWinY + 2, 10);
+	WINDOW* invWin = newwin(18, 30, 1, mazeWinX + 2);
+	//WINDOW* promptWindow = newwin(30, 120, 0, 0);
 	char key;
-	//maze1.setDepthCounter(initialDepthPrompt());
+	//maze1.setDepthCounter(initialDepthPrompt(promptWindow));
 
 	srand(time(0));
 	maze1.generateMaze();
 	player1.setPos(maze1.midPoint);
-	printFunctions(mazeWin, mazeStatus, invWin);
+	resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
+	printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
 
 	while (true) {
 		key = getch(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
@@ -81,18 +85,16 @@ int main() {
 				enemy->movementChoice(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos(), maze1.pathCount);
 			}		
 		}
-		printFunctions(mazeWin, mazeStatus, invWin);
+		printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
 
 		if (player1.isLevelClear()) {
 			levelClearedScreen(maze1.getDepthCounter());
 			maze1.clearVectors();
 			maze1.generateMaze();
-			wresize(mazeWin, maze1.getMazeSize().y + 2, maze1.getMazeSize().x + 2);
-			mvwin(invWin, 1, maze1.getMazeSize().x + 42);
-			mvwin(mazeStatus, maze1.getMazeSize().y + 2, 10);
+			resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
 			player1.setPos(maze1.midPoint);
 			player1.resetStatus();
-			printFunctions(mazeWin, mazeStatus, invWin);
+			printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
 		}
 
 		if (Enemy::isGameOver()) {
@@ -182,44 +184,39 @@ void levelClearedScreen(int depth) {
 	
 }
 
-void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin) {
+void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int playerVisionDistance, MazePoint playerPos) {
 	wclear(mazeWin);
 	wclear(mazeStatus);
 	wclear(invWin);
 	clear();
 	refresh();
-	maze1.printMazeArray(mazeWin);
+	maze1.printMazeArray(mazeWin, playerVisionDistance, playerPos);
 	maze1.printDepthEnemyPathCount(mazeStatus);
 	player1.printInventory(invWin);
 	refresh();
 }
 
-int initialDepthPrompt(WINDOW* mazeWin) {
-	int playerSetDepth = 0;
+int initialDepthPrompt(WINDOW* promptWindow) {
+	char playerSetDepth; 
+	refresh();
+	box(promptWindow, 0, 0);
 
-	cout << "Keybinds: WASD - player movement, SpaceBar - Wait a turn, x - lockpick regular doors, Number keys(1-6) - use items from left to right" << endl << endl;
-	cout << "Slow Orb: Slow enemies, useful in the deeper depths. Try to always keep enemy speed at 1 or below." << endl << endl;
-	cout << "Jump Orb: Jump in a straight path either over enemies or walls if you stand next to them, these are extremely helpful lifesavers to get away while stuck in a dead end. Direction of the jump is determined by the last movement key pressed." << endl << endl;
-	cout << "Tele Orb: Teleport to a random item in the maze, there's no safety precautions with these. Test your luck you might just end up teleporting to a space an enemy is on, or a golden key who knows. If there are no items left in the maze you will teleport to the exit door" << endl << endl;
-	cout << "Kill Orb: Kills the nearest enemy, very menacing name but also incredibly valuable. Use these sparingly so you can save them for dire situations or deeper depths..." << endl << endl;
-	cout << "Super Tele Orb: A super item. Very rare and also one of the best items to have. Compared to Tele Orbs, these have a safety precaution built in and will never teleport you on top of an enemy. Teleports you to the golden key if you don't have it, if you already do then it will teleport you to the exit door. Almost like a skip button" << endl << endl;
-	cout << "Key: Regular rusted old keys that have been scattered throughout the depths, luckily they can unlock any door except for the exit door. Just stand next to one and press the key. Hah." << endl << endl;
-	cout << "Golden Key: This is your ticket out of here, this unlocks the exit door to leave the current level, don't need to press anything just step through the door and it'll unlock!! Look for the 'D' at the edge of the maze, you can't miss it." << endl << endl;
-	cout << "Lockpicking: Since you're such a skilled and prepared adventurer you brought a magic talking lockpick with you, however it doesn't seem to like you very much, every time you ask for help it asks you to solve one of its riddles first. Be suspicious of this guy." << endl << endl;
-
-	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the recommended start." << endl;
-	cout << "Enter a Depth: ";
-	cin >> playerSetDepth;
-	while (cin.fail()) {
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << endl << "You have entered a wrong input. Enter any depth between 1 and 10: ";
-		cin >> playerSetDepth;
-	}
-	return playerSetDepth;
+	mvwprintw(promptWindow, 1, 1, "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the recommended start.");
+	mvwprintw(promptWindow, 2, 1, "Enter a Depth: ");
+	wrefresh(promptWindow);
+	refresh();
+	playerSetDepth = getch();
+	wclear(promptWindow);
+	delwin(promptWindow);
+	int val = playerSetDepth - '0';
+	return val;
 }
 
-
+void resizeAndMoveWindows(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int mazeWinY, int mazeWinX) {
+	wresize(mazeWin, mazeWinY, mazeWinX);
+	mvwin(invWin, 1, mazeWinX + 2);
+	mvwin(mazeStatus, mazeWinY + 2, 10);
+}
 /*
 
 Project Backlog

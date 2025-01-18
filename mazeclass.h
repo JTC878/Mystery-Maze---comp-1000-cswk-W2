@@ -1013,7 +1013,7 @@ public:
 			}
 		}
 	}
-	void printMazeArray(WINDOW* mazeWin) {
+	void printMazeArray(WINDOW* mazeWin, int playerVisionDistance, MazePoint playerPos) {
 		//seperate for each loop - get the position of each item and compare it to the mazeArr position, if there is no enemies on the space assign the position to the item.
 		for (Item* item : itemList) {
 			MazePoint pos = item->itemPos;
@@ -1021,11 +1021,18 @@ public:
 				mazeArr[pos.y][pos.x] = item->mazeChar;
 			}
 		}
+
 		box(mazeWin, 0, 0);
-		for (int i = 0; i < mazeY; i++) {
-			for (int j = 0; j < mazeX; j++) {
-				wmove(mazeWin, i + 1, j + 1);
-				waddnwstr(mazeWin, mazeArr[i] + j, 1); //specify one character with 'n' = 1
+		int rowCount = 0;
+		for (int i = playerPos.y - playerVisionDistance; i <= playerPos.y + playerVisionDistance; i++) {
+			rowCount++;
+			wmove(mazeWin, rowCount, 1);
+			for (int j = playerPos.x - playerVisionDistance * 2; j <= playerPos.x + playerVisionDistance * 2; j++) {
+				if (i < 0 || i >= mazeY || j < 0 || j >= mazeX) {
+					waddch(mazeWin, ' ');
+					continue;
+				}
+				waddnwstr(mazeWin, mazeArr[i] + j, 1);
 			}
 		}
 		wrefresh(mazeWin);
@@ -1290,6 +1297,7 @@ class Player {
 	Inventory playerInv;
 	MazePoint playerPos;
 	string lastItemCollected;
+	int playerVisionDistance;
 	int lastItemCollectedCounter;
 	unsigned char lastMoveKeyPressed;
 	bool levelClear;
@@ -1371,7 +1379,7 @@ class Player {
 	}
 
 public:
-	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed('w') {}
+	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed('w'), playerVisionDistance(5) {}
 	bool playerInput(unsigned char keyPress, wchar_t** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount) {
 		if (keyPress == 'w' || keyPress == 'W' || keyPress == 's' || keyPress == 'S' || keyPress == 'a' || keyPress == 'A' || keyPress == 'd' || keyPress == 'D') {
 			lastMoveKeyPressed = keyPress;
@@ -1453,6 +1461,9 @@ public:
 	}
 	MazePoint getPlayerPos() {
 		return playerPos;
+	}
+	int getPlayerVisionDistance() {
+		return playerVisionDistance;
 	}
 	bool isLevelClear() {
 		return levelClear;
