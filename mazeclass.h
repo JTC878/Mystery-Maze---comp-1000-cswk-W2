@@ -1490,15 +1490,28 @@ public:
 		}
 		delete itemObject;
 	}
+	void printInventoryItem(WINDOW* invWin, int itemNum, Item item) {
+		int offset = 2 * itemNum - 1;
+		mvwprintw(invWin, offset, 1, "%s(", item.name.c_str());
+		waddnwstr(invWin, &item.mazeChar, 1);
+		wprintw(invWin, ") : %d", item.quantity);
+	}
 	void printInventory(WINDOW* invWin) {
 		box(invWin, 0, 0);
-		mvwprintw(invWin, 1, 1, "%s(%c) :  %d", playerInv.slowOrbs.name.c_str(), playerInv.slowOrbs.mazeChar, playerInv.slowOrbs.quantity);
-		mvwprintw(invWin, 3, 1, "%s(%c) :  %d", playerInv.jumpOrbs.name.c_str(), playerInv.jumpOrbs.mazeChar, playerInv.jumpOrbs.quantity);
-		mvwprintw(invWin, 5, 1, "%s(%c) :  %d", playerInv.teleOrbs.name.c_str(), playerInv.teleOrbs.mazeChar, playerInv.teleOrbs.quantity);
-		mvwprintw(invWin, 7, 1, "%s(%c) :  %d", playerInv.killOrbs.name.c_str(), playerInv.killOrbs.mazeChar, playerInv.killOrbs.quantity);
-		mvwprintw(invWin, 9, 1, "%s(%c) :  %d", playerInv.suteleOrbs.name.c_str(), playerInv.suteleOrbs.mazeChar, playerInv.suteleOrbs.quantity);
-		mvwprintw(invWin, 11, 1, "%s(%c) :  %d", playerInv.keys.name.c_str(), playerInv.keys.mazeChar, playerInv.keys.quantity);
-		mvwprintw(invWin, 13, 1, "%s(%c) :  %d", playerInv.goldenKey.name.c_str(), playerInv.goldenKey.mazeChar, playerInv.goldenKey.quantity);
+		printInventoryItem(invWin, 1, playerInv.slowOrbs);
+		printInventoryItem(invWin, 2, playerInv.jumpOrbs);
+		printInventoryItem(invWin, 3, playerInv.teleOrbs);
+		printInventoryItem(invWin, 4, playerInv.killOrbs);
+		printInventoryItem(invWin, 5, playerInv.suteleOrbs);
+		printInventoryItem(invWin, 6, playerInv.keys);
+		printInventoryItem(invWin, 7, playerInv.goldenKey);
+		//mvwprintw(invWin, 1, 1, "%s(%c) :  %d", playerInv.slowOrbs.name.c_str(), playerInv.slowOrbs.mazeChar, playerInv.slowOrbs.quantity);
+		//mvwprintw(invWin, 3, 1, "%s(%c) :  %d", playerInv.jumpOrbs.name.c_str(), playerInv.jumpOrbs.mazeChar, playerInv.jumpOrbs.quantity);
+		//mvwprintw(invWin, 5, 1, "%s(%c) :  %d", playerInv.teleOrbs.name.c_str(), playerInv.teleOrbs.mazeChar, playerInv.teleOrbs.quantity);
+		//mvwprintw(invWin, 7, 1, "%s(%c) :  %d", playerInv.killOrbs.name.c_str(), playerInv.killOrbs.mazeChar, playerInv.killOrbs.quantity);
+		//mvwprintw(invWin, 9, 1, "%s(%c) :  %d", playerInv.suteleOrbs.name.c_str(), playerInv.suteleOrbs.mazeChar, playerInv.suteleOrbs.quantity);
+		//mvwprintw(invWin, 11, 1, "%s(%c) :  %d", playerInv.keys.name.c_str(), playerInv.keys.mazeChar, playerInv.keys.quantity);
+		//mvwprintw(invWin, 13, 1, "%s(%c) :  %d", playerInv.goldenKey.name.c_str(), playerInv.goldenKey.mazeChar, playerInv.goldenKey.quantity);
 		if (lastItemCollectedCounter != 0) {
 			mvwprintw(invWin, 15, 1, "+%d  %s", lastItemCollectedCounter, lastItemCollected.c_str()); 
 		}
