@@ -243,9 +243,6 @@ public:
 		if (enemyStep < 0) enemyStep = 0;
 		return rmDec;
 	} //This allows fractional numbers to be faster or slower than whole numbers - this means slowOrbs have an impact even if they remove a half a step for example.
-	static void printEnemyStep() {
-		printw("      Enemy Speed: %f", enemyStep);
-	}
 };
 
 class Item {
@@ -1024,10 +1021,11 @@ public:
 				mazeArr[pos.y][pos.x] = item->mazeChar;
 			}
 		}
+		box(mazeWin, 0, 0);
 		for (int i = 0; i < mazeY; i++) {
 			for (int j = 0; j < mazeX; j++) {
-				wmove(mazeWin, i, j);
-				waddwstr(mazeWin, mazeArr[i] + j);
+				wmove(mazeWin, i + 1, j + 1);
+				waddnwstr(mazeWin, mazeArr[i] + j, 1); //specify one character with 'n' = 1
 			}
 		}
 		wrefresh(mazeWin);

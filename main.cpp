@@ -49,7 +49,7 @@ void levelClearedScreen(int depth);
 void deathScreen();
 void endScreen();
 void printFunctions(WINDOW*, WINDOW*, WINDOW*);
-int initialDepthPrompt();
+int initialDepthPrompt(WINDOW*);
 void testCurses();
 //in ncurses the cursor determines where on the screen things get printed
 //the cursor starts at 0, 0 by default which is the top left of the screen
@@ -58,9 +58,9 @@ int main() {
 	setlocale(LC_ALL, "");
 	initscr();
 	noecho();
-	WINDOW* mazeWin = newwin(maze1.getMazeSize().y, maze1.getMazeSize().x, 0, 40);
-	WINDOW* mazeStatus = newwin(4, 100, maze1.getMazeSize().y, 10);
-	WINDOW* invWin = newwin(18, 30, 1, maze1.getMazeSize().x + 40);
+	WINDOW* mazeWin = newwin(maze1.getMazeSize().y + 2, maze1.getMazeSize().x + 2, 0, 40);
+	WINDOW* mazeStatus = newwin(4, 100, maze1.getMazeSize().y + 2, 10);
+	WINDOW* invWin = newwin(18, 30, 1, maze1.getMazeSize().x + 42);
 	char key;
 	//maze1.setDepthCounter(initialDepthPrompt());
 
@@ -82,18 +82,19 @@ int main() {
 			}		
 		}
 		printFunctions(mazeWin, mazeStatus, invWin);
+
 		if (player1.isLevelClear()) {
 			levelClearedScreen(maze1.getDepthCounter());
 			maze1.clearVectors();
 			maze1.generateMaze();
-			wresize(mazeWin, maze1.getMazeSize().y, maze1.getMazeSize().x);
-			mvwin(invWin, 1, maze1.getMazeSize().x + 40);
-			mvwin(mazeStatus, maze1.getMazeSize().y, 10);
+			wresize(mazeWin, maze1.getMazeSize().y + 2, maze1.getMazeSize().x + 2);
+			mvwin(invWin, 1, maze1.getMazeSize().x + 42);
+			mvwin(mazeStatus, maze1.getMazeSize().y + 2, 10);
 			player1.setPos(maze1.midPoint);
 			player1.resetStatus();
 			printFunctions(mazeWin, mazeStatus, invWin);
-			
 		}
+
 		if (Enemy::isGameOver()) {
 			deathScreen();
 		}
@@ -189,12 +190,11 @@ void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin) {
 	refresh();
 	maze1.printMazeArray(mazeWin);
 	maze1.printDepthEnemyPathCount(mazeStatus);
-	//Enemy::printEnemyStep();
 	player1.printInventory(invWin);
 	refresh();
 }
 
-int initialDepthPrompt() {
+int initialDepthPrompt(WINDOW* mazeWin) {
 	int playerSetDepth = 0;
 
 	cout << "Keybinds: WASD - player movement, SpaceBar - Wait a turn, x - lockpick regular doors, Number keys(1-6) - use items from left to right" << endl << endl;
