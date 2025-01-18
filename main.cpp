@@ -61,8 +61,8 @@ int main() {
 	int mazeWinY = player1.getPlayerVisionDistance() * 2 + 3;
 	int mazeWinX = player1.getPlayerVisionDistance() * 4 + 3;
 	WINDOW* mazeWin = newwin(mazeWinY, mazeWinX, 0, 0);
-	WINDOW* mazeStatus = newwin(4, 90, mazeWinY + 2, 10);
-	WINDOW* invWin = newwin(18, 30, 1, mazeWinX + 2);
+	WINDOW* mazeStatus = newwin(4, 90, 20, 0);
+	WINDOW* invWin = newwin(18, 30, 0, mazeWinX + 2);
 	//WINDOW* promptWindow = newwin(30, 120, 0, 0);
 	char key;
 	//maze1.setDepthCounter(initialDepthPrompt(promptWindow));
@@ -214,8 +214,8 @@ int initialDepthPrompt(WINDOW* promptWindow) {
 
 void resizeAndMoveWindows(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int mazeWinY, int mazeWinX) {
 	wresize(mazeWin, mazeWinY, mazeWinX);
-	mvwin(invWin, 1, mazeWinX + 2);
-	mvwin(mazeStatus, mazeWinY + 2, 10);
+	mvwin(invWin, 0, mazeWinX + 2);
+	mvwin(mazeStatus, 20, 0);
 }
 /*
 
