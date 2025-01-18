@@ -248,7 +248,7 @@ Implement a main menu and save/load file saves
 
 Make it so your vision is only what's printed and scrolls as you move.
 
-Maybe, Multiply the size of the maze so paths are more than one tile wide.
+Maybe, Increase the width of the paths more than one tile wide if you plan to implement other mechanics.
 
 */
 
