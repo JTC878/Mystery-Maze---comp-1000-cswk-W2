@@ -58,9 +58,9 @@ int main() {
 	setlocale(LC_ALL, "");
 	initscr();
 	noecho();
-	WINDOW* mazeWin = newwin(maze1.getMazeSize().y, maze1.getMazeSize().x, 0, 0);
-	WINDOW* mazeStatus = newwin(4, 100, maze1.getMazeSize().y + 4, 10);
-	WINDOW* invWin = newwin(20, 80, 1, 30);
+	WINDOW* mazeWin = newwin(maze1.getMazeSize().y, maze1.getMazeSize().x, 0, 40);
+	WINDOW* mazeStatus = newwin(4, 100, maze1.getMazeSize().y, 10);
+	WINDOW* invWin = newwin(18, 30, 1, maze1.getMazeSize().x + 40);
 	char key;
 	//maze1.setDepthCounter(initialDepthPrompt());
 
@@ -87,6 +87,8 @@ int main() {
 			maze1.clearVectors();
 			maze1.generateMaze();
 			wresize(mazeWin, maze1.getMazeSize().y, maze1.getMazeSize().x);
+			mvwin(invWin, 1, maze1.getMazeSize().x + 40);
+			mvwin(mazeStatus, maze1.getMazeSize().y, 10);
 			player1.setPos(maze1.midPoint);
 			player1.resetStatus();
 			printFunctions(mazeWin, mazeStatus, invWin);

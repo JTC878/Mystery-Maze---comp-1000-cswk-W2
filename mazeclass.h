@@ -31,8 +31,8 @@ public:
 	static int enemySpotDistance;
 	Enemy(wchar_t** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }), mazeX(mazeX), mazeY(mazeY), pathVisitedCount(1), copyPathArr(new bool* [mazeY]), currentPos({}), totalPathCount(0) { //enemy spawning done within constructor, could be moved to another method if necessary. 
 		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
-		int radiusY = mazeY * 0.1; //these can be changed later if necessary
-		int radiusX = mazeX * 0.1;
+		int radiusY = mazeY * 0.15; //these can be changed later if necessary
+		int radiusX = mazeX * 0.15;
 		bool pathFound = false;
 		int i, j;
 		while (pathFound == false) {
@@ -1505,13 +1505,6 @@ public:
 		printInventoryItem(invWin, 5, playerInv.suteleOrbs);
 		printInventoryItem(invWin, 6, playerInv.keys);
 		printInventoryItem(invWin, 7, playerInv.goldenKey);
-		//mvwprintw(invWin, 1, 1, "%s(%c) :  %d", playerInv.slowOrbs.name.c_str(), playerInv.slowOrbs.mazeChar, playerInv.slowOrbs.quantity);
-		//mvwprintw(invWin, 3, 1, "%s(%c) :  %d", playerInv.jumpOrbs.name.c_str(), playerInv.jumpOrbs.mazeChar, playerInv.jumpOrbs.quantity);
-		//mvwprintw(invWin, 5, 1, "%s(%c) :  %d", playerInv.teleOrbs.name.c_str(), playerInv.teleOrbs.mazeChar, playerInv.teleOrbs.quantity);
-		//mvwprintw(invWin, 7, 1, "%s(%c) :  %d", playerInv.killOrbs.name.c_str(), playerInv.killOrbs.mazeChar, playerInv.killOrbs.quantity);
-		//mvwprintw(invWin, 9, 1, "%s(%c) :  %d", playerInv.suteleOrbs.name.c_str(), playerInv.suteleOrbs.mazeChar, playerInv.suteleOrbs.quantity);
-		//mvwprintw(invWin, 11, 1, "%s(%c) :  %d", playerInv.keys.name.c_str(), playerInv.keys.mazeChar, playerInv.keys.quantity);
-		//mvwprintw(invWin, 13, 1, "%s(%c) :  %d", playerInv.goldenKey.name.c_str(), playerInv.goldenKey.mazeChar, playerInv.goldenKey.quantity);
 		if (lastItemCollectedCounter != 0) {
 			mvwprintw(invWin, 15, 1, "+%d  %s", lastItemCollectedCounter, lastItemCollected.c_str()); 
 		}
