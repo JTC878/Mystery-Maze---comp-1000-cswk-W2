@@ -7,7 +7,7 @@
 #include <queue>
 #include <stack>
 #include <iomanip>
-#define PDC_WIDE
+#define PDC_WIDE //enable wide char functions within pdcurses
 #include <curses.h>
 #include <wchar.h>
 #include <locale.h>
@@ -63,9 +63,9 @@ int main() {
 	WINDOW* mazeWin = newwin(mazeWinY, mazeWinX, 0, 0);
 	WINDOW* mazeStatus = newwin(4, 90, 20, 0);
 	WINDOW* invWin = newwin(18, 30, 0, mazeWinX + 2);
-	//WINDOW* promptWindow = newwin(30, 120, 0, 0);
+	WINDOW* promptWindow = newwin(30, 120, 0, 0);
 	char key;
-	//maze1.setDepthCounter(initialDepthPrompt(promptWindow));
+	maze1.setDepthCounter(initialDepthPrompt(promptWindow));
 
 	srand(time(0));
 	maze1.generateMaze();
@@ -205,9 +205,8 @@ int initialDepthPrompt(WINDOW* promptWindow) {
 	mvwprintw(promptWindow, 2, 1, "Enter a Depth: ");
 	wrefresh(promptWindow);
 	refresh();
-	playerSetDepth = getch();
+	playerSetDepth = wgetch(promptWindow);
 	wclear(promptWindow);
-	delwin(promptWindow);
 	int val = playerSetDepth - '0';
 	return val;
 }
