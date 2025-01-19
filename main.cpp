@@ -197,7 +197,7 @@ void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int pla
 }
 
 int initialDepthPrompt(WINDOW* promptWindow) {
-	char playerSetDepth[] = "0;";
+	char playerSetDepth[] = "0;"; //here ; almost acts like a delimiter for the strtol function with end 
 	char* end = &playerSetDepth[1];
 	refresh();
 	box(promptWindow, 0, 0);
