@@ -197,7 +197,8 @@ void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int pla
 }
 
 int initialDepthPrompt(WINDOW* promptWindow) {
-	char playerSetDepth; 
+	char playerSetDepth[] = "0;";
+	char* end = &playerSetDepth[1];
 	refresh();
 	box(promptWindow, 0, 0);
 
@@ -205,10 +206,10 @@ int initialDepthPrompt(WINDOW* promptWindow) {
 	mvwprintw(promptWindow, 2, 1, "Enter a Depth: ");
 	wrefresh(promptWindow);
 	refresh();
-	playerSetDepth = wgetch(promptWindow);
+	wgetnstr(promptWindow, playerSetDepth, 2);
 	wclear(promptWindow);
-	int val = playerSetDepth - '0';
-	return val;
+	long res = strtol(playerSetDepth, &end, 10);
+	return int(res);
 }
 
 void resizeAndMoveWindows(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int mazeWinY, int mazeWinX) {

@@ -1268,9 +1268,9 @@ public:
 		return depthCounter;
 	}
 	void setDepthCounter(int playerInput) {
+		depthCounter = playerInput - 1;
 		if (playerInput < 1) depthCounter = 0;
 		if (playerInput > 10) depthCounter = 9;
-		depthCounter = playerInput - 1;
 	}
 	MazePoint getMazeSize() {
 		return { mazeY, mazeX };
