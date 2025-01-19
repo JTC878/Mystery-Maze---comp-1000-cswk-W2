@@ -45,7 +45,7 @@ float Enemy::stepRemainder = 0;
 Maze maze1; 
 Player player1(maze1.midPoint);
 
-void levelClearedScreen(int depth);
+void levelClearedScreen(int depth, WINDOW*, WINDOW*, WINDOW*, WINDOW*);
 void deathScreen();
 void endScreen();
 void printFunctions(WINDOW*, WINDOW*, WINDOW*, int, MazePoint);
@@ -88,7 +88,7 @@ int main() {
 		printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
 
 		if (player1.isLevelClear()) {
-			levelClearedScreen(maze1.getDepthCounter());
+			levelClearedScreen(maze1.getDepthCounter(), promptWindow, mazeWin, mazeStatus, invWin);
 			maze1.clearVectors();
 			maze1.generateMaze();
 			resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
@@ -146,20 +146,27 @@ void endScreen() {
 	exit(0);
 }
 
-void levelClearedScreen(int depth) {
-	char c;
-	system("cls");
+void levelClearedScreen(int depth, WINDOW* promptWindow, WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin) {
+	wclear(mazeWin);
+	wclear(mazeStatus);
+	wclear(invWin);
+	clear();
+	refresh();
+	box(promptWindow, 0, 0);
+	wrefresh(promptWindow);
+	mvwprintw(promptWindow, 1, 1, "<enter to continue>");
+	wrefresh(promptWindow);
+	wgetch(promptWindow);
+	int wPos;
 	switch (depth) {
 	case 1:
-		c = getchar();
-		cout << "*As you crawl through the pitch black sewers you hear a faint whisper in your ear*" << endl << "<enter to continue>" << endl;
-		c = getchar();
-		cout << "Well done. However, you have only cleared the very first hurdle." << endl << "<enter to continue>" << endl;
-		c = getchar();
-		cout << "Be prepared for what lurks in the depths, stock up on anything you can get your hands on." << endl << "<enter to continue>" << endl;
-		c = getchar();
-		cout << "I'll be waiting for you at the bottom~" << endl << "<enter to continue>" << endl;
-		c = getchar();
+		for (int i = 0; i < 4; i++) {
+			wPos = 3 * (i + 1);
+			mvwprintw(promptWindow, wPos, 1, "%s", levelClearedDialogue[i].c_str());
+			mvwprintw(promptWindow, wPos + 1, 1, "<enter to continue>");
+			wrefresh(promptWindow);
+			wgetch(promptWindow);
+		}
 		break;
 	case 2:
 		break;
@@ -181,7 +188,7 @@ void levelClearedScreen(int depth) {
 		endScreen();
 		break;
 	}
-	
+	wclear(promptWindow);
 }
 
 void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int playerVisionDistance, MazePoint playerPos) {

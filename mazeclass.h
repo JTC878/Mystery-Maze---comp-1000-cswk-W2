@@ -1573,3 +1573,13 @@ const string Key::lockpickRiddles[38][2] = {
 	{"Take off my skin - I won't cry, but you will! What am I?", "Onion"}, 
 	{"What invention lets you look right through a wall?", "Window"}
 };
+
+string levelClearedDialogue[] = {
+	//Depth 1 cleared
+	"*As you crawl through the pitch black sewers you hear a faint whisper in your ear*", 
+	"Well done. However, you have only cleared the very first hurdle.", 
+	"Be prepared for what lurks in the depths, stock up on anything you can get your hands on.", 
+	"I'll be waiting for you at the bottom~"
+
+	//Depth 2 cleared
+};
