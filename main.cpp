@@ -45,7 +45,7 @@ float Enemy::stepRemainder = 0;
 Maze maze1; 
 Player player1(maze1.midPoint);
 
-void levelClearedScreen(int depth, WINDOW*, WINDOW*, WINDOW*, WINDOW*);
+void levelClearedScreen(int depth, WINDOW*);
 void deathScreen();
 void endScreen();
 void printFunctions(WINDOW*, WINDOW*, WINDOW*, int, MazePoint);
@@ -88,7 +88,7 @@ int main() {
 		printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
 
 		if (player1.isLevelClear()) {
-			levelClearedScreen(maze1.getDepthCounter(), promptWindow, mazeWin, mazeStatus, invWin);
+			levelClearedScreen(maze1.getDepthCounter(), promptWindow);
 			maze1.clearVectors();
 			maze1.generateMaze();
 			resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
@@ -146,10 +146,7 @@ void endScreen() {
 	exit(0);
 }
 
-void levelClearedScreen(int depth, WINDOW* promptWindow, WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin) {
-	wclear(mazeWin);
-	wclear(mazeStatus);
-	wclear(invWin);
+void levelClearedScreen(int depth, WINDOW* promptWindow) {
 	clear();
 	refresh();
 	box(promptWindow, 0, 0);
