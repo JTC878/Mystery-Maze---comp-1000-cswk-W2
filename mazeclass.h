@@ -691,7 +691,7 @@ public:
 		return 3;
 	}
 	bool solveRiddle(WINDOW* promptWindow) {
-		char input;
+		char input[100];
 		string answer;
 		int randRiddle = rand() % 38;
 		clear();
@@ -700,8 +700,8 @@ public:
 		mvwprintw(promptWindow, 1, 1, "Solve this riddle to lockpick the door successfully.");
 		mvwprintw(promptWindow, 3, 1, "%s", lockpickRiddles[randRiddle][0].c_str());
 		mvwprintw(promptWindow, 4, 1, "Your answer: ");
-		wgetstr(promptWindow, &input);
-		answer.assign(&input);
+		wgetstr(promptWindow, input);
+		answer.assign(input);
 		string riddleAnswer = lockpickRiddles[randRiddle][1];
 		transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
 		transform(riddleAnswer.begin(), riddleAnswer.end(), riddleAnswer.begin(), ::tolower);
