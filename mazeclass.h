@@ -653,7 +653,7 @@ public:
 		}
 		return false;
 	}
-	int useLockpick(wchar_t** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) { //https://logiclike.com/en/famous-riddles
+	int useLockpick(wchar_t** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos, WINDOW* promptWindow) { //https://logiclike.com/en/famous-riddles
 		int doorCounter = 0;
 		int i = 0;
 		int doorArr[4];
@@ -664,7 +664,7 @@ public:
 					(lastMoveKeyPressed == 's' || lastMoveKeyPressed == 'S') && playerPos.y + 1 == it->y ||
 					(lastMoveKeyPressed == 'a' || lastMoveKeyPressed == 'A') && playerPos.x - 1 == it->x ||
 					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && playerPos.x + 1 == it->x) { //If the door is associated with the direction of the lastKeyPress unlock that door.
-					if (!solveRiddle()) {
+					if (!solveRiddle(promptWindow)) {
 						return 2;
 					}
 					pathArr[it->y][it->x] = true;
@@ -677,7 +677,7 @@ public:
 			}
 		}
 		if (doorCounter > 0) { //remove a random door
-			if (!solveRiddle()) {
+			if (!solveRiddle(promptWindow)) {
 				return 2;
 			}
 			int randNum = rand() % doorCounter;
@@ -690,28 +690,30 @@ public:
 		}
 		return 3;
 	}
-	bool solveRiddle() {
+	bool solveRiddle(WINDOW* promptWindow) {
+		char input;
 		string answer;
 		int randRiddle = rand() % 38;
-		system("cls");
-		cout << "Solve this riddle to lockpick the door successfully." << endl << endl;
-		cout << lockpickRiddles[randRiddle][0] << endl << endl;
-		cout << "Your answer: ";
-		cin >> answer;
+		clear();
+		refresh();
+		mvwprintw(promptWindow, 1, 1, "Solve this riddle to lockpick the door successfully.");
+		mvwprintw(promptWindow, 3, 1, "%s", lockpickRiddles[randRiddle][0].c_str());
+		mvwprintw(promptWindow, 4, 1, "Your answer: ");
+		wgetstr(promptWindow, &input);
+		answer.assign(&input);
 		string riddleAnswer = lockpickRiddles[randRiddle][1];
 		transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
 		transform(riddleAnswer.begin(), riddleAnswer.end(), riddleAnswer.begin(), ::tolower);
 		if (answer == riddleAnswer) {
-			cout << endl << endl << "Correct." << endl;
-			cout << "Press enter to continue." << endl;
-			cin.get();
-			cin.get();
+			mvwprintw(promptWindow, 6, 1, "Correct.");
+			mvwprintw(promptWindow, 7, 1, "<enter to continue>");
+			wgetch(promptWindow);
 			return true;
 		}
 		else {
-			cout << endl << endl << "The answer is " << lockpickRiddles[randRiddle][1] << endl;
-			cout << "Press enter to continue." << endl;
-			cin.get();
+			mvwprintw(promptWindow, 6, 1, "The answer is: %s", lockpickRiddles[randRiddle][1].c_str());
+			mvwprintw(promptWindow, 7, 1, "<enter to continue>");
+			wgetch(promptWindow);
 			return false;
 		}
 	}
@@ -1380,7 +1382,7 @@ class Player {
 
 public:
 	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed('w'), playerVisionDistance(5) {}
-	bool playerInput(unsigned char keyPress, wchar_t** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount) {
+	bool playerInput(unsigned char keyPress, wchar_t** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount, WINDOW* promptWindow) {
 		if (keyPress == 'w' || keyPress == 'W' || keyPress == 's' || keyPress == 'S' || keyPress == 'a' || keyPress == 'A' || keyPress == 'd' || keyPress == 'D') {
 			lastMoveKeyPressed = keyPress;
 		}
@@ -1424,7 +1426,7 @@ public:
 			return true;
 		}
 		else if (keyPress == 'x' || keyPress == 'X') {
-			int outcome = playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos); //this method should probably be apart of Player class, since lockpick is not dependant on keys
+			int outcome = playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos, promptWindow); //this method should probably be apart of Player class, since lockpick is not dependant on keys
 			if (outcome == 1) {
 				pathCount++;
 				return true;

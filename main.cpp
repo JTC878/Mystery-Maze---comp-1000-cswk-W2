@@ -75,7 +75,7 @@ int main() {
 
 	while (true) {
 		key = getch(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
-		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor, maze1.goldenKey, maze1.getMazeSize(), maze1.pathCount)) { //for each item check collect method, if check collect is true then player.collect the item. 
+		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor, maze1.goldenKey, maze1.getMazeSize(), maze1.pathCount, promptWindow)) { //for each item check collect method, if check collect is true then player.collect the item. 
 			for (Item* item : maze1.itemList) { //this can be made a function if necessary inside Maze class just make the player object a reference parameter
 				if (item->checkCollect(player1.getPlayerPos())) {
 					player1.collectItem(item, maze1.itemList);
