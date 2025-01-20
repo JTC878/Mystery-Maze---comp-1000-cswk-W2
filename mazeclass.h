@@ -1424,7 +1424,7 @@ public:
 			return true;
 		}
 		else if (keyPress == 'x' || keyPress == 'X') {
-			int outcome = playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos);
+			int outcome = playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos); //this method should probably be apart of Player class, since lockpick is not dependant on keys
 			if (outcome == 1) {
 				pathCount++;
 				return true;
