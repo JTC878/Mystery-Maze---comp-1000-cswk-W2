@@ -696,6 +696,7 @@ public:
 		int randRiddle = rand() % 38;
 		clear();
 		refresh();
+		box(promptWindow, 0, 0);
 		mvwprintw(promptWindow, 1, 1, "Solve this riddle to lockpick the door successfully.");
 		mvwprintw(promptWindow, 3, 1, "%s", lockpickRiddles[randRiddle][0].c_str());
 		mvwprintw(promptWindow, 4, 1, "Your answer: ");
