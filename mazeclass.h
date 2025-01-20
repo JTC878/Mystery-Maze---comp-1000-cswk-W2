@@ -708,12 +708,14 @@ public:
 			mvwprintw(promptWindow, 6, 1, "Correct.");
 			mvwprintw(promptWindow, 7, 1, "<enter to continue>");
 			wgetch(promptWindow);
+			wclear(promptWindow);
 			return true;
 		}
 		else {
 			mvwprintw(promptWindow, 6, 1, "The answer is: %s", lockpickRiddles[randRiddle][1].c_str());
 			mvwprintw(promptWindow, 7, 1, "<enter to continue>");
 			wgetch(promptWindow);
+			wclear(promptWindow);
 			return false;
 		}
 	}
