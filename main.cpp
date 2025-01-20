@@ -215,7 +215,7 @@ int initialDepthPrompt(WINDOW* promptWindow) {
 	refresh();
 	wgetnstr(promptWindow, playerSetDepth, 2);
 	wclear(promptWindow);
-	long res = strtol(playerSetDepth, &end, 10);
+	long res = strtol(playerSetDepth, &end, 10); //third argument is the radix(base) which is 10 for decimal. Will convert the string to an integer until it reaches the delimiter char in end.
 	return int(res);
 }
 
