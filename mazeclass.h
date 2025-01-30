@@ -699,22 +699,23 @@ public:
 		box(promptWindow, 0, 0);
 		mvwprintw(promptWindow, 1, 1, "Solve this riddle to lockpick the door successfully.");
 		mvwprintw(promptWindow, 3, 1, "%s", lockpickRiddles[randRiddle][0].c_str());
-		mvwprintw(promptWindow, 4, 1, "Your answer: ");
+		int endofString = getcury(promptWindow);
+		mvwprintw(promptWindow, endofString + 1, 1, "Your answer: ");
 		wgetstr(promptWindow, input);
 		answer.assign(input);
 		string riddleAnswer = lockpickRiddles[randRiddle][1];
 		transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
 		transform(riddleAnswer.begin(), riddleAnswer.end(), riddleAnswer.begin(), ::tolower);
 		if (answer == riddleAnswer) {
-			mvwprintw(promptWindow, 6, 1, "Correct.");
-			mvwprintw(promptWindow, 7, 1, "<enter to continue>");
+			mvwprintw(promptWindow, endofString + 3, 1, "Correct.");
+			mvwprintw(promptWindow, endofString + 4, 1, "<enter to continue>");
 			wgetch(promptWindow);
 			wclear(promptWindow);
 			return true;
 		}
 		else {
-			mvwprintw(promptWindow, 6, 1, "The answer is: %s", lockpickRiddles[randRiddle][1].c_str());
-			mvwprintw(promptWindow, 7, 1, "<enter to continue>");
+			mvwprintw(promptWindow, endofString + 3, 1, "The answer is: %s", lockpickRiddles[randRiddle][1].c_str());
+			mvwprintw(promptWindow, endofString + 4, 1, "<enter to continue>");
 			wgetch(promptWindow);
 			wclear(promptWindow);
 			return false;
@@ -1539,40 +1540,40 @@ public:
 
 const string Key::lockpickRiddles[38][2] = {
 	//Reference https://logiclike.com/en/famous-riddles
-	{"As I walked along the path I saw something with four fingers and one thumb,\nbut it was not flesh, fish, bone or fowl.", "Glove"}, 
-	{"The sun bakes them,\nThe hand breaks them,\nThe foot treads on them,\nAnd the mouth tastes them.\nWhat are they ?", "Grapes"}, 
-	{"A precious stone, as clear as diamond.\nSeek it out whilst the sun's near the horizon.\nThough you can walk on water with its power,\nTry to keep it, and it'll vanish within an hour.", "Ice"}, 
-	{"I soar without wings, I see without eyes.\nI've traveled the universe to and fro.\nI've conquered the world, yet I've never been anywhere but home.\nWho am I ? ", "Imagination"}, 
+	{"As I walked along the path I saw something with four fingers and one thumb,\n but it was not flesh, fish, bone or fowl.", "Glove"}, 
+	{"The sun bakes them,\n The hand breaks them,\n The foot treads on them,\n And the mouth tastes them.\n What are they ?", "Grapes"}, 
+	{"A precious stone, as clear as diamond.\n Seek it out whilst the sun's near the horizon.\n Though you can walk on water with its power,\n Try to keep it, and it'll vanish within an hour.", "Ice"}, 
+	{"I soar without wings, I see without eyes.\n I've traveled the universe to and fro.\n I've conquered the world, yet I've never been anywhere but home.\n Who am I ? ", "Imagination"}, 
 	{"Iron roof, glass walls Burns and burns And never falls.", "Lantern"}, 
-	{"Walk on the living, they don't even mumble.\nWalk on the dead, they mutter and grumble.", "Leaves"}, 
-	{"My tines are long.\nMy tines are short.\nMy tines end ere.\nMy first report.\nWhat am I ? ", "Lightning"}, 
+	{"Walk on the living, they don't even mumble.\n Walk on the dead, they mutter and grumble.", "Leaves"}, 
+	{"My tines are long.\n My tines are short.\n My tines end ere.\n My first report.\n What am I ? ", "Lightning"}, 
 	{"What is always coming but never arrives?", "Tomorrow"}, 
-	{"Look at me. I can bring a smile to your face, A tear to your eye,\nOr even a thought to your mind.But, I can't be seen. What am I?", "Memories"}, 
-	{"I look at you, you look at me I raise my right,\nyou raise your left What is this object ? ", "Mirror"},
+	{"Look at me. I can bring a smile to your face, A tear to your eye,\n Or even a thought to your mind.But, I can't be seen. What am I?", "Memories"}, 
+	{"I look at you, you look at me I raise my right,\n you raise your left What is this object ? ", "Mirror"},
 	{"I work when I play and play when I work.", "Musician"}, 
 	{"What is so delicate that saying its name breaks it?", "Silence"}, 
 	{"What goes up the hill and down the hill, And spite of all, yet standeth still?", "Road"}, 
-	{"What is that which belongs to you\nBut others use it more than you do?", "Name"}, 
-	{"I have streets, but no pavement.\nI have cities, but no buildings.\nI have forests, yet no trees.\nI have rivers, yet no water.", "Map"}, 
-	{"The root tops the trunk on this backward thing,\nthat grows in the winter and dies in the spring.", "Icicle"}, 
+	{"What is that which belongs to you\n But others use it more than you do?", "Name"}, 
+	{"I have streets, but no pavement.\n I have cities, but no buildings.\n I have forests, yet no trees.\n I have rivers, yet no water.", "Map"}, 
+	{"The root tops the trunk on this backward thing,\n that grows in the winter and dies in the spring.", "Icicle"}, 
 	{"What can travel around the world while staying in a corner?", "Stamp"}, 
 	{"What has to be broken before you use it?", "Egg"}, 
 	{"What has many keys but can't open a single lock?", "Piano"}, 
 	{"What runs all around a backyard, yet never moves?", "Fence"},
 	{"What has a bottom at the top?", "Legs"}, 
-	{"I am an odd number. Take away a letter and I become even.\nWhat number am I?", "Seven"}, 
+	{"I am an odd number. Take away a letter and I become even.\n What number am I?", "Seven"}, 
 	{"What goes through cities and fields, but never moves?", "Road"}, 
-	{"I'm tall when I'm young and I'm short when I'm old.\nWhat am I ? ", "Candle"}, 
+	{"I'm tall when I'm young and I'm short when I'm old.\n What am I ? ", "Candle"}, 
 	{"What has hands but can not clap?", "Clock"}, 
-	{"You can drop me from the tallest building and I'll be fine,\nbut if you drop me in water I die.\nWhat am I ? ", "Paper"}, 
+	{"You can drop me from the tallest building and I'll be fine,\n but if you drop me in water I die.\n What am I ? ", "Paper"}, 
 	{"What has an eye but can not see?", "Needle"}, 
 	{"What gets wetter and wetter the more it dries?", "Towel"}, 
-	{"There was a green house. Inside the green house there was a white house.\nInside the white house there was a red house.\nInside the red house there were lots of babies.\nWhat is it ? ", "Watermelon"}, 
+	{"There was a green house. Inside the green house there was a white house.\n Inside the white house there was a red house.\n Inside the red house there were lots of babies.\n What is it ? ", "Watermelon"}, 
 	{"What kind of room has no doors or windows?", "Mushroom"},
 	{"What kind of tree can you carry in your hand?", "Palm"}, 
-	{"Which creature walks on four legs in the morning,\ntwo legs in the afternoon, and three legs in the evening ? ", "Man"}, 
+	{"Which creature walks on four legs in the morning,\n two legs in the afternoon, and three legs in the evening ? ", "Man"}, 
 	{"Which word in the dictionary is spelled incorrectly?", "Incorrectly"}, 
-	{"If you have me, you want to share me. If you share me, you haven't got me.\nWhat am I ? ", "Secret"}, 
+	{"If you have me, you want to share me. If you share me, you haven't got me.\n What am I ? ", "Secret"}, 
 	{"What gets broken without being held?", "Promise"}, 
 	{"Feed me and I live, yet give me a drink and I die.", "Fire"}, 
 	{"Take off my skin - I won't cry, but you will! What am I?", "Onion"}, 
