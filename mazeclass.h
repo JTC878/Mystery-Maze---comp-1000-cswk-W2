@@ -717,7 +717,6 @@ public:
 			mvwprintw(promptWindow, endofString + 3, 1, "The answer is: %s", lockpickRiddles[randRiddle][1].c_str());
 			mvwprintw(promptWindow, endofString + 4, 1, "<enter to continue>");
 			wgetch(promptWindow);
-			wclear(promptWindow);
 			return false;
 		}
 	}
@@ -1329,7 +1328,7 @@ class Player {
 			return false;
 		}
 	}
-	void resetItemQuantity() {
+	void resetItemQuantity(WINDOW* promptWindow) {
 		bool done = false;
 		int loopCounter = 0;
 		int randNum;
@@ -1340,48 +1339,50 @@ class Player {
 			case 0:
 				if (playerInv.slowOrbs.quantity > 0) {
 					playerInv.slowOrbs.quantity = 0;
-					cout << "Somehow your slow orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your slow orbs have completely disappeared from your pouch");
 					done = true;
 				}
 				break;
 			case 1:
 				if (playerInv.jumpOrbs.quantity > 0) {
 					playerInv.jumpOrbs.quantity = 0;
-					cout << "Somehow your jump orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your jump orbs have completely disappeared from your pouch");
 					done = true;
 				}
 				break;
 			case 2:
 				if (playerInv.teleOrbs.quantity > 0) {
 					playerInv.teleOrbs.quantity = 0;
-					cout << "Somehow your teleport orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your teleport orbs have completely disappeared from your pouch");
 					done = true;
 				}
 				break;
 			case 3:
 				if (playerInv.killOrbs.quantity > 0) {
 					playerInv.killOrbs.quantity = 0;
-					cout << "Somehow your kill orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your kill orbs have completely disappeared from your pouch");
 					done = true;
 				}
 				break;
 			case 4:
 				if (playerInv.suteleOrbs.quantity > 0) {
 					playerInv.suteleOrbs.quantity = 0;
-					cout << "Somehow your super teleport orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your super teleport orbs have completely disappeared from your pouch");
 					done = true;
 				}
 				break;
 			case 5:
 				if (playerInv.keys.quantity > 0) {
 					playerInv.keys.quantity = 0;
-					cout << "Somehow your keys have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your keys have completely disappeared from your pouch");
 					done = true;
 				}
 				break;
 			}
 		}
-		cin.get();
+		mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+		wgetch(promptWindow);
+		wclear(promptWindow);
 	}
 
 public:
@@ -1436,7 +1437,7 @@ public:
 				return true;
 			}
 			if (outcome == 2) { 
-				resetItemQuantity(); 
+				resetItemQuantity(promptWindow); 
 				return true;
 			}
 			if (outcome == 3) return false;
