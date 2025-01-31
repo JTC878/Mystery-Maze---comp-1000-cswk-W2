@@ -45,9 +45,9 @@ float Enemy::stepRemainder = 0;
 Maze maze1; 
 Player player1(maze1.midPoint);
 
-void levelClearedScreen(int depth, WINDOW*);
-void deathScreen();
-void endScreen();
+bool levelClearedScreen(int depth, WINDOW*);
+void deathScreen(WINDOW*);
+void endScreen(WINDOW*);
 void printFunctions(WINDOW*, WINDOW*, WINDOW*, int, MazePoint);
 int initialDepthPrompt(WINDOW*);
 void resizeAndMoveWindows(WINDOW*, WINDOW*, WINDOW*, int mazeWinY, int mazeWinX);
@@ -88,7 +88,9 @@ int main() {
 		printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
 
 		if (player1.isLevelClear()) {
-			levelClearedScreen(maze1.getDepthCounter(), promptWindow);
+			if (levelClearedScreen(maze1.getDepthCounter(), promptWindow)) {
+				return 0;
+			}
 			maze1.clearVectors();
 			maze1.generateMaze();
 			resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
@@ -98,11 +100,14 @@ int main() {
 		}
 
 		if (Enemy::isGameOver()) {
-			deathScreen();
+			mvprintw(mazeWinY + 2, 0, "YOU DIED!!!");
+			getch();
+			deathScreen(promptWindow);
+			return 0;
 		}
 	}
 
-	return 0;
+	return 1;
 }
 
 void testCurses() {
@@ -128,25 +133,31 @@ void testCurses() {
 }
 
 
-void deathScreen() {
-	cout << endl << endl << "GAME OVER";
-	cout << endl << "You have died by getting hit by an enemy" << endl;
-	cout << "Press any button to exit" << endl << endl;
-	system("pause");
+void deathScreen(WINDOW* promptWindow) {
+	clear();
+	refresh();
+	box(promptWindow, 0, 0);
+	mvwprintw(promptWindow, 1, 1, "GAME OVER");
+	mvwprintw(promptWindow, 2, 1, "You died by getting hit by an enemy");
+	mvwprintw(promptWindow, 3, 1, "Press any button to exit");
+	wgetch(promptWindow);
+	clear();
 	endwin();
-	exit(0);
 }
 
-void endScreen() {
-	cout << endl << endl << "Congratulations";
-	cout << endl << "You have made it out of the maze!" << endl;
-	cout << "Press any button to exit" << endl;
-	system("pause");
+void endScreen(WINDOW* promptWindow) {
+	clear();
+	refresh();
+	box(promptWindow, 0, 0);
+	mvwprintw(promptWindow, 1, 1, "Congratulations");
+	mvwprintw(promptWindow, 2, 1, "You have made it out of the maze!");
+	mvwprintw(promptWindow, 3, 1, "Press any button to exit");
+	wgetch(promptWindow);
+	clear();
 	endwin();
-	exit(0);
 }
 
-void levelClearedScreen(int depth, WINDOW* promptWindow) {
+bool levelClearedScreen(int depth, WINDOW* promptWindow) {
 	clear();
 	refresh();
 	box(promptWindow, 0, 0);
@@ -182,10 +193,12 @@ void levelClearedScreen(int depth, WINDOW* promptWindow) {
 	case 9:
 		break;
 	case 10:
-		endScreen();
+		endScreen(promptWindow);
+		return true;
 		break;
 	}
 	wclear(promptWindow);
+	return false;
 }
 
 void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int playerVisionDistance, MazePoint playerPos) {

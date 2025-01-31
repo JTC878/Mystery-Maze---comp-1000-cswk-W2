@@ -206,6 +206,11 @@ public:
 		
 	} //this method is only about updating the shortestPathQueue
 	void movementChoice(wchar_t** mazeArr, bool** pathArr, MazePoint playerPos, int mazePathCount) { 
+		if (enemyPos.y == playerPos.y && enemyPos.x == playerPos.x || gameOver == true) {
+			mazeArr[enemyPos.y][enemyPos.x] = 'E';
+			gameOver = true;
+			return;
+		}
 		int xDifference = playerPos.x - enemyPos.x;
 		int yDifference = playerPos.y - enemyPos.y;
 		int playerDistance = hypot(xDifference, yDifference);
@@ -1052,7 +1057,7 @@ public:
 	}
 	void printDepthEnemyPathCount(WINDOW* mazeStatus) {
 		box(mazeStatus, 0, 0);
-		mvwprintw(mazeStatus, 2, 1, "Depth: %d      Number of paths: %d      Number of enemies: %d      Enemy Speed: %f", depthCounter, pathCount, enemyList.size(), Enemy::enemyStep);
+		mvwprintw(mazeStatus, 2, 1, "Depth: %d      Number of paths: %d      Number of enemies: %d      Enemy Speed: %.1f", depthCounter, pathCount, enemyList.size(), Enemy::enemyStep);
 		wrefresh(mazeStatus);
 	}
 	void generateMazePaths() {
@@ -1340,6 +1345,8 @@ class Player {
 				if (playerInv.slowOrbs.quantity > 0) {
 					playerInv.slowOrbs.quantity = 0;
 					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your slow orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
@@ -1347,6 +1354,8 @@ class Player {
 				if (playerInv.jumpOrbs.quantity > 0) {
 					playerInv.jumpOrbs.quantity = 0;
 					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your jump orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
@@ -1354,6 +1363,8 @@ class Player {
 				if (playerInv.teleOrbs.quantity > 0) {
 					playerInv.teleOrbs.quantity = 0;
 					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your teleport orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
@@ -1361,6 +1372,8 @@ class Player {
 				if (playerInv.killOrbs.quantity > 0) {
 					playerInv.killOrbs.quantity = 0;
 					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your kill orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
@@ -1368,6 +1381,8 @@ class Player {
 				if (playerInv.suteleOrbs.quantity > 0) {
 					playerInv.suteleOrbs.quantity = 0;
 					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your super teleport orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
@@ -1375,13 +1390,13 @@ class Player {
 				if (playerInv.keys.quantity > 0) {
 					playerInv.keys.quantity = 0;
 					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your keys have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
 			}
 		}
-		mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
-		wgetch(promptWindow);
 		wclear(promptWindow);
 	}
 
