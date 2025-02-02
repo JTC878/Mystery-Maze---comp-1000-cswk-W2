@@ -71,63 +71,71 @@ int main() {
 	WINDOW* promptWindow = newwin(30, 120, 0, 0);
 	char key;
 
-	switch (startingMenuScreen(mazeWin)) {
-	case 1:
-		maze1.setDepthCounter(initialDepthPrompt(promptWindow));
-		srand(time(0));
-		maze1.generateMaze();
-		player1.setPos(maze1.midPoint);
-		resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
-		printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
-		break; 
-	case 2:
-		return 1;
-		break;
-	case 3:
-		return 1;
-		break;
-	case 4:
-		endwin();
-		return 0;
-		break;
-	default:
-		break;
-	}
-
 	while (true) {
-		key = getch(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
-		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor, maze1.goldenKey, maze1.getMazeSize(), maze1.pathCount, promptWindow)) { //for each item check collect method, if check collect is true then player.collect the item. 
-			for (Item* item : maze1.itemList) { //this can be made a function if necessary inside Maze class just make the player object a reference parameter
-				if (item->checkCollect(player1.getPlayerPos())) {
-					player1.collectItem(item, maze1.itemList);
-				}
-			}
-			for (Enemy* enemy : maze1.enemyList) {
-				enemy->movementChoice(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos(), maze1.pathCount);
-			}		
-		}
-		printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
-
-		if (player1.isLevelClear()) {
-			if (levelClearedScreen(maze1.getDepthCounter(), promptWindow)) {
-				return 0;
-			}
+		clear();
+		wclear(mazeWin);
+		wclear(mazeStatus);
+		wclear(invWin);
+		wclear(promptWindow);
+		switch (startingMenuScreen(mazeWin)) {
+		case 1:
+			maze1.setDepthCounter(initialDepthPrompt(promptWindow));
+			srand(time(0));
 			maze1.clearVectors();
 			maze1.generateMaze();
+			player1 = Player(maze1.midPoint);
 			resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
-			player1.setPos(maze1.midPoint);
-			player1.resetStatus();
 			printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
+			break;
+		case 2:
+			return 1;
+			break;
+		case 3:
+			return 1;
+			break;
+		case 4:
+			endwin();
+			return 0;
+			break;
+		default:
+			break;
 		}
 
-		if (Enemy::isGameOver()) {
-			mvprintw(mazeWinY + 2, 0, "YOU DIED!!!");
-			getch();
-			deathScreen(promptWindow);
-			return 0;
+		while (true) {
+			key = getch(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
+			if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor, maze1.goldenKey, maze1.getMazeSize(), maze1.pathCount, promptWindow)) { //for each item check collect method, if check collect is true then player.collect the item. 
+				for (Item* item : maze1.itemList) { //this can be made a function if necessary inside Maze class just make the player object a reference parameter
+					if (item->checkCollect(player1.getPlayerPos())) {
+						player1.collectItem(item, maze1.itemList);
+					}
+				}
+				for (Enemy* enemy : maze1.enemyList) {
+					enemy->movementChoice(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos(), maze1.pathCount);
+				}
+			}
+			printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
+
+			if (player1.isLevelClear()) {
+				if (levelClearedScreen(maze1.getDepthCounter(), promptWindow)) {
+					return 0;
+				}
+				maze1.clearVectors();
+				maze1.generateMaze();
+				resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
+				player1.setPos(maze1.midPoint);
+				player1.resetStatus();
+				printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
+			}
+
+			if (Enemy::isGameOver()) {
+				mvprintw(mazeWinY + 2, 0, "YOU DIED!!!");
+				getch();
+				deathScreen(promptWindow);
+				Enemy::resetGameOver();
+				break;
+			}
 		}
 	}
-
 	return 1;
 }
 
@@ -209,10 +217,9 @@ void deathScreen(WINDOW* promptWindow) {
 	box(promptWindow, 0, 0);
 	mvwprintw(promptWindow, 1, 1, "GAME OVER");
 	mvwprintw(promptWindow, 2, 1, "You died by getting hit by an enemy");
-	mvwprintw(promptWindow, 3, 1, "Press any button to exit");
+	mvwprintw(promptWindow, 3, 1, "Press any button to return to the main menu");
 	wgetch(promptWindow);
 	clear();
-	endwin();
 }
 
 void endScreen(WINDOW* promptWindow) {

@@ -239,6 +239,9 @@ public:
 	static bool isGameOver() {
 		return gameOver;
 	}
+	static void resetGameOver() {
+		gameOver = false;
+	}
 	static int getEnemyStep() { //use getEnemyStep instead of the enemyStep attribute when you want to apply this behaviour(only when the enemy makes movements)
 		int rmDec = (int)enemyStep;
 		stepRemainder += enemyStep - rmDec;
@@ -972,8 +975,8 @@ private:
 				i = (rand() % (mazeY - 3)) + 2;
 				j = (rand() % (mazeX - 3)) + 2;
 				loopCounter++;
-				if ((mazeArr[i - 1][j] == ' ' && mazeArr[i + 1][j] == ' ' && mazeArr[i][j - 1] == mazeWallChar && mazeArr[i][j + 1] == mazeWallChar) ||
-					(mazeArr[i][j - 1] == ' ' && mazeArr[i][j + 1] == ' ' && mazeArr[i - 1][j] == mazeWallChar && mazeArr[i + 1][j] == mazeWallChar)) {
+				if (((mazeArr[i - 1][j] == ' ' && mazeArr[i + 1][j] == ' ' && mazeArr[i][j - 1] == mazeWallChar && mazeArr[i][j + 1] == mazeWallChar) ||
+					(mazeArr[i][j - 1] == ' ' && mazeArr[i][j + 1] == ' ' && mazeArr[i - 1][j] == mazeWallChar && mazeArr[i + 1][j] == mazeWallChar)) && (midPoint.y != i || midPoint.x != j)) {
 					loopCounter = 0;
 					pathFound = true;
 					doorPoints.push_back({ i, j });
