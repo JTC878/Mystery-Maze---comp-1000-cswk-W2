@@ -219,7 +219,8 @@ public:
 			totalPathCount = mazePathCount;
 			updatePathfinding(playerPos);
 		}
-		for (int i = 0; i < enemyStep; i++) {
+		int stepWithRM = getEnemyStep();
+		for (int i = 0; i < stepWithRM; i++) {
 			if (!shortestPathQueue.empty()) {
 				enemyTargetedMove(mazeArr, pathArr, playerPos);
 			}
@@ -701,12 +702,13 @@ public:
 		int randRiddle = rand() % 38;
 		clear();
 		refresh();
-		box(promptWindow, 0, 0);
 		mvwprintw(promptWindow, 1, 1, "Solve this riddle to lockpick the door successfully.");
 		mvwprintw(promptWindow, 3, 1, "%s", lockpickRiddles[randRiddle][0].c_str());
+		box(promptWindow, 0, 0);
 		int endofString = getcury(promptWindow);
 		mvwprintw(promptWindow, endofString + 1, 1, "Your answer: ");
 		wgetstr(promptWindow, input);
+		box(promptWindow, 0, 0);
 		answer.assign(input);
 		string riddleAnswer = lockpickRiddles[randRiddle][1];
 		transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
@@ -722,6 +724,7 @@ public:
 			mvwprintw(promptWindow, endofString + 3, 1, "The answer is: %s", lockpickRiddles[randRiddle][1].c_str());
 			mvwprintw(promptWindow, endofString + 4, 1, "<enter to continue>");
 			wgetch(promptWindow);
+			box(promptWindow, 0, 0);
 			return false;
 		}
 	}
@@ -1042,8 +1045,15 @@ public:
 					waddch(mazeWin, ' ');
 					continue;
 				}
+				if (mazeArr[i][j] == 'E') wattron(mazeWin, COLOR_PAIR(2));
 				waddnwstr(mazeWin, mazeArr[i] + j, 1);
+				wattroff(mazeWin, COLOR_PAIR(2));
 			}
+		}
+		if (mazeArr[playerPos.y][playerPos.x] != 'E') {
+			wattron(mazeWin, COLOR_PAIR(1));
+			mvwaddnwstr(mazeWin, mazeWin->_maxy / 2, mazeWin->_maxx / 2, &mazeArr[playerPos.y][playerPos.x], 1);
+			wattroff(mazeWin, COLOR_PAIR(1));
 		}
 		wrefresh(mazeWin);
 	}

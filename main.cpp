@@ -52,12 +52,17 @@ void printFunctions(WINDOW*, WINDOW*, WINDOW*, int, MazePoint);
 int initialDepthPrompt(WINDOW*);
 void resizeAndMoveWindows(WINDOW*, WINDOW*, WINDOW*, int mazeWinY, int mazeWinX);
 void testCurses();
+int startingMenuScreen(WINDOW*);
+void initMyColorPairs();
 //in ncurses the cursor determines where on the screen things get printed
 //the cursor starts at 0, 0 by default which is the top left of the screen
 
 int main() {
 	setlocale(LC_ALL, "");
 	initscr();
+	start_color();
+	initMyColorPairs();
+	keypad(stdscr, true);
 	int mazeWinY = player1.getPlayerVisionDistance() * 2 + 3;
 	int mazeWinX = player1.getPlayerVisionDistance() * 4 + 3;
 	WINDOW* mazeWin = newwin(mazeWinY, mazeWinX, 0, 0);
@@ -65,13 +70,29 @@ int main() {
 	WINDOW* invWin = newwin(18, 30, 0, mazeWinX + 2);
 	WINDOW* promptWindow = newwin(30, 120, 0, 0);
 	char key;
-	maze1.setDepthCounter(initialDepthPrompt(promptWindow));
 
-	srand(time(0));
-	maze1.generateMaze();
-	player1.setPos(maze1.midPoint);
-	resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
-	printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
+	switch (startingMenuScreen(mazeWin)) {
+	case 1:
+		maze1.setDepthCounter(initialDepthPrompt(promptWindow));
+		srand(time(0));
+		maze1.generateMaze();
+		player1.setPos(maze1.midPoint);
+		resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
+		printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
+		break; 
+	case 2:
+		return 1;
+		break;
+	case 3:
+		return 1;
+		break;
+	case 4:
+		endwin();
+		return 0;
+		break;
+	default:
+		break;
+	}
 
 	while (true) {
 		key = getch(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
@@ -130,8 +151,57 @@ void testCurses() {
 	int c = getch();
 
 	endwin();
+
+	//init_pair(1, COLOR_BLACK, COLOR_WHITE);
+	//wattron(mazeWin, COLOR_PAIR(1));
 }
 
+void initMyColorPairs() {
+	init_pair(1, COLOR_CYAN, COLOR_BLACK);
+	init_pair(2, COLOR_RED, COLOR_BLACK);
+}
+
+int startingMenuScreen(WINDOW* mazeWin) {
+	clear();
+	refresh();
+	keypad(mazeWin, true);
+	curs_set(0);
+	noecho();
+	string menuStrings[4] = {"1. New game", "2. Load game", "3. Settings", "4. Exit"};
+	int selected = 1;
+	wchar_t inputKey;
+	box(mazeWin, 0, 0);
+	wattron(mazeWin, A_BLINK);
+	mvwprintw(mazeWin, 1, 1, "1. New game");
+	wattroff(mazeWin, A_BLINK);
+	mvwprintw(mazeWin, 2, 1, "2. Load game");
+	mvwprintw(mazeWin, 3, 1, "3. Settings");
+	mvwprintw(mazeWin, 4, 1, "4. Exit");
+	refresh();
+	wrefresh(mazeWin);
+	while (true) {
+		inputKey = wgetch(mazeWin);
+		if ((inputKey == 'w' || inputKey == 'W' || inputKey == KEY_UP) && selected > 1) {
+			mvwprintw(mazeWin, selected, 1, "%s", menuStrings[selected - 1].c_str());
+			selected--;
+		}
+		if ((inputKey == 's' || inputKey == 'S' || inputKey == KEY_DOWN) && selected < 4) {
+			mvwprintw(mazeWin, selected, 1, "%s", menuStrings[selected - 1].c_str());
+			selected++;
+		}
+		if (inputKey == '\n') {
+			curs_set(1);
+			echo();
+			return selected;
+		}
+		wattron(mazeWin, A_BLINK);
+		mvwprintw(mazeWin, selected, 1, "%s", menuStrings[selected - 1].c_str());
+		wattroff(mazeWin, A_BLINK);
+	}
+	wgetch(mazeWin);
+	curs_set(1);
+	return 0;
+}
 
 void deathScreen(WINDOW* promptWindow) {
 	clear();
