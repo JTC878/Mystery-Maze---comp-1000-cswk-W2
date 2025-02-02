@@ -117,7 +117,7 @@ int main() {
 
 			if (player1.isLevelClear()) {
 				if (levelClearedScreen(maze1.getDepthCounter(), promptWindow)) {
-					return 0;
+					break;
 				}
 				maze1.clearVectors();
 				maze1.generateMaze();
@@ -228,10 +228,9 @@ void endScreen(WINDOW* promptWindow) {
 	box(promptWindow, 0, 0);
 	mvwprintw(promptWindow, 1, 1, "Congratulations");
 	mvwprintw(promptWindow, 2, 1, "You have made it out of the maze!");
-	mvwprintw(promptWindow, 3, 1, "Press any button to exit");
+	mvwprintw(promptWindow, 3, 1, "Press any button to return to the main menu");
 	wgetch(promptWindow);
 	clear();
-	endwin();
 }
 
 bool levelClearedScreen(int depth, WINDOW* promptWindow) {
