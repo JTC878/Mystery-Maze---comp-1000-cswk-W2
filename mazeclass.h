@@ -106,6 +106,9 @@ public:
 		else {
 			return;
 		}
+		else {
+			return;
+		}
 		if (pathArr[nextPos.y][nextPos.x] == true) {
 			mazeArr[enemyPos.y][enemyPos.x] = ' ';
 			enemyPos = nextPos;
@@ -318,13 +321,13 @@ class JumpOrb : public Item {
 public:
 	JumpOrb() {
 		name = "Jump Orb";
-		mazeChar = 'J';
+		mazeChar = 232;
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	JumpOrb(MazePoint pos, int quant) {
 		name = "Jump Orb";
-		mazeChar = 'J';
+		mazeChar = 232;
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -1107,7 +1110,7 @@ public:
 			}
 			r = rand() % 4; //random variable corresponding to up,down,left,right to check whether carving a path is possible from the current position in the subsequent switch case.
 			switch (r) {
-			case 0: //ABOVE case - ISSUE Maze will never end at top or bottom but because of the way memory addressing works for arrays ending at the left or right side is possible 
+			case 0: //ABOVE case 
 				if ((rand() % 101) <= weightedRandomPercY(i)) { //if left, right and up is a wall
 					if (i < 3) { //because of the way memory addressing works for arrays this precaution is necessary
 						if (found != true) {
@@ -1126,6 +1129,7 @@ public:
 						}
 					}
 					else if (pathArr[i - 1][j] == false && pathArr[i - 2][j] == false && pathArr[i - 1][j - 1] == false && pathArr[i - 1][j + 1] == false) {
+						//if left, right and up is a wall
 						mazeArr[i - 1][j] = ' ';
 						i--;
 						backtrack.push({ i, j });

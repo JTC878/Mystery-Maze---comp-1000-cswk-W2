@@ -312,7 +312,6 @@ void resizeAndMoveWindows(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, i
 }
 /*
 
-Project Backlog
 
 >I think the best avenue for the game would be a fog of war option(fogOption maze attribute and isFogOn() public method) thus allows you to make the game, enemies way easier and items 
 more generous(no fog of war easy mode) and an item to expand the vision you have Fog orb. You would do this by editing the printMaze function to have an if statement in the print loop. 
