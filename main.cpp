@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <random>
@@ -5,25 +6,28 @@
 #include <vector>
 #include <queue>
 #include <stack>
-#include <conio.h>
 #include <iomanip>
+#define PDC_WIDE //enable wide char functions within pdcurses
+#include <curses.h>
+#include <wchar.h>
+#include <locale.h>
 
 using namespace std;
 
 #include "mazeclass.h"
 
-const int Maze::depthValues[10][13] = { 
-  //mazeX  mazeY percPathsofMaze*10  enemyNumber  enemySpotDistance  enemyStep  maxSlow  maxJump  maxTele  maxKill  maxSUTele  maxKeys  maxDoorCount
-	{30,     20,         4,              1,               3,			 1,        5,       4,      4,       4,        0,        5,         5},
-	{40,     20,         4,              3,               4,			 2,        6,       5,      4,       4,        0,        7,         8},
-	{50,     30,         4,              5,               4,			 2,        8,       6,      5,       4,        1,        8,         10},
-	{60,     30,         4,              6,               4,			 3,        10,      9,      6,       5,        1,        10,         12},
-	{60,     40,         4,              8,               5,			 3,        12,      11,      8,      8,       1,        13,         15},
-	{70,     40,         5,              10,			  5,			 4,        14,      13,      12,      10,       1,        15,         17},
-	{80,     50,         5,              13,			  6,			 4,        16,      15,      14,      13,       2,        17,         19},
-	{90,     50,         5,              16,			  6,			 5,        18,      16,      16,      15,       2,        19,         21},
-	{100,    50,         5,              19,			  7,			 6,        20,      18,      19,      18,       1,        21,         23},
-	{100,    50,         5,              23,			  8,			 7,        22,      20,      23,      20,      1,        23,         25},
+const int Maze::depthValues[10][13] = {
+	//mazeX  mazeY percPathsofMaze*10  enemyNumber  enemySpotDistance  enemyStep  maxSlow  maxJump  maxTele  maxKill  maxSUTele  maxKeys  maxDoorCount
+	  {30,     20,         4,              1,              3,			   1,        5,       4,       4,       4,        0,        5,         5},
+	  {40,     20,         4,              3,              4,			   2,        6,       5,       4,       4,        0,        7,         8},
+	  {50,     30,         4,              5,              4,			   2,        8,       6,       5,       4,        1,        8,         10},
+	  {60,     30,         4,              6,              4,			   3,        10,      9,       6,       5,        1,        10,        12},
+	  {60,     40,         4,              8,              5,			   3,        12,      11,      8,       8,        1,        13,        15},
+	  {70,     40,         5,              10,			   5,			   4,        14,      13,      12,      10,       1,        15,        17},
+	  {80,     50,         5,              13,			   6,			   4,        16,      15,      14,      13,       2,        17,        19},
+	  {90,     50,         5,              16,			   6,			   5,        18,      16,      16,      15,       2,        19,        21},
+	  {100,    50,         5,              19,			   7,			   6,        20,      18,      19,      18,       1,        21,        23},
+	  {100,    50,         5,              23,			   8,			   7,        22,      20,      23,      20,       1,        23,        25},
 }; //placeholder values 
 
 vector<Item*> Maze::itemList = {};
@@ -41,86 +45,212 @@ float Enemy::stepRemainder = 0;
 Maze maze1; 
 Player player1(maze1.midPoint);
 
-void levelClearedScreen(int depth);
-void deathScreen();
-void endScreen();
-void printFunctions();
-int initialDepthPrompt();
+bool levelClearedScreen(int depth, WINDOW*);
+void deathScreen(WINDOW*);
+void endScreen(WINDOW*);
+void printFunctions(WINDOW*, WINDOW*, WINDOW*, int, MazePoint);
+int initialDepthPrompt(WINDOW*);
+void resizeAndMoveWindows(WINDOW*, WINDOW*, WINDOW*, int mazeWinY, int mazeWinX);
+void testCurses();
+int startingMenuScreen(WINDOW*);
+void initMyColorPairs();
+//in ncurses the cursor determines where on the screen things get printed
+//the cursor starts at 0, 0 by default which is the top left of the screen
 
 int main() {
-
+	setlocale(LC_ALL, "");
+	initscr();
+	start_color();
+	initMyColorPairs();
+	keypad(stdscr, true);
+	int mazeWinY = player1.getPlayerVisionDistance() * 2 + 3;
+	int mazeWinX = player1.getPlayerVisionDistance() * 4 + 3;
+	WINDOW* mazeWin = newwin(mazeWinY, mazeWinX, 0, 0);
+	WINDOW* mazeStatus = newwin(4, 90, 20, 0);
+	WINDOW* invWin = newwin(18, 30, 0, mazeWinX + 2);
+	WINDOW* promptWindow = newwin(30, 120, 0, 0);
 	char key;
-	maze1.setDepthCounter(initialDepthPrompt());
-
-	srand(time(0));
-	maze1.generateMaze();
-	player1.setPos(maze1.midPoint);
-	system("cls");
-	printFunctions();
 
 	while (true) {
-		key = _getche(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
-		if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor, maze1.goldenKey, maze1.getMazeSize(), maze1.pathCount)) { //for each item check collect method, if check collect is true then player.collect the item. 
-			for (Item* item : maze1.itemList) { //this can be made a function if necessary inside Maze class just make the player object a reference parameter
-				if (item->checkCollect(player1.getPlayerPos())) {
-					player1.collectItem(item, maze1.itemList);
-				}
-			}
-			for (Enemy* enemy : maze1.enemyList) {
-				enemy->movementChoice(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos(), maze1.pathCount);
-			}		
-		}
-		system("cls"); //windows dependant - ncurses?
-		printFunctions();
-		if (player1.isLevelClear()) {
-			levelClearedScreen(maze1.getDepthCounter());
+		clear();
+		wclear(mazeWin);
+		wclear(mazeStatus);
+		wclear(invWin);
+		wclear(promptWindow);
+		switch (startingMenuScreen(mazeWin)) {
+		case 1:
+			maze1.setDepthCounter(initialDepthPrompt(promptWindow));
+			srand(time(0));
 			maze1.clearVectors();
 			maze1.generateMaze();
-			player1.setPos(maze1.midPoint);
-			player1.resetStatus();
-			system("cls");
-			printFunctions();
-			
+			player1 = Player(maze1.midPoint);
+			resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
+			printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
+			break;
+		case 2:
+			return 1;
+			break;
+		case 3:
+			return 1;
+			break;
+		case 4:
+			endwin();
+			return 0;
+			break;
+		default:
+			break;
 		}
-		if (Enemy::isGameOver()) {
-			deathScreen();
+
+		while (true) {
+			key = getch(); //Instead of including multiple maze parameters for playerInput you can just pass a reference to the maze1 object.
+			if (player1.playerInput(key, maze1.mazeArr, maze1.pathArr, maze1.exitDoor, maze1.goldenKey, maze1.getMazeSize(), maze1.pathCount, promptWindow)) { //for each item check collect method, if check collect is true then player.collect the item. 
+				for (Item* item : maze1.itemList) { //this can be made a function if necessary inside Maze class just make the player object a reference parameter
+					if (item->checkCollect(player1.getPlayerPos())) {
+						player1.collectItem(item, maze1.itemList);
+					}
+				}
+				for (Enemy* enemy : maze1.enemyList) {
+					enemy->movementChoice(maze1.mazeArr, maze1.pathArr, player1.getPlayerPos(), maze1.pathCount);
+				}
+			}
+			printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
+
+			if (player1.isLevelClear()) {
+				if (levelClearedScreen(maze1.getDepthCounter(), promptWindow)) {
+					break;
+				}
+				maze1.clearVectors();
+				maze1.generateMaze();
+				resizeAndMoveWindows(mazeWin, mazeStatus, invWin, mazeWinY, mazeWinX);
+				player1.setPos(maze1.midPoint);
+				player1.resetStatus();
+				printFunctions(mazeWin, mazeStatus, invWin, player1.getPlayerVisionDistance(), player1.getPlayerPos());
+			}
+
+			if (Enemy::isGameOver()) {
+				mvprintw(mazeWinY + 2, 0, "YOU DIED!!!");
+				getch();
+				deathScreen(promptWindow);
+				Enemy::resetGameOver();
+				break;
+			}
 		}
 	}
+	return 1;
+}
 
+void testCurses() {
+	//initialises the screen, sets up memory 
+	initscr();
+
+	int height, width, y, x;
+	height = 10;
+	width = 20;
+	y = 10;
+	x = 10;
+
+	WINDOW* win = newwin(height, width, y, x); //without doing anything to it, the window is an invisible part of the terminal
+	refresh();
+
+	box(win, 0, 0);
+	wrefresh(win); //refreshes a specific window, you don't need to refresh the whole screen if you only update one window 
+	//everything thats changed specifically in memory will never get updated to the screen until you call refresh
+
+	int c = getch();
+
+	endwin();
+
+	//init_pair(1, COLOR_BLACK, COLOR_WHITE);
+	//wattron(mazeWin, COLOR_PAIR(1));
+}
+
+void initMyColorPairs() {
+	init_pair(1, COLOR_CYAN, COLOR_BLACK);
+	init_pair(2, COLOR_RED, COLOR_BLACK);
+}
+
+int startingMenuScreen(WINDOW* mazeWin) {
+	clear();
+	refresh();
+	keypad(mazeWin, true);
+	curs_set(0);
+	noecho();
+	string menuStrings[4] = {"1. New game", "2. Load game", "3. Settings", "4. Exit"};
+	int selected = 1;
+	wchar_t inputKey;
+	box(mazeWin, 0, 0);
+	wattron(mazeWin, A_BLINK);
+	mvwprintw(mazeWin, 1, 1, "1. New game");
+	wattroff(mazeWin, A_BLINK);
+	mvwprintw(mazeWin, 2, 1, "2. Load game");
+	mvwprintw(mazeWin, 3, 1, "3. Settings");
+	mvwprintw(mazeWin, 4, 1, "4. Exit");
+	refresh();
+	wrefresh(mazeWin);
+	while (true) {
+		inputKey = wgetch(mazeWin);
+		if ((inputKey == 'w' || inputKey == 'W' || inputKey == KEY_UP) && selected > 1) {
+			mvwprintw(mazeWin, selected, 1, "%s", menuStrings[selected - 1].c_str());
+			selected--;
+		}
+		if ((inputKey == 's' || inputKey == 'S' || inputKey == KEY_DOWN) && selected < 4) {
+			mvwprintw(mazeWin, selected, 1, "%s", menuStrings[selected - 1].c_str());
+			selected++;
+		}
+		if (inputKey == '\n') {
+			curs_set(1);
+			echo();
+			return selected;
+		}
+		wattron(mazeWin, A_BLINK);
+		mvwprintw(mazeWin, selected, 1, "%s", menuStrings[selected - 1].c_str());
+		wattroff(mazeWin, A_BLINK);
+	}
+	wgetch(mazeWin);
+	curs_set(1);
 	return 0;
 }
 
-
-void deathScreen() {
-	cout << endl << endl << "GAME OVER";
-	cout << endl << "You have died by getting hit by an enemy" << endl;
-	cout << "Press any button to exit" << endl << endl;
-	system("pause");
-	exit(0);
+void deathScreen(WINDOW* promptWindow) {
+	clear();
+	refresh();
+	box(promptWindow, 0, 0);
+	mvwprintw(promptWindow, 1, 1, "GAME OVER");
+	mvwprintw(promptWindow, 2, 1, "You died by getting hit by an enemy");
+	mvwprintw(promptWindow, 3, 1, "Press any button to return to the main menu");
+	wgetch(promptWindow);
+	clear();
 }
 
-void endScreen() {
-	cout << endl << endl << "Congratulations";
-	cout << endl << "You have made it out of the maze!" << endl;
-	cout << "Press any button to exit" << endl;
-	system("pause");
-	exit(0);
+void endScreen(WINDOW* promptWindow) {
+	clear();
+	refresh();
+	box(promptWindow, 0, 0);
+	mvwprintw(promptWindow, 1, 1, "Congratulations");
+	mvwprintw(promptWindow, 2, 1, "You have made it out of the maze!");
+	mvwprintw(promptWindow, 3, 1, "Press any button to return to the main menu");
+	wgetch(promptWindow);
+	clear();
 }
 
-void levelClearedScreen(int depth) {
-	char c;
-	system("cls");
+bool levelClearedScreen(int depth, WINDOW* promptWindow) {
+	clear();
+	refresh();
+	box(promptWindow, 0, 0);
+	wrefresh(promptWindow);
+	mvwprintw(promptWindow, 1, 1, "<enter to continue>");
+	wrefresh(promptWindow);
+	wgetch(promptWindow);
+	int wPos;
 	switch (depth) {
 	case 1:
-		c = getchar();
-		cout << "*As you crawl through the pitch black sewers you hear a faint whisper in your ear*" << endl << "<enter to continue>" << endl;
-		c = getchar();
-		cout << "Well done. However, you have only cleared the very first hurdle." << endl << "<enter to continue>" << endl;
-		c = getchar();
-		cout << "Be prepared for what lurks in the depths, stock up on anything you can get your hands on." << endl << "<enter to continue>" << endl;
-		c = getchar();
-		cout << "I'll be waiting for you at the bottom~" << endl << "<enter to continue>" << endl;
-		c = getchar();
+		for (int i = 0; i < 4; i++) {
+			wPos = 3 * (i + 1);
+			mvwprintw(promptWindow, wPos, 1, "%s", levelClearedDialogue[i].c_str());
+			mvwprintw(promptWindow, wPos + 1, 1, "<enter to continue>");
+			wrefresh(promptWindow);
+			wgetch(promptWindow);
+		}
 		break;
 	case 2:
 		break;
@@ -139,47 +269,80 @@ void levelClearedScreen(int depth) {
 	case 9:
 		break;
 	case 10:
-		endScreen();
+		endScreen(promptWindow);
+		return true;
 		break;
 	}
-	
+	wclear(promptWindow);
+	return false;
 }
 
-void printFunctions() {
-	maze1.printMazeArray();
-	maze1.printDepthEnemyPathCount();
-	Enemy::printEnemyStep();
-	player1.printInventory();
+void printFunctions(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int playerVisionDistance, MazePoint playerPos) {
+	wclear(mazeWin);
+	wclear(mazeStatus);
+	wclear(invWin);
+	clear();
+	refresh();
+	maze1.printMazeArray(mazeWin, playerVisionDistance, playerPos);
+	maze1.printDepthEnemyPathCount(mazeStatus);
+	player1.printInventory(invWin);
+	refresh();
 }
 
-int initialDepthPrompt() {
-	int playerSetDepth = 0;
+int initialDepthPrompt(WINDOW* promptWindow) {
+	char playerSetDepth[] = "0;"; //here ; almost acts like a delimiter for the strtol function with end 
+	char* end = &playerSetDepth[1];
+	refresh();
+	box(promptWindow, 0, 0);
 
-	cout << "Keybinds: WASD - player movement, SpaceBar - Wait a turn, x - lockpick regular doors, Number keys(1-6) - use items from left to right" << endl << endl;
-	cout << "Slow Orb: Slow enemies, useful in the deeper depths. Try to always keep enemy speed at 1 or below." << endl << endl;
-	cout << "Jump Orb: Jump in a straight path either over enemies or walls if you stand next to them, these are extremely helpful lifesavers to get away while stuck in a dead end. Direction of the jump is determined by the last movement key pressed." << endl << endl;
-	cout << "Tele Orb: Teleport to a random item in the maze, there's no safety precautions with these. Test your luck you might just end up teleporting to a space an enemy is on, or a golden key who knows. If there are no items left in the maze you will teleport to the exit door" << endl << endl;
-	cout << "Kill Orb: Kills the nearest enemy, very menacing name but also incredibly valuable. Use these sparingly so you can save them for dire situations or deeper depths..." << endl << endl;
-	cout << "Super Tele Orb: A super item. Very rare and also one of the best items to have. Compared to Tele Orbs, these have a safety precaution built in and will never teleport you on top of an enemy. Teleports you to the golden key if you don't have it, if you already do then it will teleport you to the exit door. Almost like a skip button" << endl << endl;
-	cout << "Key: Regular rusted old keys that have been scattered throughout the depths, luckily they can unlock any door except for the exit door. Just stand next to one and press the key. Hah." << endl << endl;
-	cout << "Golden Key: This is your ticket out of here, this unlocks the exit door to leave the current level, don't need to press anything just step through the door and it'll unlock!! Look for the 'D' at the edge of the maze, you can't miss it." << endl << endl;
-	cout << "Lockpicking: Since you're such a skilled and prepared adventurer you brought a magic talking lockpick with you, however it doesn't seem to like you very much, every time you ask for help it asks you to solve one of its riddles first. Be suspicious of this guy." << endl << endl;
-
-	cout << "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the recommended start." << endl;
-	cout << "Enter a Depth: ";
-	cin >> playerSetDepth;
-	while (cin.fail()) {
-		cin.clear();
-		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cout << endl << "You have entered a wrong input. Enter any depth between 1 and 10: ";
-		cin >> playerSetDepth;
-	}
-	return playerSetDepth;
+	mvwprintw(promptWindow, 1, 1, "Depths 1->10 Is there a specific depth you want to start from? Depth 1 is the recommended start.");
+	mvwprintw(promptWindow, 2, 1, "Enter a Depth: ");
+	wrefresh(promptWindow);
+	refresh();
+	wgetnstr(promptWindow, playerSetDepth, 2);
+	wclear(promptWindow);
+	long res = strtol(playerSetDepth, &end, 10); //third argument is the radix(base) which is 10 for decimal. Will convert the string to an integer until it reaches the delimiter char in end.
+	return int(res);
 }
 
+void resizeAndMoveWindows(WINDOW* mazeWin, WINDOW* mazeStatus, WINDOW* invWin, int mazeWinY, int mazeWinX) {
+	wresize(mazeWin, mazeWinY, mazeWinX);
+	mvwin(invWin, 0, mazeWinX + 2);
+	mvwin(mazeStatus, 20, 0);
+}
+/*
 
 
+>I think the best avenue for the game would be a fog of war option(fogOption maze attribute and isFogOn() public method) thus allows you to make the game, enemies way easier and items 
+more generous(no fog of war easy mode) and an item to expand the vision you have Fog orb. You would do this by editing the printMaze function to have an if statement in the print loop. 
+The function would need to take playerPosition as parameter and playerFogRange as parameter(in the Maze class you can assign this to an attribute as a reference to be able to change 
+the default value with depth. Aka fogRange attribute). You would check if the current loop for the printed maze is within that range, if it isn't print over it with any character 
+not in use in the maze. attribute fogChar. 
+Before this you 100% should implement the rest of the items and enemy pathfinding algorithm first. Also fix the screen flickering with some kind of library(search up online for an answer) 
+like ncurses.
 
+>Roadside picnic story inspiration~~~
+
+
+After implementing fog of war
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add a new item 'Vision orb' which reduces enemy spot distance and increases visibility for the player within the fog.
+
+Add a new item 'super kill orb' which kills a random 50% of the enemies within the maze.
+
+Put all classes with their declarations and definitions in seperate files.
+
+Implement NPC traders using pdcurses, whenever you interact with them open up a shop window UI.
+
+Print the distance to the nearest enemy and enemy vision distance so you can more accurately plan and predict your path in the fog. 
+
+Implement a main menu and save/load file saves 
+
+Make it so your vision is only what's printed and scrolls as you move.
+
+Maybe, Increase the width of the paths more than one tile wide if you plan to implement other mechanics.
+
+*/
 
 
 

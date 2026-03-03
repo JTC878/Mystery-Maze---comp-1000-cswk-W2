@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 struct MazePoint {
 	int y;
@@ -29,7 +29,7 @@ class Enemy {
 public:
 	static float enemyStep;
 	static int enemySpotDistance;
-	Enemy(unsigned char** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }), mazeX(mazeX), mazeY(mazeY), pathVisitedCount(1), copyPathArr(new bool* [mazeY]), currentPos({}), totalPathCount(0) { //enemy spawning done within constructor, could be moved to another method if necessary. 
+	Enemy(wchar_t** mazeArr, int mazeX, int mazeY) : enemyPos({ 0, 0 }), mazeX(mazeX), mazeY(mazeY), pathVisitedCount(1), copyPathArr(new bool* [mazeY]), currentPos({}), totalPathCount(0) { //enemy spawning done within constructor, could be moved to another method if necessary. 
 		MazePoint midPoint = { mazeY / 2, mazeX / 2 };
 		int radiusY = mazeY * 0.15; //these can be changed later if necessary
 		int radiusX = mazeX * 0.15;
@@ -51,7 +51,7 @@ public:
 			copyPathArr[i] = new bool[mazeX];
 		}
 	}
-	void enemyRandomMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
+	void enemyRandomMove(wchar_t** mazeArr, bool** pathArr, MazePoint playerPos) {
 		bool hasMoved = false;
 		int r;
 		while (hasMoved == false) {
@@ -97,10 +97,14 @@ public:
 			gameOver = true;
 		}
 	}
-	void enemyTargetedMove(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos) {
-		MazePoint nextPos = { 0, 0 };
+	void enemyTargetedMove(wchar_t** mazeArr, bool** pathArr, MazePoint playerPos) {
+		MazePoint nextPos = { NULL, NULL };
 		if (!shortestPathQueue.empty()) {
 			nextPos = shortestPathQueue.front();
+			
+		}
+		else {
+			return;
 		}
 		else {
 			return;
@@ -204,7 +208,12 @@ public:
 		if (!shortestPathQueue.empty()) shortestPathQueue.pop();
 		
 	} //this method is only about updating the shortestPathQueue
-	void movementChoice(unsigned char** mazeArr, bool** pathArr, MazePoint playerPos, int mazePathCount) { 
+	void movementChoice(wchar_t** mazeArr, bool** pathArr, MazePoint playerPos, int mazePathCount) { 
+		if (enemyPos.y == playerPos.y && enemyPos.x == playerPos.x || gameOver == true) {
+			mazeArr[enemyPos.y][enemyPos.x] = 'E';
+			gameOver = true;
+			return;
+		}
 		int xDifference = playerPos.x - enemyPos.x;
 		int yDifference = playerPos.y - enemyPos.y;
 		int playerDistance = hypot(xDifference, yDifference);
@@ -213,7 +222,8 @@ public:
 			totalPathCount = mazePathCount;
 			updatePathfinding(playerPos);
 		}
-		for (int i = 0; i < getEnemyStep(); i++) {
+		int stepWithRM = getEnemyStep();
+		for (int i = 0; i < stepWithRM; i++) {
 			if (!shortestPathQueue.empty()) {
 				enemyTargetedMove(mazeArr, pathArr, playerPos);
 			}
@@ -232,7 +242,10 @@ public:
 	static bool isGameOver() {
 		return gameOver;
 	}
-	int getEnemyStep() { //use getEnemyStep instead of the enemyStep attribute when you want to apply this behaviour(only when the enemy makes movements)
+	static void resetGameOver() {
+		gameOver = false;
+	}
+	static int getEnemyStep() { //use getEnemyStep instead of the enemyStep attribute when you want to apply this behaviour(only when the enemy makes movements)
 		int rmDec = (int)enemyStep;
 		stepRemainder += enemyStep - rmDec;
 		if (stepRemainder >= 1.0) {
@@ -242,15 +255,12 @@ public:
 		if (enemyStep < 0) enemyStep = 0;
 		return rmDec;
 	} //This allows fractional numbers to be faster or slower than whole numbers - this means slowOrbs have an impact even if they remove a half a step for example.
-	static void printEnemyStep() {
-		cout << "      Enemy Speed: " << enemyStep << endl;
-	}
 };
 
 class Item {
 public:
 	string name;
-	unsigned char mazeChar;
+	wchar_t mazeChar;
 	MazePoint itemPos;
 	int quantity;
 	Item() {
@@ -278,13 +288,13 @@ class SlowOrb : public Item {
 public:
 	SlowOrb() : slowValue(0.5) {
 		name = "Slow Orb";
-		mazeChar = 248;
+		mazeChar = L'°';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	SlowOrb(MazePoint pos, int quant) : slowValue(0.5) {
 		name = "Slow Orb";
-		mazeChar = 248;
+		mazeChar = L'°';
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -322,7 +332,7 @@ public:
 		quantity = quant;
 	}
 
-	bool use(MazePoint& playerPos, unsigned char** mazeArr, bool** pathArr, MazePoint mazeSize, unsigned char lastMoveKeyPressed) {
+	bool use(MazePoint& playerPos, wchar_t** mazeArr, bool** pathArr, MazePoint mazeSize, unsigned char lastMoveKeyPressed) {
 		int inc = 1;
 		switch (directionCase(lastMoveKeyPressed)) {
 		case 0: //w case
@@ -420,23 +430,23 @@ public:
 		return true;
 	}
 };
-//jump orb?? = lastKeyPressed recorded and it will teleport your position in a straight line, you can either jump over enemies if the path infront if your lastKeyPressed is a path, or you can jump over walls if it is a wall.
+
 class TeleOrb : public Item {
 public:
 	static vector<Item*> &itemList;
 	TeleOrb() {
 		name = "Tele Orb";
-		mazeChar = 94;
+		mazeChar = '^';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	TeleOrb(MazePoint pos, int quant) {
 		name = "Tele Orb";
-		mazeChar = 94;
+		mazeChar = '^';
 		itemPos = pos;
 		quantity = quant;
 	}
-	bool use(MazePoint& playerPos, unsigned char** mazeArr, MazePoint exitDoor, MazePoint mazeSize) { //you can teleport on enemies be careful, if no items left it will teleport you to the door
+	bool use(MazePoint& playerPos, wchar_t** mazeArr, MazePoint exitDoor, MazePoint mazeSize) { //you can teleport on enemies be careful, if no items left it will teleport you to the door
 		if (itemList.empty()) {
 			if (exitDoor.y == 0) {
 				mazeArr[playerPos.y][playerPos.x] = ' ';
@@ -491,17 +501,17 @@ public:
 	static vector<Enemy*>& enemyList;
 	KillOrb() : noOfKills(1) {
 		name = "Kill Orb";
-		mazeChar = 167;
+		mazeChar = L'º';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	KillOrb(MazePoint pos, int quant) : noOfKills(1) {
 		name = "Kill Orb";
-		mazeChar = 167;
+		mazeChar = L'º';
 		itemPos = pos;
 		quantity = quant;
 	}
-	bool use(MazePoint playerPos, unsigned char** mazeArr) {
+	bool use(MazePoint playerPos, wchar_t** mazeArr) {
 		if (enemyList.empty()) {
 			return false;
 		}
@@ -539,17 +549,17 @@ class SUTeleOrb : public Item {
 public:
 	SUTeleOrb() {
 		name = "Super Tele Orb";
-		mazeChar = 173;
+		mazeChar = L'¡';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	SUTeleOrb(MazePoint pos, int quant) {
 		name = "Super Tele Orb";
-		mazeChar = 173;
+		mazeChar = L'¡';
 		itemPos = pos;
 		quantity = quant;
 	}
-	bool use(MazePoint& playerPos, unsigned char** mazeArr, MazePoint exitDoor, MazePoint goldenKey, int playerGKeyQuant, MazePoint mazeSize)  {
+	bool use(MazePoint& playerPos, wchar_t** mazeArr, MazePoint exitDoor, MazePoint goldenKey, int playerGKeyQuant, MazePoint mazeSize)  {
 		if (playerGKeyQuant < 1) {
 			if (mazeArr[goldenKey.y][goldenKey.x] == 'E') return false; //we can add more to this check later, for example for fog of war or normal doors return false;
 			else {
@@ -612,18 +622,18 @@ public:
 	static vector<MazePoint>& doorPoints;
 	Key() {
 		name = "Key";
-		mazeChar = 191;
+		mazeChar = L'┐';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	Key(MazePoint pos, int quant) {
 		name = "Key";
-		mazeChar = 191;
+		mazeChar = L'┐';
 		itemPos = pos;
 		quantity = quant;
 	}
 	
-	bool use(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) {
+	bool use(wchar_t** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) {
 		int doorCounter = 0;
 		int i = 0;
 		int doorArr[4];
@@ -655,7 +665,7 @@ public:
 		}
 		return false;
 	}
-	int useLockpick(unsigned char** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos) { //https://logiclike.com/en/famous-riddles
+	int useLockpick(wchar_t** mazeArr, bool** pathArr, unsigned char lastMoveKeyPressed, MazePoint playerPos, WINDOW* promptWindow) { //https://logiclike.com/en/famous-riddles
 		int doorCounter = 0;
 		int i = 0;
 		int doorArr[4];
@@ -666,7 +676,7 @@ public:
 					(lastMoveKeyPressed == 's' || lastMoveKeyPressed == 'S') && playerPos.y + 1 == it->y ||
 					(lastMoveKeyPressed == 'a' || lastMoveKeyPressed == 'A') && playerPos.x - 1 == it->x ||
 					(lastMoveKeyPressed == 'd' || lastMoveKeyPressed == 'D') && playerPos.x + 1 == it->x) { //If the door is associated with the direction of the lastKeyPress unlock that door.
-					if (!solveRiddle()) {
+					if (!solveRiddle(promptWindow)) {
 						return 2;
 					}
 					pathArr[it->y][it->x] = true;
@@ -679,7 +689,7 @@ public:
 			}
 		}
 		if (doorCounter > 0) { //remove a random door
-			if (!solveRiddle()) {
+			if (!solveRiddle(promptWindow)) {
 				return 2;
 			}
 			int randNum = rand() % doorCounter;
@@ -692,28 +702,35 @@ public:
 		}
 		return 3;
 	}
-	bool solveRiddle() {
+	bool solveRiddle(WINDOW* promptWindow) {
+		char input[100];
 		string answer;
 		int randRiddle = rand() % 38;
-		system("cls");
-		cout << "Solve this riddle to lockpick the door successfully." << endl << endl;
-		cout << lockpickRiddles[randRiddle][0] << endl << endl;
-		cout << "Your answer: ";
-		cin >> answer;
+		clear();
+		refresh();
+		mvwprintw(promptWindow, 1, 1, "Solve this riddle to lockpick the door successfully.");
+		mvwprintw(promptWindow, 3, 1, "%s", lockpickRiddles[randRiddle][0].c_str());
+		box(promptWindow, 0, 0);
+		int endofString = getcury(promptWindow);
+		mvwprintw(promptWindow, endofString + 1, 1, "Your answer: ");
+		wgetstr(promptWindow, input);
+		box(promptWindow, 0, 0);
+		answer.assign(input);
 		string riddleAnswer = lockpickRiddles[randRiddle][1];
 		transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
 		transform(riddleAnswer.begin(), riddleAnswer.end(), riddleAnswer.begin(), ::tolower);
 		if (answer == riddleAnswer) {
-			cout << endl << endl << "Correct." << endl;
-			cout << "Press enter to continue." << endl;
-			cin.get();
-			cin.get();
+			mvwprintw(promptWindow, endofString + 3, 1, "Correct.");
+			mvwprintw(promptWindow, endofString + 4, 1, "<enter to continue>");
+			wgetch(promptWindow);
+			wclear(promptWindow);
 			return true;
 		}
 		else {
-			cout << endl << endl << "The answer is " << lockpickRiddles[randRiddle][1] << endl;
-			cout << "Press enter to continue." << endl;
-			cin.get();
+			mvwprintw(promptWindow, endofString + 3, 1, "The answer is: %s", lockpickRiddles[randRiddle][1].c_str());
+			mvwprintw(promptWindow, endofString + 4, 1, "<enter to continue>");
+			wgetch(promptWindow);
+			box(promptWindow, 0, 0);
 			return false;
 		}
 	}
@@ -723,13 +740,13 @@ class GoldenKey : public Item {
 public:
 	GoldenKey() {
 		name = "Golden Key";
-		mazeChar = 184;
+		mazeChar = L'╗';
 		itemPos = { NULL, NULL };
 		quantity = 0;
 	}
 	GoldenKey(MazePoint pos, int quant) {
 		name = "Golden Key";
-		mazeChar = 184;
+		mazeChar = L'╗';
 		itemPos = pos;
 		quantity = quant;
 	}
@@ -756,7 +773,7 @@ private:
 	int maxPathCount;
 	float percPathsofMaze;
 	int enemyNumber;
-	unsigned char mazeWallChar, doorChar;
+	wchar_t mazeWallChar, doorChar;
 	int maxSlow, maxJump, maxTele, maxKill, maxSUTele, maxKeys, maxDoorCount;
 	const float minItemPercOfMax, minSUItemPercOfMax, minDoorPercOfMax;
 	stack<MazePoint> backtrack;
@@ -961,8 +978,8 @@ private:
 				i = (rand() % (mazeY - 3)) + 2;
 				j = (rand() % (mazeX - 3)) + 2;
 				loopCounter++;
-				if ((mazeArr[i - 1][j] == ' ' && mazeArr[i + 1][j] == ' ' && mazeArr[i][j - 1] == mazeWallChar && mazeArr[i][j + 1] == mazeWallChar) ||
-					(mazeArr[i][j - 1] == ' ' && mazeArr[i][j + 1] == ' ' && mazeArr[i - 1][j] == mazeWallChar && mazeArr[i + 1][j] == mazeWallChar)) {
+				if (((mazeArr[i - 1][j] == ' ' && mazeArr[i + 1][j] == ' ' && mazeArr[i][j - 1] == mazeWallChar && mazeArr[i][j + 1] == mazeWallChar) ||
+					(mazeArr[i][j - 1] == ' ' && mazeArr[i][j + 1] == ' ' && mazeArr[i - 1][j] == mazeWallChar && mazeArr[i + 1][j] == mazeWallChar)) && (midPoint.y != i || midPoint.x != j)) {
 					loopCounter = 0;
 					pathFound = true;
 					doorPoints.push_back({ i, j });
@@ -977,7 +994,7 @@ private:
 
 
 public:
-	unsigned char** mazeArr;
+	wchar_t** mazeArr;
 	bool** pathArr;
 	int pathCount; //Now should be accurate to the amount of paths that are in the maze, exitDoor is not a path nor any normalKeyDoors. and pathCount is decremented for each generated.
 	static vector<Item*> itemList;
@@ -987,23 +1004,21 @@ public:
 	MazePoint exitDoor;
 	MazePoint goldenKey;
 	Maze() : depthCounter(0), percPathsofMaze((float)depthValues[depthCounter][2] * 0.1), mazeX(depthValues[depthCounter][0]), mazeY(depthValues[depthCounter][1]),
-		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new unsigned char* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
-		maxSlow(depthValues[depthCounter][6]), maxJump(depthValues[depthCounter][7]), maxTele(depthValues[depthCounter][8]), maxKill(depthValues[depthCounter][9]), 
-		maxSUTele(depthValues[depthCounter][10]), maxKeys(depthValues[depthCounter][11]), maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), 
-		minDoorPercOfMax(0), mazeWallChar(219), doorChar(194), goldenKey({NULL, NULL}) {
+		pathCount(1), midPoint({ (mazeY / 2), (mazeX / 2) }), exitDoor({ 0, 0 }), mazeArr(new wchar_t* [mazeY]), pathArr(new bool* [mazeY]), enemyNumber(depthValues[depthCounter][3]),
+		maxSlow(depthValues[depthCounter][6]), maxJump(depthValues[depthCounter][7]), maxTele(depthValues[depthCounter][8]), maxKill(depthValues[depthCounter][9]), maxSUTele(depthValues[depthCounter][10]), maxKeys(depthValues[depthCounter][11]),
+		maxDoorCount(depthValues[depthCounter][12]), minItemPercOfMax(0.5), minSUItemPercOfMax(1), minDoorPercOfMax(0), mazeWallChar(L'█'), doorChar(L'┬'), goldenKey({NULL, NULL}) {
 		for (int i = 0; i < mazeY; i++) {
-			mazeArr[i] = new unsigned char[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
+			mazeArr[i] = new wchar_t[mazeX]; //dynamically allocate the memory for the ammount of columns for each row that has been initialised to create a 2D array. 
 			pathArr[i] = new bool[mazeX];
 		}
 		maxPathCount = (mazeX * mazeY) * percPathsofMaze;
 	}
 	void initialiseMazeArray() { //need to delete the arrays like in the destructor, then allocate new memory to the arrays with the same name, then initialise for new depth mazes
 
-		unsigned char** newMazeArray = new unsigned char* [mazeY];
+		wchar_t** newMazeArray = new wchar_t* [mazeY];
 		bool** newPathArray = new bool* [mazeY];
 		for (int i = 0; i < mazeY; i++) {
-			newMazeArray[i] = new unsigned char[mazeX]; 
-			//'mazeX' ammount of unsigned chars are dynamically assigned memory for each 1D array(pointer) within the 2D array(pointer to pointers)
+			newMazeArray[i] = new wchar_t[mazeX]; //'mazeX' ammount of pointers are initialised for each row
 			newPathArray[i] = new bool[mazeX];
 		}
 
@@ -1017,7 +1032,7 @@ public:
 			}
 		}
 	}
-	void printMazeArray() {
+	void printMazeArray(WINDOW* mazeWin, int playerVisionDistance, MazePoint playerPos) {
 		//seperate for each loop - get the position of each item and compare it to the mazeArr position, if there is no enemies on the space assign the position to the item.
 		for (Item* item : itemList) {
 			MazePoint pos = item->itemPos;
@@ -1026,12 +1041,27 @@ public:
 			}
 		}
 
-		for (int i = 0; i < mazeY; i++) {
-			cout << endl;
-			for (int j = 0; j < mazeX; j++) {
-				cout << mazeArr[i][j];
+		box(mazeWin, 0, 0);
+		int rowCount = 0;
+		for (int i = playerPos.y - playerVisionDistance; i <= playerPos.y + playerVisionDistance; i++) {
+			rowCount++;
+			wmove(mazeWin, rowCount, 1);
+			for (int j = playerPos.x - playerVisionDistance * 2; j <= playerPos.x + playerVisionDistance * 2; j++) {
+				if (i < 0 || i >= mazeY || j < 0 || j >= mazeX) {
+					waddch(mazeWin, ' ');
+					continue;
+				}
+				if (mazeArr[i][j] == 'E') wattron(mazeWin, COLOR_PAIR(2));
+				waddnwstr(mazeWin, mazeArr[i] + j, 1);
+				wattroff(mazeWin, COLOR_PAIR(2));
 			}
 		}
+		if (mazeArr[playerPos.y][playerPos.x] != 'E') {
+			wattron(mazeWin, COLOR_PAIR(1));
+			mvwaddnwstr(mazeWin, mazeWin->_maxy / 2, mazeWin->_maxx / 2, &mazeArr[playerPos.y][playerPos.x], 1);
+			wattroff(mazeWin, COLOR_PAIR(1));
+		}
+		wrefresh(mazeWin);
 	}
 	void printPathArray() {
 		for (int i = 0; i < mazeY; i++) {
@@ -1041,9 +1071,10 @@ public:
 			}
 		}
 	}
-	void printDepthEnemyPathCount() {
-		cout << endl;
-		cout << endl << "Depth: " << depthCounter << "       Number of paths: " << pathCount << "      Number of enemies: " << enemyList.size();
+	void printDepthEnemyPathCount(WINDOW* mazeStatus) {
+		box(mazeStatus, 0, 0);
+		mvwprintw(mazeStatus, 2, 1, "Depth: %d      Number of paths: %d      Number of enemies: %d      Enemy Speed: %.1f", depthCounter, pathCount, enemyList.size(), Enemy::enemyStep);
+		wrefresh(mazeStatus);
 	}
 	void generateMazePaths() {
 		mazeArr[midPoint.y][midPoint.x] = 'C';
@@ -1264,9 +1295,9 @@ public:
 		return depthCounter;
 	}
 	void setDepthCounter(int playerInput) {
+		depthCounter = playerInput - 1;
 		if (playerInput < 1) depthCounter = 0;
 		if (playerInput > 10) depthCounter = 9;
-		depthCounter = playerInput - 1;
 	}
 	MazePoint getMazeSize() {
 		return { mazeY, mazeX };
@@ -1293,6 +1324,7 @@ class Player {
 	Inventory playerInv;
 	MazePoint playerPos;
 	string lastItemCollected;
+	int playerVisionDistance;
 	int lastItemCollectedCounter;
 	unsigned char lastMoveKeyPressed;
 	bool levelClear;
@@ -1305,7 +1337,7 @@ class Player {
 			return false;
 		}
 	}
-	bool checkGoldenKey(int playerPosY, int playerPosX, unsigned char** mazeArr) {
+	bool checkGoldenKey(int playerPosY, int playerPosX, wchar_t** mazeArr) {
 		if (playerInv.goldenKey.quantity >= 1) {
 			mazeArr[playerPos.y][playerPos.x] = ' ';
 			playerPos.y = playerPosY;
@@ -1318,63 +1350,76 @@ class Player {
 			return false;
 		}
 	}
-	void resetItemQuantity() {
+	void resetItemQuantity(WINDOW* promptWindow) {
 		bool done = false;
 		int loopCounter = 0;
 		int randNum;
 		while (done != true && loopCounter < 100) {
+			loopCounter++;
 			randNum = rand() % 6;
 			switch (randNum) {
 			case 0:
 				if (playerInv.slowOrbs.quantity > 0) {
 					playerInv.slowOrbs.quantity = 0;
-					cout << "Somehow your slow orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your slow orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
 			case 1:
 				if (playerInv.jumpOrbs.quantity > 0) {
 					playerInv.jumpOrbs.quantity = 0;
-					cout << "Somehow your jump orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your jump orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
 			case 2:
 				if (playerInv.teleOrbs.quantity > 0) {
 					playerInv.teleOrbs.quantity = 0;
-					cout << "Somehow your teleport orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your teleport orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
 			case 3:
 				if (playerInv.killOrbs.quantity > 0) {
 					playerInv.killOrbs.quantity = 0;
-					cout << "Somehow your kill orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your kill orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
 			case 4:
 				if (playerInv.suteleOrbs.quantity > 0) {
 					playerInv.suteleOrbs.quantity = 0;
-					cout << "Somehow your super teleport orbs have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your super teleport orbs have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
 			case 5:
 				if (playerInv.keys.quantity > 0) {
 					playerInv.keys.quantity = 0;
-					cout << "Somehow your keys have completely disappeared from your pouch";
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "Somehow your keys have completely disappeared from your pouch");
+					mvwprintw(promptWindow, getcury(promptWindow) + 1, 1, "<enter to continue>");
+					wgetch(promptWindow);
 					done = true;
 				}
 				break;
 			}
 		}
-		cin.get();
+		wclear(promptWindow);
 	}
 
 public:
-	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed('w') {}
-	bool playerInput(unsigned char keyPress, unsigned char** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount) {
+	Player(MazePoint midPoint) : playerPos(midPoint), playerInv({}), levelClear(false), lastItemCollected("None"), lastItemCollectedCounter(0), lastMoveKeyPressed('w'), playerVisionDistance(5) {}
+	bool playerInput(unsigned char keyPress, wchar_t** mazeArr, bool** pathArr, MazePoint exitDoor, MazePoint goldenKeyPos, MazePoint mazeSize, int &pathCount, WINDOW* promptWindow) {
 		if (keyPress == 'w' || keyPress == 'W' || keyPress == 's' || keyPress == 'S' || keyPress == 'a' || keyPress == 'A' || keyPress == 'd' || keyPress == 'D') {
 			lastMoveKeyPressed = keyPress;
 		}
@@ -1418,13 +1463,13 @@ public:
 			return true;
 		}
 		else if (keyPress == 'x' || keyPress == 'X') {
-			int outcome = playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos);
+			int outcome = playerInv.keys.useLockpick(mazeArr, pathArr, lastMoveKeyPressed, playerPos, promptWindow); //this method should probably be apart of Player class, since lockpick is not dependant on keys
 			if (outcome == 1) {
 				pathCount++;
 				return true;
 			}
 			if (outcome == 2) { 
-				resetItemQuantity(); 
+				resetItemQuantity(promptWindow); 
 				return true;
 			}
 			if (outcome == 3) return false;
@@ -1435,7 +1480,7 @@ public:
 		else if ((keyPress == '2' || keyPress == '"') && playerInv.jumpOrbs.quantity > 0) {
 			return playerInv.jumpOrbs.use(playerPos, mazeArr, pathArr, mazeSize, lastMoveKeyPressed);
 		}
-		else if ((keyPress == '3' || keyPress == '�') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
+		else if ((keyPress == '3' || keyPress == '£') && playerInv.teleOrbs.quantity > 0) { //use teleOrb
 			return playerInv.teleOrbs.use(playerPos, mazeArr, exitDoor, mazeSize);
 		}
 		else if ((keyPress == '4' || keyPress == '$') && playerInv.killOrbs.quantity > 0) { //use killOrb
@@ -1455,6 +1500,9 @@ public:
 	}
 	MazePoint getPlayerPos() {
 		return playerPos;
+	}
+	int getPlayerVisionDistance() {
+		return playerVisionDistance;
 	}
 	bool isLevelClear() {
 		return levelClear;
@@ -1490,19 +1538,25 @@ public:
 		}
 		delete itemObject;
 	}
-	void printInventory() {
-		cout << endl;
-		cout << playerInv.slowOrbs.name << "(" << playerInv.slowOrbs.mazeChar << ")" << " : " << playerInv.slowOrbs.quantity;
-		cout << setw(18) << playerInv.jumpOrbs.name << "(" << playerInv.jumpOrbs.mazeChar << ")" << " : " << playerInv.jumpOrbs.quantity;
-		cout << setw(18) << playerInv.teleOrbs.name << "(" << playerInv.teleOrbs.mazeChar << ")" << " : " << playerInv.teleOrbs.quantity;
-		cout << setw(20) << playerInv.killOrbs.name << "(" << playerInv.killOrbs.mazeChar << ")" << " : " << playerInv.killOrbs.quantity;
-		cout << setw(22) << playerInv.suteleOrbs.name << "(" << playerInv.suteleOrbs.mazeChar << ")" << " : " << playerInv.suteleOrbs.quantity;
-		cout << setw(15) << playerInv.keys.name << "(" << playerInv.keys.mazeChar << ")" << " : " << playerInv.keys.quantity;
-		cout << setw(20) << playerInv.goldenKey.name << "(" << playerInv.goldenKey.mazeChar << ")" << " : " << playerInv.goldenKey.quantity;
+	void printInventoryItem(WINDOW* invWin, int itemNum, Item item) {
+		int offset = 2 * itemNum - 1;
+		mvwprintw(invWin, offset, 1, "%s(", item.name.c_str());
+		waddnwstr(invWin, &item.mazeChar, 1);
+		wprintw(invWin, ") : %d", item.quantity);
+	}
+	void printInventory(WINDOW* invWin) {
+		box(invWin, 0, 0);
+		printInventoryItem(invWin, 1, playerInv.slowOrbs);
+		printInventoryItem(invWin, 2, playerInv.jumpOrbs);
+		printInventoryItem(invWin, 3, playerInv.teleOrbs);
+		printInventoryItem(invWin, 4, playerInv.killOrbs);
+		printInventoryItem(invWin, 5, playerInv.suteleOrbs);
+		printInventoryItem(invWin, 6, playerInv.keys);
+		printInventoryItem(invWin, 7, playerInv.goldenKey);
 		if (lastItemCollectedCounter != 0) {
-			cout << endl;
-			cout << "+" << lastItemCollectedCounter << " " << lastItemCollected;
+			mvwprintw(invWin, 15, 1, "+%d  %s", lastItemCollectedCounter, lastItemCollected.c_str()); 
 		}
+		wrefresh(invWin);
 	}
 	void setPos(MazePoint midpoint) {
 		playerPos = midpoint;
@@ -1519,42 +1573,52 @@ public:
 
 const string Key::lockpickRiddles[38][2] = {
 	//Reference https://logiclike.com/en/famous-riddles
-	{"As I walked along the path I saw something with four fingers and one thumb,\nbut it was not flesh, fish, bone or fowl.", "Glove"}, 
-	{"The sun bakes them,\nThe hand breaks them,\nThe foot treads on them,\nAnd the mouth tastes them.\nWhat are they ?", "Grapes"}, 
-	{"A precious stone, as clear as diamond.\nSeek it out whilst the sun's near the horizon.\nThough you can walk on water with its power,\nTry to keep it, and it'll vanish within an hour.", "Ice"}, 
-	{"I soar without wings, I see without eyes.\nI've traveled the universe to and fro.\nI've conquered the world, yet I've never been anywhere but home.\nWho am I ? ", "Imagination"}, 
+	{"As I walked along the path I saw something with four fingers and one thumb,\n but it was not flesh, fish, bone or fowl.", "Glove"}, 
+	{"The sun bakes them,\n The hand breaks them,\n The foot treads on them,\n And the mouth tastes them.\n What are they ?", "Grapes"}, 
+	{"A precious stone, as clear as diamond.\n Seek it out whilst the sun's near the horizon.\n Though you can walk on water with its power,\n Try to keep it, and it'll vanish within an hour.", "Ice"}, 
+	{"I soar without wings, I see without eyes.\n I've traveled the universe to and fro.\n I've conquered the world, yet I've never been anywhere but home.\n Who am I ? ", "Imagination"}, 
 	{"Iron roof, glass walls Burns and burns And never falls.", "Lantern"}, 
-	{"Walk on the living, they don't even mumble.\nWalk on the dead, they mutter and grumble.", "Leaves"}, 
-	{"My tines are long.\nMy tines are short.\nMy tines end ere.\nMy first report.\nWhat am I ? ", "Lightning"}, 
+	{"Walk on the living, they don't even mumble.\n Walk on the dead, they mutter and grumble.", "Leaves"}, 
+	{"My tines are long.\n My tines are short.\n My tines end ere.\n My first report.\n What am I ? ", "Lightning"}, 
 	{"What is always coming but never arrives?", "Tomorrow"}, 
-	{"Look at me. I can bring a smile to your face, A tear to your eye,\nOr even a thought to your mind.But, I can't be seen. What am I?", "Memories"}, 
-	{"I look at you, you look at me I raise my right,\nyou raise your left What is this object ? ", "Mirror"},
+	{"Look at me. I can bring a smile to your face, A tear to your eye,\n Or even a thought to your mind.But, I can't be seen. What am I?", "Memories"}, 
+	{"I look at you, you look at me I raise my right,\n you raise your left What is this object ? ", "Mirror"},
 	{"I work when I play and play when I work.", "Musician"}, 
 	{"What is so delicate that saying its name breaks it?", "Silence"}, 
 	{"What goes up the hill and down the hill, And spite of all, yet standeth still?", "Road"}, 
-	{"What is that which belongs to you\nBut others use it more than you do?", "Name"}, 
-	{"I have streets, but no pavement.\nI have cities, but no buildings.\nI have forests, yet no trees.\nI have rivers, yet no water.", "Map"}, 
-	{"The root tops the trunk on this backward thing,\nthat grows in the winter and dies in the spring.", "Icicle"}, 
+	{"What is that which belongs to you\n But others use it more than you do?", "Name"}, 
+	{"I have streets, but no pavement.\n I have cities, but no buildings.\n I have forests, yet no trees.\n I have rivers, yet no water.", "Map"}, 
+	{"The root tops the trunk on this backward thing,\n that grows in the winter and dies in the spring.", "Icicle"}, 
 	{"What can travel around the world while staying in a corner?", "Stamp"}, 
 	{"What has to be broken before you use it?", "Egg"}, 
 	{"What has many keys but can't open a single lock?", "Piano"}, 
 	{"What runs all around a backyard, yet never moves?", "Fence"},
 	{"What has a bottom at the top?", "Legs"}, 
-	{"I am an odd number. Take away a letter and I become even.\nWhat number am I?", "Seven"}, 
+	{"I am an odd number. Take away a letter and I become even.\n What number am I?", "Seven"}, 
 	{"What goes through cities and fields, but never moves?", "Road"}, 
-	{"I'm tall when I'm young and I'm short when I'm old.\nWhat am I ? ", "Candle"}, 
+	{"I'm tall when I'm young and I'm short when I'm old.\n What am I ? ", "Candle"}, 
 	{"What has hands but can not clap?", "Clock"}, 
-	{"You can drop me from the tallest building and I'll be fine,\nbut if you drop me in water I die.\nWhat am I ? ", "Paper"}, 
+	{"You can drop me from the tallest building and I'll be fine,\n but if you drop me in water I die.\n What am I ? ", "Paper"}, 
 	{"What has an eye but can not see?", "Needle"}, 
 	{"What gets wetter and wetter the more it dries?", "Towel"}, 
-	{"There was a green house. Inside the green house there was a white house.\nInside the white house there was a red house.\nInside the red house there were lots of babies.\nWhat is it ? ", "Watermelon"}, 
+	{"There was a green house. Inside the green house there was a white house.\n Inside the white house there was a red house.\n Inside the red house there were lots of babies.\n What is it ? ", "Watermelon"}, 
 	{"What kind of room has no doors or windows?", "Mushroom"},
 	{"What kind of tree can you carry in your hand?", "Palm"}, 
-	{"Which creature walks on four legs in the morning,\ntwo legs in the afternoon, and three legs in the evening ? ", "Man"}, 
+	{"Which creature walks on four legs in the morning,\n two legs in the afternoon, and three legs in the evening ? ", "Man"}, 
 	{"Which word in the dictionary is spelled incorrectly?", "Incorrectly"}, 
-	{"If you have me, you want to share me. If you share me, you haven't got me.\nWhat am I ? ", "Secret"}, 
+	{"If you have me, you want to share me. If you share me, you haven't got me.\n What am I ? ", "Secret"}, 
 	{"What gets broken without being held?", "Promise"}, 
 	{"Feed me and I live, yet give me a drink and I die.", "Fire"}, 
 	{"Take off my skin - I won't cry, but you will! What am I?", "Onion"}, 
 	{"What invention lets you look right through a wall?", "Window"}
+};
+
+string levelClearedDialogue[] = {
+	//Depth 1 cleared
+	"*As you crawl through the pitch black sewers you hear a faint whisper in your ear*", 
+	"Well done. However, you have only cleared the very first hurdle.", 
+	"Be prepared for what lurks in the depths, stock up on anything you can get your hands on.", 
+	"I'll be waiting for you at the bottom~"
+
+	//Depth 2 cleared
 };
